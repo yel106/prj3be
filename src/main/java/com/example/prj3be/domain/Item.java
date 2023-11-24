@@ -16,7 +16,7 @@ public class Item {
     @Column(name = "item_id")
 
     private Long id;
-
+// 재고수량에 대해 더 알아오기
     private String title;
     private String artist;
     private String releasedDate;
