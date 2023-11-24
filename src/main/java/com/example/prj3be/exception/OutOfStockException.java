@@ -1,4 +1,8 @@
 package com.example.prj3be.exception;
 
-public class OutOfStockException {
+//임시
+public class OutOfStockException extends RuntimeException {
+    public OutOfStockException(String message) {
+        super(message);
+    }
 }
