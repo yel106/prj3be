@@ -8,6 +8,8 @@ import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.service.MemberService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
@@ -67,13 +69,18 @@ public class MemberController {
             return ResponseEntity.ok().build();
         }
     }
+    @GetMapping(value = "check",params = "logId")
+    public ResponseEntity method6(String logId) {
+        if (memberService.getLogId(logId)==null){
+            return ResponseEntity.notFound().build();
+        }else {
+            return ResponseEntity.ok().build();
+        }
+    }
     @GetMapping("list")
-    public List<FindMemberDto> method5(){
-        List<Member> memberList = memberService.findMemberList();
-        List<FindMemberDto> dtoList = memberList.stream()
-                .map(FindMemberDto::new)
-                .collect(Collectors.toList());
-        return dtoList;
+    public Page<FindMemberDto> method5(Pageable pageable) {
+        Page<Member> memberPage = memberService.findMemberList(pageable);
+        return memberPage.map(FindMemberDto::new);
     }
 
 
