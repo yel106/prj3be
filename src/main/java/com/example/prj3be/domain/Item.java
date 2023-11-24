@@ -16,11 +16,11 @@ public class Item {
     @Column(name = "item_id")
 
     private Long id;
-// 재고수량에 대해 더 알아오기
+    // 재고수량에 대해 더 알아오기
     private String title;
     private String artist;
     private String releasedDate;
-// title 앨범 명, 가수명, releasedDate : 발매일 ,
+    // title 앨범 명, 가수명, releasedDate : 발매일 ,
     @Enumerated(EnumType.STRING)
     private AlbumFormat albumFormat;
 
@@ -33,7 +33,8 @@ public class Item {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")      //board_id를 외래키로 사용. board_id가 Item의 pk를 참조
     private Board board;
-//37번
+
+    //37번
     public Item(Long id, Board board) {
         this.id = id;
         this.board = board;
