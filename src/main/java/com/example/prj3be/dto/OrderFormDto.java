@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class OrderFromDto {
+public class OrderFormDto {
     @NotBlank(message = "이름은 필수 입력값입니다.")
     private String name;
     @NotBlank(message = "주소는 필수 입력값입니다.")
