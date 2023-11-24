@@ -33,7 +33,7 @@ public class Item {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")      //board_id를 외래키로 사용. board_id가 Item의 pk를 참조
     private Board board;
-
+//37번
     public Item(Long id, Board board) {
         this.id = id;
         this.board = board;
