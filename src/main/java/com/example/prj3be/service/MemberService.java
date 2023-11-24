@@ -5,6 +5,8 @@ import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,9 +40,12 @@ public class MemberService {
         return memberRepository.findEmailByEmail(email)
                 .orElse(null);
     }
+    public String getLogId(String logId) {
+        return memberRepository.findLogIdByLogId(logId)
+                .orElse(null);
+    }
 
-    public List<Member> findMemberList() {
-        List<Member> all = memberRepository.findAll();
-        return all;
+    public Page<Member> findMemberList(Pageable pageable) {
+        return memberRepository.findAll(pageable);
     }
 }
