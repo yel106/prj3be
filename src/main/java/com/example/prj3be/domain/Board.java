@@ -22,6 +22,7 @@ public class Board {
     @OneToMany(mappedBy = "board")
     private List<Item> items = new ArrayList<>();
 
+
     @OneToMany(mappedBy = "comment")
     private List<Comment> comments = new ArrayList<>();
 
