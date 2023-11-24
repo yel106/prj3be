@@ -24,11 +24,17 @@ public class QItem extends EntityPathBase<Item> {
 
     public final StringPath agency = createString("agency");
 
+    public final EnumPath<AlbumFormat> albumFormat = createEnum("albumFormat", AlbumFormat.class);
+
+    public final StringPath artist = createString("artist");
+
     public final QBoard board;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath price = createString("price");
+
+    public final DatePath<java.time.LocalDate> releaseDate = createDate("releaseDate", java.time.LocalDate.class);
 
     public final StringPath title = createString("title");
 

@@ -23,14 +23,13 @@ public class Board {
     private List<Item> items = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
-    public Board(Long id, List<Item> items) {
+    public Board(Long id, String content, List<Item> items, List<Comment> comments) {
         this.id = id;
+        this.content = content;
         this.items = items;
+        this.comments = comments;
     }
-
-
-
 }
