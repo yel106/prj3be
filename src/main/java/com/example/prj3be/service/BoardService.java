@@ -3,6 +3,8 @@ package com.example.prj3be.service;
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +17,12 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
 
+//    public List<Board> boardList(Board board) {
+//        return boardRepository.findAll();
+//    }
 
-    public List<Board> boardList(Board board) {
-        return boardRepository.findAll();
+    public Page<Board> boardList(Pageable pageable) {
+        return boardRepository.findAll(pageable);
     }
 
     public void save(Board board) {

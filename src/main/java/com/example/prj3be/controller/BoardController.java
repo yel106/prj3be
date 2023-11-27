@@ -4,6 +4,8 @@ import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Item;
 import com.example.prj3be.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,9 +24,15 @@ import static com.example.prj3be.domain.QItem.item;
 public class BoardController {
     private final BoardService boardService;
 
+//    @GetMapping("list")
+//    public List<Board> list(Board board) {
+//        return boardService.boardList(board);
+//    }
+
     @GetMapping("list")
-    public List<Board> list(Board board) {
-        return boardService.boardList(board);
+    public Page<Board> list(Pageable pageable) {
+        Page<Board> boardListPage = boardService.boardList(pageable);
+        return boardListPage;
     }
 
     @PostMapping("add")
