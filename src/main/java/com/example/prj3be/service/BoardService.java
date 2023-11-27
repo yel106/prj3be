@@ -15,6 +15,7 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
 
+
     public List<Board> boardList(Board board) {
         return boardRepository.findAll();
     }
