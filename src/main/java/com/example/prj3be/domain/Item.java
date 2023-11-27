@@ -38,6 +38,5 @@ public class Item {
     public Item(Long id, Board board) {
         this.id = id;
         this.board = board;
-
     }
 }
