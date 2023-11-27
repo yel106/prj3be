@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="member")
 @Getter
@@ -29,6 +32,9 @@ public class Member extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     private Role role; //ADMIN,USER
 
+    //order에 일대다 연관관계 매핑
+    @OneToMany(mappedBy = "member")
+    private List<Order> orders = new ArrayList<Order>();
 
     public Member() {
     }
