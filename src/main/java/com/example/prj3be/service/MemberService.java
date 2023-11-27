@@ -4,18 +4,13 @@ import com.example.prj3be.domain.Member;
 import com.example.prj3be.domain.QMember;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.repository.MemberRepository;
-import com.example.prj3be.repository.MemberRepositoryImpl;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,8 +18,6 @@ import java.util.Optional;
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final MemberRepositoryImpl repository;
-
 
     public void signup(Member member) {
         memberRepository.save(member);
