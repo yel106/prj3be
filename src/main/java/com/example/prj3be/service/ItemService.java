@@ -24,7 +24,6 @@ public class ItemService {
         Item existingItem = itemRepository.findItemsById(updateItem.getId()).orElse(null);
 
         if (existingItem != null){
-            existingItem.setId(updateItem.getId());
             existingItem.setTitle(updateItem.getTitle());
             existingItem.setArtist(updateItem.getArtist());
             existingItem.setReleaseDate(updateItem.getReleaseDate());

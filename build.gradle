@@ -28,9 +28,9 @@ dependencies {
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2'
 
     //security
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-    //Oauth2
-//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+  //    Oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
