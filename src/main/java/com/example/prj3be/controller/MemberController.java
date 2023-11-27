@@ -8,18 +8,17 @@ import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.service.MemberService;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
+@Slf4j
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
@@ -78,8 +77,12 @@ public class MemberController {
         }
     }
     @GetMapping("list")
-    public Page<FindMemberDto> method5(Pageable pageable) {
-        Page<Member> memberPage = memberService.findMemberList(pageable);
+    public Page<FindMemberDto> method5(Pageable pageable,
+                                       @RequestParam(value = "k",defaultValue = "")String keyword,
+                                       @RequestParam(value = "c",defaultValue = "all")String category) {
+        System.out.println(keyword);
+        System.out.println(category);
+        Page<Member> memberPage = memberService.findMemberList(pageable,keyword,category);
         return memberPage.map(FindMemberDto::new);
     }
 
@@ -96,7 +99,6 @@ public class MemberController {
         int birthYear = Integer.parseInt(birthdate.substring(0, 2));
         int birthMonth = Integer.parseInt(birthdate.substring(2, 4));
         int birthDay = Integer.parseInt(birthdate.substring(4, 6));
-
         // 2000년대생인지 1900년대생인지 판단한다
         if (birthYear >= 0 && birthYear <= 22) { // 현재 연도를 기준으로 조정할 수 있다
             birthYear += 2000;
