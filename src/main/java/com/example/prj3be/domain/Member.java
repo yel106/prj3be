@@ -23,6 +23,8 @@ public class Member extends BaseTimeEntity{
     private String password;
     private String name;
     private String address;
+
+    @Column(unique = true)
     private String email;
 
     private Integer age;
