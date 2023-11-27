@@ -2,11 +2,13 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.domain.Cart;
 import com.example.prj3be.domain.CartItem;
+import com.example.prj3be.domain.Item;
 import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.CartInfoDto;
 import com.example.prj3be.dto.CartItemDto;
 import com.example.prj3be.repository.CartItemRepository;
 import com.example.prj3be.repository.CartRepository;
+import com.example.prj3be.repository.ItemRepository;
 import com.example.prj3be.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

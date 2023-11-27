@@ -18,26 +18,39 @@ public class QBoard extends EntityPathBase<Board> {
 
     private static final long serialVersionUID = -1960555125L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QBoard board = new QBoard("board");
 
     public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
 
-    public final StringPath content = createString("content");
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final ListPath<Item, QItem> items = this.<Item, QItem>createList("items", Item.class, QItem.class, PathInits.DIRECT2);
+    public final QItem item;
+
+    public final StringPath price = createString("price");
+
+    public final StringPath title = createString("title");
 
     public QBoard(String variable) {
-        super(Board.class, forVariable(variable));
+        this(Board.class, forVariable(variable), INITS);
     }
 
     public QBoard(Path<? extends Board> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QBoard(PathMetadata metadata) {
-        super(Board.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QBoard(PathMetadata metadata, PathInits inits) {
+        this(Board.class, metadata, inits);
+    }
+
+    public QBoard(Class<? extends Board> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.item = inits.isInitialized("item") ? new QItem(forProperty("item"), inits.get("item")) : null;
     }
 
 }
