@@ -10,17 +10,17 @@ import lombok.ToString;
 @ToString
 public class Cart {
     @Id
-    @Column(name= "cartId")
+    @Column(name= "cart_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-//    @OneToOne
-//    @JoinColumn(name="memberId") //TODO: 멤버 테이블 작성 완료시 칼럼명 맞추기
-//    private Member member;
+    @OneToOne
+    @JoinColumn(name="member_id")
+    private Member member;
 
     public static Cart createCart(Member member) {
         Cart cart = new Cart();
-//        cart.setMember(member);
+        cart.setMember(member);
         return cart;
     }
 }

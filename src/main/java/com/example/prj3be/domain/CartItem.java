@@ -6,30 +6,30 @@ import lombok.ToString;
 
 @Entity
 @Data
-@Table(name="cartItem")
+@Table(name="cart_item")
 public class CartItem {
     @Id
     @GeneratedValue
-    @Column(name="itemId")
+    @Column(name="cart_item_id")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="cartId")
+    @JoinColumn(name="cart_id")
     private Cart cart;
 
-//    @ManyToOne
-//    @JoinColumn(name="itemId") //TODO: item 쪽 완성되면 이름 맞춰놓기
-//    private Item item;
+    @ManyToOne
+    @JoinColumn(name="item_id")
+    private Item item;
 
     private int count;
 
-//    public static CartItem createCartItem(Cart cart, Item item, int count) {
-//        CartItem cartItem = new CartItem();
-//        cartItem.setCart(cart);
-//        cartItem.setItem(item);
-//        cartItem.setCount(count);
-//        return cartItem;
-//    }
+    public static CartItem createCartItem(Cart cart, Item item, int count) {
+        CartItem cartItem = new CartItem();
+        cartItem.setCart(cart);
+        cartItem.setItem(item);
+        cartItem.setCount(count);
+        return cartItem;
+    }
 
     public void addCount(int count) {
         this.count += count;
