@@ -19,7 +19,6 @@ public class ItemController {
     @PostMapping("addItem")
     public void method1(@Validated @RequestBody ItemFormDto dto) {
         Item item = new Item();
-        item.setId(dto.getId());
         item.setTitle(dto.getTitle());
         item.setArtist(dto.getArtist());
         item.setReleaseDate(dto.getReleaseDate());
