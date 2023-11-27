@@ -46,6 +46,7 @@ public class CartController {
         return new ResponseEntity<Long>(cartItemId, HttpStatus.OK);
     }
 
+    //TODO : 회원 닉네임이 email이란 가정 하에 작성한 코드, CartController, getCartList 수정할 것
     @GetMapping(value = "/cart")
     public ResponseEntity<List<CartInfoDto>> orderHistory(Principal principal) {
         List<CartInfoDto> cartInfoDtoList = cartService.getCartList(principal.getName());

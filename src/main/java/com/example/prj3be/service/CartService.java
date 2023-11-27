@@ -26,7 +26,8 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
 
-    public Long addCart(CartItemDto cartItemDto, Integer id) {
+    //TODO: findByEmail이 아니라 닉네임으로 서치하도록 수정할 것
+    public Long addCart(CartItemDto cartItemDto, String email) {
         Item item = itemRepository.findById(cartItemDto.getItemId()).orElseThrow(EntityNotFoundException::new);
         Member member = memberRepository.findByEmail(email);
 
