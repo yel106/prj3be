@@ -15,4 +15,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
     Optional<String> findEmailByEmail(String email);
     @Query("SELECT m.logId FROM Member m WHERE m.logId = :logId")
     Optional<String> findLogIdByLogId(String logId);
+
+    @Query("SELECT m FROM Member m WHERE m.email = :email")
+    Member findByEmail(String email);
 }
