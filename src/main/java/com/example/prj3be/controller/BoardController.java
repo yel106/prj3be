@@ -30,8 +30,10 @@ public class BoardController {
 //    }
 
     @GetMapping("list")
-    public Page<Board> list(Pageable pageable) {
-        Page<Board> boardListPage = boardService.boardList(pageable);
+    public Page<Board> list(Pageable pageable,
+                            @RequestParam (value = "c", defaultValue = "all") String category,
+                            @RequestParam (value = "k", defaultValue = "") String keyword) {
+        Page<Board> boardListPage = boardService.boardList(pageable, category, keyword);
         return boardListPage;
     }
 
@@ -54,6 +56,10 @@ public class BoardController {
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
     }
+
+
+
+
 
 
 }
