@@ -19,7 +19,10 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     public Page<Board> boardListAll(Pageable pageable, String category, String keyword) {
-        return boardRepository.findAll(pageable);
+        QBoard board = QBoard.board;
+        Predicate predicate1 = createPredicate(category, keyword, board);
+
+        return boardRepository.findAll(predicate1, pageable);
     }
 
     public Page<Board> boardListSearch(Pageable pageable,
