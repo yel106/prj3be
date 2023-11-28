@@ -3,6 +3,7 @@ package com.example.prj3be.service;
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.QBoard;
 import com.example.prj3be.repository.BoardRepository;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,34 +21,23 @@ public class BoardService {
 
     public Page<Board> boardListAll(Pageable pageable, String category, String keyword) {
         QBoard board = QBoard.board;
-        Predicate predicate1 = createPredicate(category, keyword, board);
-
-        return boardRepository.findAll(predicate1, pageable);
-    }
-
-    public Page<Board> boardListSearch(Pageable pageable,
-                                 String category,
-                                 String keyword) {
-
-//        Predicate predicate = QBoard.board.title.contains(keyword);
-//                .or(QBoard.board.title.contains(keyword));
-
-        QBoard board = QBoard.board;
-
-        Predicate predicate = createPredicate(keyword, category, board); //호출시 param전달 순서도 일치해야함
+        Predicate predicate = createPredicate(category, keyword, board);
 
         return boardRepository.findAll(predicate, pageable);
-
-
     }
 
+
     private Predicate createPredicate(String category, String keyword, QBoard board) {
-        if ("all".equals(category)) {
-            return board.title.containsIgnoreCase(keyword);
-        } else if ("CD".equals(category)) {
-            return board.title.containsIgnoreCase(keyword);
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if( keyword != null && !keyword.trim().isEmpty()) {
+            builder.and(board.title.containsIgnoreCase(keyword));
         }
-        return null;
+
+//        if(!"all".equals(category)) {
+//            builder.and(board.title.containsIgnoreCase(keyword));
+//        }
+        return builder;
     }
 
 
