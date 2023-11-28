@@ -1,22 +1,14 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Board;
-import com.example.prj3be.domain.Item;
 import com.example.prj3be.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.example.prj3be.domain.QItem.item;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,18 +16,14 @@ import static com.example.prj3be.domain.QItem.item;
 public class BoardController {
     private final BoardService boardService;
 
-//    @GetMapping("list")
-//    public List<Board> list(Board board) {
-//        return boardService.boardList(board);
-//    }
-
-    @GetMapping("list")
+    @GetMapping ("list")
     public Page<Board> list(Pageable pageable,
                             @RequestParam (value = "c", defaultValue = "all") String category,
                             @RequestParam (value = "k", defaultValue = "") String keyword) {
-        Page<Board> boardListPage = boardService.boardList(pageable, category, keyword);
+        Page<Board> boardListPage = boardService.boardListAll(pageable, category, keyword);
         return boardListPage;
     }
+
 
     @PostMapping("add")
     public void add(@Validated @RequestBody Board saveboard) {

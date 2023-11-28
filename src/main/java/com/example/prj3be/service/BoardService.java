@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +18,11 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public Page<Board> boardList(Pageable pageable,
+    public Page<Board> boardListAll(Pageable pageable, String category, String keyword) {
+        return boardRepository.findAll(pageable);
+    }
+
+    public Page<Board> boardListSearch(Pageable pageable,
                                  String category,
                                  String keyword) {
 
@@ -38,10 +41,10 @@ public class BoardService {
     private Predicate createPredicate(String category, String keyword, QBoard board) {
         if ("all".equals(category)) {
             return board.title.containsIgnoreCase(keyword);
-        } else if ("item".equals(category)) {
-            return board.price.containsIgnoreCase(keyword);
+        } else if ("CD".equals(category)) {
+            return board.title.containsIgnoreCase(keyword);
         }
-        return board.title.containsIgnoreCase(keyword);
+        return null;
     }
 
 
