@@ -57,7 +57,7 @@ public class SecurityConfig{
 
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers("/member/add", "/authenticate").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 )
 
                 //세션을 사용하지 않으므로 STATELESS로 설정
