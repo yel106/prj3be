@@ -21,24 +21,40 @@ public class BoardService {
 
     public Page<Board> boardListAll(Pageable pageable, String category, String keyword) {
         QBoard board = QBoard.board;
-        Predicate predicate = createPredicate(category, keyword, board);
+        BooleanBuilder builder = new BooleanBuilder();
 
-        return boardRepository.findAll(predicate, pageable);
+        /* TODO: 카테고리 분류 추가하기*/
+        if (category != null && keyword != null) {
+            if ("all".equals(category)) {
+                builder.and(board.title.containsIgnoreCase(keyword));
+            } else if ("CD".equals(category)) {
+                builder.and(board.title.containsIgnoreCase(keyword));
+            }
+        }
+
+        Predicate predicate = builder.hasValue() ? builder.getValue() : null; //삼항연산자
+
+        if (predicate != null) {
+            return boardRepository.findAll(predicate, pageable);
+        } else {
+            return boardRepository.findAll(pageable);
+        }
     }
 
 
-    private Predicate createPredicate(String category, String keyword, QBoard board) {
-        BooleanBuilder builder = new BooleanBuilder();
+//    private Predicate createPredicate(String category, String keyword, QBoard board) {
+//        BooleanBuilder builder = new BooleanBuilder();
+//
+//        if( keyword != null && !keyword.trim().isEmpty()) {
+//            builder.and(board.title.containsIgnoreCase(keyword));
+//        }
 
-        if( keyword != null && !keyword.trim().isEmpty()) {
-            builder.and(board.title.containsIgnoreCase(keyword));
-        }
 
 //        if(!"all".equals(category)) {
 //            builder.and(board.title.containsIgnoreCase(keyword));
 //        }
-        return builder;
-    }
+//        return builder;
+//    }
 
 
     public void save(Board board) {

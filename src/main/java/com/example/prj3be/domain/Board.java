@@ -20,6 +20,7 @@ public class Board {
     private Long id;
     @NotBlank private String title;
     @NotBlank private String price;
+    private String image;
 
     @OneToOne
     @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조

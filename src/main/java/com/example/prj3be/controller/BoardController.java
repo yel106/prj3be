@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -26,7 +27,9 @@ public class BoardController {
 
 
     @PostMapping("add")
-    public void add(@Validated @RequestBody Board saveboard) {
+    //파일 추가할때 @RequestBody X
+    public void add(@Validated @RequestBody Board saveboard,
+                    @RequestParam (value = "uploadFiles[]", required = false) MultipartFile[] file) {
         boardService.save(saveboard);
     }
 
