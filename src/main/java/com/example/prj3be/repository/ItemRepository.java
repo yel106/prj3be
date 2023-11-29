@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT i FROM Item i WHERE i.id = :itemId")
     Optional<Item> findItemsById(@Param("itemId")Long itemId);
-    @Query("SELECT i FROM Item i WHERE i.name = :itemName")
-    List<Item> findItemsByName(@Param("itemName") String itemName);
+    @Query("SELECT i FROM Item i WHERE i.title = :itemTitle")
+    List<Item> findItemsByName(@Param("itemTitle") String itemName);
 
 
 

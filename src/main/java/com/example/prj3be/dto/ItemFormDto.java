@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDate;
 @Data
 public class ItemFormDto {
-    private String id;
+
     @NotBlank(message = "Register Album Title")
     private String Title;
     @NotBlank(message = "Input the Artist's Name")
