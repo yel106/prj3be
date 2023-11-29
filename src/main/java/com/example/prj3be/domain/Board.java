@@ -20,7 +20,6 @@ public class Board {
     private Long id;
     @NotBlank private String title;
     @NotBlank private String price;
-    private String image;
 
     @OneToOne
     @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조
@@ -29,14 +28,11 @@ public class Board {
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
-    public Board(Long id, String title, String price, Item item, List<Comment> comments) {
+    public Board(Long id, String title, String price, String image, Item item, List<Comment> comments) {
         this.id = id;
         this.title = title;
         this.price = price;
         this.item = item;
         this.comments = comments;
     }
-
-
-
 }

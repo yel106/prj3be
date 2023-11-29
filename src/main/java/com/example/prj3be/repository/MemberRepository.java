@@ -8,9 +8,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import java.util.Optional;
 
 
-public interface
-
-MemberRepository extends JpaRepository<Member,Long>,QuerydslPredicateExecutor<Member>{
+public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPredicateExecutor<Member>{
     @Query("SELECT m.email FROM Member m WHERE m.email = :email")
     Optional<String> findEmailByEmail(String email);
     @Query("SELECT m.logId FROM Member m WHERE m.logId = :logId")

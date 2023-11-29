@@ -1,6 +1,7 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Board;
+import com.example.prj3be.domain.BoardFile;
 import com.example.prj3be.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -17,10 +19,10 @@ import java.util.Optional;
 public class BoardController {
     private final BoardService boardService;
 
-    @GetMapping ("list")
+    @GetMapping("list")
     public Page<Board> list(Pageable pageable,
-                            @RequestParam (value = "c", defaultValue = "all") String category,
-                            @RequestParam (value = "k", defaultValue = "") String keyword) {
+                            @RequestParam(value = "c", defaultValue = "all") String category,
+                            @RequestParam(value = "k", defaultValue = "") String keyword) {
         Page<Board> boardListPage = boardService.boardListAll(pageable, category, keyword);
         return boardListPage;
     }
@@ -28,10 +30,13 @@ public class BoardController {
 
     @PostMapping("add")
     //파일 추가할때 @RequestBody X
-    public void add(@Validated @RequestBody Board saveboard,
-                    @RequestParam (value = "uploadFiles[]", required = false) MultipartFile[] file) {
-        boardService.save(saveboard);
+    public void add(@Validated Board saveboard,
+                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
+                    BoardFile boardFile) throws IOException {
+
+        boardService.save(saveboard, files, boardFile);
     }
+
 
     @GetMapping("id/{id}")
     public Optional<Board> get(@PathVariable Long id) {
@@ -47,10 +52,6 @@ public class BoardController {
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
     }
-
-
-
-
 
 
 }
