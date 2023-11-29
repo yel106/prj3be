@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,16 +37,21 @@ public class MemberDetailService implements UserDetailsService {
     }
 
     private User createUser(String username, Member member) {
-        if(member.getActivated() == null || !member.getActivated()){
+        if(!member.getActivated()){
             throw new RuntimeException(username+"이 활성화 되어 있지 않습니다.");
         }
 
-        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-                .collect(Collectors.toList());
+//        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
+//                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
+//                .collect(Collectors.toList());
+//        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+//        grantedAuthorities.add(new SimpleGrantedAuthority(member.getRole().name()));
 
-        System.out.println("grantedAuthorities = " + grantedAuthorities);
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole().name());
 
-        return new User(member.getLogId(), member.getPassword(), grantedAuthorities);
+//        System.out.println("grantedAuthorities = " + grantedAuthorities);
+        System.out.println("grantedAuthority = " + grantedAuthority);
+
+        return new User(member.getLogId(), member.getPassword(), Collections.singletonList(grantedAuthority));
     }
 }

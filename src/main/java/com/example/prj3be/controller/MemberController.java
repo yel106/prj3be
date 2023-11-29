@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -23,11 +24,12 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder;
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
         Member member = new Member();
         member.setLogId(dto.getLogId());
-        member.setPassword(dto.getPassword());
+        member.setPassword(passwordEncoder.encode(dto.getPassword()));
         member.setName(dto.getName());
         member.setEmail(dto.getEmail());
         if (dto.getFirstDigit()== 1 || dto.getFirstDigit()== 3) {

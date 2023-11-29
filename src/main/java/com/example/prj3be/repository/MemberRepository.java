@@ -20,7 +20,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
     @Query("SELECT m FROM Member m WHERE m.email = :email")
     Member findByEmail(String email);
 
-    @EntityGraph(attributePaths = "authorities")
+    @EntityGraph(attributePaths = "role")
     @Query("SELECT m FROM Member m WHERE m.logId = :logId")
     Optional<Member> findOneWithAuthoritiesByLogId(String logId);
 }

@@ -38,13 +38,13 @@ public class Member extends BaseTimeEntity{
     @Column(name="activated")
     private Boolean activated;
 
-    @ManyToMany
-    @JoinTable(
-            name="member_authority",
-            joinColumns = {@JoinColumn(name="member_id", referencedColumnName = "member_id")},
-            inverseJoinColumns = {@JoinColumn(name="authority_name", referencedColumnName = "authority_name")}
-    )
-    private Set<Authority> authorities;
+//    @ManyToMany
+//    @JoinTable(
+//            name="member_authority",
+//            joinColumns = {@JoinColumn(name="member_id", referencedColumnName = "member_id")},
+//            inverseJoinColumns = {@JoinColumn(name="authority_name", referencedColumnName = "authority_name")}
+//    )
+//    private Set<Authority> authorities;
     public Member() {
     }
 }
