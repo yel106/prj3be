@@ -36,7 +36,7 @@ public class Member extends BaseTimeEntity{
     private Role role; //ADMIN,USER
 
     @Column(name="activated")
-    private boolean activated;
+    private Boolean activated;
 
     @ManyToMany
     @JoinTable(

@@ -21,5 +21,6 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
     Member findByEmail(String email);
 
     @EntityGraph(attributePaths = "authorities")
+    @Query("SELECT m FROM Member m WHERE m.logId = :logId")
     Optional<Member> findOneWithAuthoritiesByLogId(String logId);
 }

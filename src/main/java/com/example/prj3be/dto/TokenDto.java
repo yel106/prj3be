@@ -1,8 +1,10 @@
 package com.example.prj3be.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter @Setter @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TokenDto {
     private String token;
 }
