@@ -43,6 +43,7 @@ public class MemberController {
         member.setAddress(dto.getAddress());
         Role role = Role.valueOf(String.valueOf(dto.getRole()));
         member.setRole(role);
+        member.setActivated(true);
         memberService.signup(member);
     }
 
