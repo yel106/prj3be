@@ -7,19 +7,42 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class BoardService {
-    private BoardRepository boardRepository;
+    private final BoardRepository boardRepository;
 
-    public void boardList(Board board) {
-        boardRepository.findAll();
+    public List<Board> boardList(Board board) {
+        return boardRepository.findAll();
     }
 
-    public void edit(Board board) {
+    public void save(Board board) {
         boardRepository.save(board);
     }
+
+    public Optional<Board> getBoardById(Long id) {
+        return boardRepository.findById(id);
+    }
+
+    public void update(Long id, Board updateBoard) {
+        Optional<Board> boardById = boardRepository.findById(id);
+        if( boardById.isPresent()) {
+            Board board1 = boardById.get();
+            board1.setTitle(updateBoard.getTitle());
+            board1.setPrice(updateBoard.getPrice());
+        }
+    }
+
+
+    public void delete(Long id) {
+        boardRepository.deleteById(id);
+    }
+
+
+
+
 
 }

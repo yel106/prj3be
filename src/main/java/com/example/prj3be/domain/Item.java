@@ -27,12 +27,17 @@ public class Item {
     private String agency;
     private LocalDate releaseDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id") //board_id를 외래키로 사용. board_id가 Item의 pk를 참조
+    @OneToOne(mappedBy = "item")
     private Board board;
 
-    public Item(Long id, Board board) {
+    public Item(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, Board board) {
         this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.albumFormat = albumFormat;
+        this.price = price;
+        this.agency = agency;
+        this.releaseDate = releaseDate;
         this.board = board;
     }
 }
