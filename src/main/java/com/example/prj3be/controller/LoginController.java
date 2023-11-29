@@ -3,7 +3,9 @@ package com.example.prj3be.controller;
 import com.example.prj3be.dto.LoginDto;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.jwt.JwtFilter;
+import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
+import com.example.prj3be.service.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.HashMap;
 
 @RestController
@@ -24,6 +27,8 @@ public class LoginController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     @Value("${button.image.url}")
     private String socialButtonImagePrefix;
+    private LoginService loginService;
+    private final LoginProvider loginProvider;
 
     public LoginController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder){
         this.tokenProvider = tokenProvider;
@@ -69,7 +74,7 @@ public class LoginController {
 
     @ResponseBody
     @GetMapping("/api/login/kakao")
-    public BaseResponse<PostLoginRes> kakaoLogin(@RequestParam(required = false) String code) {
+    public ResponseEntity<PostLoginRes> kakaoLogin(@RequestParam(required = false) String code) {
         try{
             //URL에 포함된 code를 이용하여 액세스 토큰 발급
             String accessToken = loginService.getKakaoAccessToken(code);
@@ -84,14 +89,15 @@ public class LoginController {
             //만약 DB에 해당 이메일을 가진 유저가 없다면 회원가입 시키고, 유저 식별자와 JWT 반환
             //전화번호, 성별, 및 기타 개인 정보는 사업자 번호가 없기 때문에 받아올 권한이 없어 테스트 불가능
             if(loginProvider.checkEmail(String.valueOf(userInfo.get("email"))) == 0) {
-                return new BaseResponse<>(postLoginRes);
+                return ResponseEntity.ok(null);
             } else {
                 //해당 이메일을 가진 유저가 있다면 기존 유저의 로그인으로 판단하고 유저 식별자와 JWT 반환
                 postLoginRes = loginProvider.getUserInfo(String.valueOf(userInfo.get("email")));
-                return new BaseResponse<>(postLoginRes);
+                return ResponseEntity.ok(postLoginRes);
             }
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Internal Server Error: " + e.getMessage());
         }
     }
 
