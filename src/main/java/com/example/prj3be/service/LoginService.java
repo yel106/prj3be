@@ -1,8 +1,10 @@
 package com.example.prj3be.service;
 
+import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.SocialTokenDto;
 import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
+import com.example.prj3be.repository.MemberRepository;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
@@ -32,6 +34,7 @@ public class LoginService {
     private String kakaoClientSecretKey;
     private LoginProvider loginProvider;
     private TokenProvider tokenProvider;
+    private MemberRepository memberRepository;
 
     public HashMap<String, Object> getUserInfo(String accessToken) {
         HashMap<String, Object> userInfo = new HashMap<>();
@@ -70,6 +73,8 @@ public class LoginService {
         }
 
         return userInfo;
+
+        //해당 이메일을 가진 유저가 있다면 기존 유저의 로그인으로 판단하고 유저 식별자와 JWT 반환
     }
 
     public String getKakaoAccessToken(String code) {
@@ -124,7 +129,7 @@ public class LoginService {
     }
 
     public void updateKakaoToken(int userId) throws Exception {
-        SocialTokenDto kakaoToken = loginProvider.getToken(userId);
+        SocialTokenDto kakaoToken = getToken(userId);
         String postURL = "http://kauth.kakao.com/oauth/token";
         SocialTokenDto newToken = null;
 
@@ -183,6 +188,14 @@ public class LoginService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public boolean checkEmail(String email) {
+        //DB에 해당 이메일을 가진 유저가 없는지 확인
+        return memberRepository.findByEmail(email) == null;
+    }
+
+    public SocialTokenDto getToken(int userId) {
+        //TODO : getToken 함수 완성시키기
     }
 }

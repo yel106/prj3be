@@ -8,7 +8,6 @@ import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.LoginService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -77,8 +76,8 @@ public class LoginController {
 
     @ResponseBody
     @GetMapping("/api/login/kakao")
-    public ResponseEntity<String> kakaoLogin(@RequestParam(required = false) String code) {
-        String postLoginRes = "";
+    public ResponseEntity<HashMap<String, Object>> kakaoLogin(@RequestParam(required = false) String code) {
+        HashMap<String, Object> postLoginRes = new HashMap<>();
 
         try{
             //URL에 포함된 code를 이용하여 액세스 토큰 발급
@@ -93,16 +92,21 @@ public class LoginController {
 
             //만약 DB에 해당 이메일을 가진 유저가 없다면 회원가입 시키고, 유저 식별자와 JWT 반환
             //전화번호, 성별, 및 기타 개인 정보는 사업자 번호가 없기 때문에 받아올 권한이 없어 테스트 불가능
-            if(loginProvider.checkEmail(String.valueOf(userInfo.get("email"))) == 0) {
+            if(loginService.checkEmail(String.valueOf(userInfo.get("email")))) {
                 return ResponseEntity.ok(null);
+                //TODO: "회원가입시키고, 유저 식별자와 JWT 반환" 완성하기
+                //TODO : 회원가입 후 로그인 창으로 가기 때문에 냅둬도 ㄱㅊ?
             } else {
                 //해당 이메일을 가진 유저가 있다면 기존 유저의 로그인으로 판단하고 유저 식별자와 JWT 반환
-                postLoginRes = loginProvider.getUserInfo(String.valueOf(userInfo.get("email")));
+                //TODO: 유저 식별자와 JWT 반환
+                postLoginRes = loginService.getUserInfo(String.valueOf(userInfo.get("email")));
                 return ResponseEntity.ok(postLoginRes);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body("Internal Server Error: " + e.getMessage());
+            HashMap<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
