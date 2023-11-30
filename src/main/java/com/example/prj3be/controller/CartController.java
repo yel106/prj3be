@@ -2,7 +2,7 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.dto.CartInfoDto;
 import com.example.prj3be.dto.CartItemDto;
-import com.example.prj3be.service.CartService;
+//import com.example.prj3be.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

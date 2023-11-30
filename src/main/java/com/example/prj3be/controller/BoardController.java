@@ -2,7 +2,6 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.BoardFile;
-import com.example.prj3be.domain.Item;
 import com.example.prj3be.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
