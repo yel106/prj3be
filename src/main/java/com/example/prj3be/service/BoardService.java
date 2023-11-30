@@ -28,6 +28,7 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
+//    private final ItemRepository itemRepository;
 
     @Value("{image.file.prefix}")
     private String urlPrefix;
