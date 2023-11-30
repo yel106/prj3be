@@ -8,6 +8,8 @@ import com.example.prj3be.repository.MemberRepository;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
+import jakarta.servlet.ServletRequest;
+//import jdk.internal.jimage.BasicImageReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -196,6 +198,12 @@ public class LoginService {
     }
 
     public SocialTokenDto getToken(int userId) {
+
+//        String token = servletRequest.getHeader("Authorization");
+//        if(token !=null && token.startsWith("Bearer")) {
+//            token = token.substring(7);
+//        }
+        return null;
         //TODO : getToken 함수 완성시키기
     }
 }

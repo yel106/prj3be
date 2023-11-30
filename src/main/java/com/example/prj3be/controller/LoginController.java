@@ -7,7 +7,7 @@ import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.LoginService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,19 +23,15 @@ import java.net.URI;
 import java.util.HashMap;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LoginController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final LoginService loginService;
+    private final LoginProvider loginProvider;
+
     @Value("${button.image.url}")
     private String socialButtonImagePrefix;
-    private LoginService loginService;
-    private LoginProvider loginProvider;
-
-    public LoginController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder){
-        this.tokenProvider = tokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto){
