@@ -28,6 +28,8 @@ public class Board {
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
+
+
     public Board(Long id, String title, String price, String image, Item item, List<Comment> comments) {
         this.id = id;
         this.title = title;

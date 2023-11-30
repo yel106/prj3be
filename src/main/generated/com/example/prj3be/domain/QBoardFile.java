@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,7 +18,11 @@ public class QBoardFile extends EntityPathBase<BoardFile> {
 
     private static final long serialVersionUID = -1644299865L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QBoardFile boardFile = new QBoardFile("boardFile");
+
+    public final QBoard board;
 
     public final StringPath fileName = createString("fileName");
 
@@ -26,15 +31,24 @@ public class QBoardFile extends EntityPathBase<BoardFile> {
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public QBoardFile(String variable) {
-        super(BoardFile.class, forVariable(variable));
+        this(BoardFile.class, forVariable(variable), INITS);
     }
 
     public QBoardFile(Path<? extends BoardFile> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QBoardFile(PathMetadata metadata) {
-        super(BoardFile.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QBoardFile(PathMetadata metadata, PathInits inits) {
+        this(BoardFile.class, metadata, inits);
+    }
+
+    public QBoardFile(Class<? extends BoardFile> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.board = inits.isInitialized("board") ? new QBoard(forProperty("board"), inits.get("board")) : null;
     }
 
 }

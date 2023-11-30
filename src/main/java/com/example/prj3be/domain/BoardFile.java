@@ -18,6 +18,9 @@ public class BoardFile {
     private String fileName;
     private String fileUrl;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     public BoardFile(Long id, String fileName, String fileUrl) {
         this.id = id;
