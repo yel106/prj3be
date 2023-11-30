@@ -32,15 +32,12 @@ public class Board {
     private LocalDate releaseDate;
     private Long stockQuantity;
 
-//    @OneToOne
-//    @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조
-//    private Item item;
 
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
 
-    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, List<Comment> comments) {
+    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, Long stockQuantity, List<Comment> comments) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -48,6 +45,7 @@ public class Board {
         this.price = price;
         this.agency = agency;
         this.releaseDate = releaseDate;
+        this.stockQuantity = stockQuantity;
         this.comments = comments;
     }
 }

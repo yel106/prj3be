@@ -2,11 +2,9 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.BoardFile;
-import com.example.prj3be.domain.Item;
 import com.example.prj3be.domain.QBoard;
 import com.example.prj3be.repository.BoardFileRepository;
 import com.example.prj3be.repository.BoardRepository;
-import com.example.prj3be.repository.ItemRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,6 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
-    private final ItemRepository itemRepository;
 
     @Value("{image.file.prefix}")
     private String urlPrefix;
