@@ -28,7 +28,6 @@ public class BoardController {
     }
 
 
-    @PostMapping("add")
     //파일 추가할때 @RequestBody X
     public void add(@Validated Board saveBoard,
                     @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
@@ -36,6 +35,13 @@ public class BoardController {
 
         boardService.save(saveBoard, files, boardFile);
     }
+    @PostMapping("add")
+    public void add(@Validated Board saveBoard,
+                    @RequestParam(value = "imageURL") String imageURL) {
+        System.out.println(saveBoard);
+        boardService.save(saveBoard, imageURL);
+    }
+
 
 
     @GetMapping("id/{id}")

@@ -28,7 +28,11 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
 
+    public final StringPath fileName = createString("fileName");
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final StringPath imageURL = createString("imageURL");
 
     public final StringPath price = createString("price");
 

@@ -31,6 +31,9 @@ public class Board {
     private String agency;
     private LocalDate releaseDate;
     private Long stockQuantity;
+    @NotBlank(message = "Image URL cannot be blank")
+    private String imageURL;
+    private String fileName;
 
 //    @OneToOne
 //    @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조
@@ -40,7 +43,7 @@ public class Board {
     private List<Comment> comments = new ArrayList<>();
 
 
-    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, List<Comment> comments) {
+    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, String imageURL, LocalDate releaseDate, List<Comment> comments) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -49,5 +52,7 @@ public class Board {
         this.agency = agency;
         this.releaseDate = releaseDate;
         this.comments = comments;
+        this.imageURL = imageURL;
     }
+
 }
