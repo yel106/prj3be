@@ -1,6 +1,7 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.dto.LoginDto;
+import com.example.prj3be.dto.MemberInfoDto;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.TokenProvider;
@@ -17,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,7 +67,21 @@ public class LoginController {
             System.out.println("인증 실패 :"+e.getMessage());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+    }
 
+    @GetMapping("/login")
+    public void login(HttpServletRequest servletRequest){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("name = " + name);
+
+        // Http 헤더에서 토큰 추출
+        String token = servletRequest.getHeader("Authorization");
+        if(token != null && token.startsWith("Bearer")){
+            token = token.substring(7);
+        }
+
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        System.out.println("authentication = " + authentication);
     }
 
     @GetMapping("/api/login/image")
