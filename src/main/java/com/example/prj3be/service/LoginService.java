@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -38,47 +39,22 @@ public class LoginService {
     private TokenProvider tokenProvider;
     private MemberRepository memberRepository;
 
-    public HashMap<String, Object> getUserInfo(String accessToken) {
-        HashMap<String, Object> userInfo = new HashMap<>();
-        String postURL = "https://kapi.kakao.com/v2/user/me";
-
+    // 버튼 클릭 시 로그인 창으로 이동
+    public String createRedirectKakaoURL() {
         try {
-            URL url = new URL(postURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-
-            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-
-            int responseCode = conn.getResponseCode();
-            System.out.println("responseCode = " + responseCode);
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = "";
-            StringBuilder result = new StringBuilder();
-
-            while((line = br.readLine()) != null) {
-                result.append(line);
-            }
-            System.out.println("response body = " + result);
-
-            JsonElement element = JsonParser.parseString(result.toString());
-            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
-            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
-
-            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-            String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
-
-            userInfo.put("nickname", nickname);
-            userInfo.put("email", email);
-        } catch (IOException e) {
-            e.printStackTrace();
+            String encodedRedirectUri = URLEncoder.encode("https://localhost:3000/api/login/kakao", "UTF-8");
+            String loginURL = "https://kauth.kakao.com/oauth/authorize" +
+                    "?client_id=" + kakaoRestApiKey +
+                    "&redirect_uri=" + encodedRedirectUri +
+                    "&response_type=code" +
+                    "&prompt=login";
+            return loginURL;
+        } catch (Exception e) {
+            return null;
         }
-
-        return userInfo;
-
-        //해당 이메일을 가진 유저가 있다면 기존 유저의 로그인으로 판단하고 유저 식별자와 JWT 반환
     }
 
+    //인가 코드 받는 url
     public String getKakaoAccessToken(String code) {
         String accessToken = "";
         String refreshToken = "";
@@ -129,6 +105,48 @@ public class LoginService {
 
         return accessToken;
     }
+
+    public HashMap<String, Object> getUserInfo(String accessToken) {
+        HashMap<String, Object> userInfo = new HashMap<>();
+        String postURL = "https://kapi.kakao.com/v2/user/me";
+
+        try {
+            URL url = new URL(postURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode = " + responseCode);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            StringBuilder result = new StringBuilder();
+
+            while((line = br.readLine()) != null) {
+                result.append(line);
+            }
+            System.out.println("response body = " + result);
+
+            JsonElement element = JsonParser.parseString(result.toString());
+            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
+            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
+
+            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+            String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
+
+            userInfo.put("nickname", nickname);
+            userInfo.put("email", email);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return userInfo;
+
+        //해당 이메일을 가진 유저가 있다면 기존 유저의 로그인으로 판단하고 유저 식별자와 JWT 반환
+    }
+
 
     public void updateKakaoToken(int userId) throws Exception {
         SocialTokenDto kakaoToken = getToken(userId);
@@ -206,4 +224,5 @@ public class LoginService {
         return null;
         //TODO : getToken 함수 완성시키기
     }
+
 }

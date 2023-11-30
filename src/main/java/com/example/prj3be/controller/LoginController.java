@@ -28,7 +28,7 @@ public class LoginController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final LoginService loginService;
-    private final LoginProvider loginProvider;
+//    private final LoginProvider loginProvider;
 
     @Value("${button.image.url}")
     private String socialButtonImagePrefix;
@@ -68,6 +68,14 @@ public class LoginController {
     @GetMapping("/api/login/image")
     public ResponseEntity<String> socialButtonImage() {
         return ResponseEntity.ok(socialButtonImagePrefix);
+    }
+
+    @ResponseBody
+    @GetMapping("/api/login/kakaoPage")
+    public String kakaoLoginPage() {
+        String redirectKakaoURL = loginService.createRedirectKakaoURL();
+
+        return redirectKakaoURL;
     }
 
     @ResponseBody
