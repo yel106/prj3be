@@ -101,6 +101,24 @@ public class LoginController {
         }
     }
 
+    @ResponseBody
+    @GetMapping("/api/login/kakao/{userId}")
+    public ResponseEntity<String> updateKakaoToken(@PathVariable int userId) {
+        String result = "";
 
+        try {
+            // JWT에서 id 추출
+            int userIndexByJwt = jwtService.getUserIndex();
+            // userIndex와 접근한 유저가 같은지 확인
+            if(userId != userIndexByJwt) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid User JWT");
+            }
+            loginService.updateKakaoToken(userId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
 }
