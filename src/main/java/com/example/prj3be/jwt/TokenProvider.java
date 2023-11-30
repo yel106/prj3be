@@ -1,5 +1,6 @@
 package com.example.prj3be.jwt;
 
+import com.example.prj3be.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -41,14 +43,24 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    //authentication 객체에 포함되어 있는 권한 정보들을 통해 토큰을 생성
-    public String createToken(Authentication authentication){
+    public TokenDto createTokens(Authentication authentication){
+        String accessToken = createAccessToken(authentication);
+        String refreshToken = createRefreshToken(authentication);
+
+        return new TokenDto(accessToken, refreshToken);
+    }
+
+    //authentication 객체에 포함되어 있는 권한 정보들을 통해 엑세스 토큰을 생성
+    public String createAccessToken(Authentication authentication){
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         long now =(new Date()).getTime();
         Date validity = new Date(now+this.tokenExpiration);
+
+        System.out.println("TokenProvider.createAccessToken");
+        System.out.println("authorities = " + authorities);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
@@ -57,6 +69,23 @@ public class TokenProvider implements InitializingBean {
                 .setExpiration(validity)
                 .compact();
     }
+    // 리프레시 토큰 생성
+    public String createRefreshToken(Authentication authentication){
+        //사용자의 식별 정보 가져오기
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // 현재 시간과 토큰 만료 시간 설정, 엑세스 토큰의 24배(24시간)
+        long now =(new Date()).getTime();
+        Date validity = new Date(now+this.tokenExpiration*24);
+
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(validity)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
 
     //토큰의 정보를 이용해 Authentication 객체 리턴
     public Authentication getAuthentication(String token){

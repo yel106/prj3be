@@ -51,16 +51,19 @@ public class LoginController {
 
             System.out.println("authentication = " + authentication);
 
-            String jwt = tokenProvider.createToken(authentication);
+//            String jwt = tokenProvider.createToken(authentication);
+            TokenDto tokens = tokenProvider.createTokens(authentication);
 
-            System.out.println("jwt = " + jwt);
+            System.out.println("tokens = " + tokens);
 
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+            // 헤더에 토큰들 담기
+            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens.getAccessToken());
+            httpHeaders.add("Refresh-Token", tokens.getFreshToken());
 
             System.out.println("httpHeaders = " + httpHeaders);
 
-            return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(new TokenDto(tokens.getAccessToken()), httpHeaders, HttpStatus.OK);
         } catch (AuthenticationException e){
             System.out.println("인증 실패 :"+e.getMessage());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
