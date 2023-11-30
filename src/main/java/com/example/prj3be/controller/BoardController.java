@@ -2,6 +2,7 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.BoardFile;
+import com.example.prj3be.domain.Item;
 import com.example.prj3be.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,11 +31,11 @@ public class BoardController {
 
     @PostMapping("add")
     //파일 추가할때 @RequestBody X
-    public void add(@Validated Board saveboard,
+    public void add(@Validated Board saveBoard,
                     @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
                     BoardFile boardFile) throws IOException {
 
-        boardService.save(saveboard, files, boardFile);
+        boardService.save(saveBoard, files, boardFile);
     }
 
 
@@ -51,6 +52,7 @@ public class BoardController {
     @DeleteMapping("remove/{id}")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
+
     }
 
 

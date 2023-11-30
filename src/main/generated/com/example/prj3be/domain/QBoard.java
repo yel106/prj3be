@@ -22,6 +22,12 @@ public class QBoard extends EntityPathBase<Board> {
 
     public static final QBoard board = new QBoard("board");
 
+    public final StringPath agency = createString("agency");
+
+    public final EnumPath<AlbumFormat> albumFormat = createEnum("albumFormat", AlbumFormat.class);
+
+    public final StringPath artist = createString("artist");
+
     public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -29,6 +35,8 @@ public class QBoard extends EntityPathBase<Board> {
     public final QItem item;
 
     public final StringPath price = createString("price");
+
+    public final DatePath<java.time.LocalDate> releaseDate = createDate("releaseDate", java.time.LocalDate.class);
 
     public final StringPath title = createString("title");
 
