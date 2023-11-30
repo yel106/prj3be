@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class Board {
     private String agency;
     private LocalDate releaseDate;
     private Long stockQuantity;
+    private String imageUrl;
+    private String fileName;
 
 //    @OneToOne
 //    @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조
@@ -49,5 +52,13 @@ public class Board {
         this.agency = agency;
         this.releaseDate = releaseDate;
         this.comments = comments;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageUrl = imageURL;
+    }
+
+    public Object getFileName() {
+        return this.fileName;
     }
 }

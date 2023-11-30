@@ -23,6 +23,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.example.prj3be.domain.QBoard.board;
+import static com.example.prj3be.domain.QBoardFile.boardFile;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -85,7 +88,7 @@ public class BoardService {
 
 
         for (int i = 0; i < files.length; i++) {
-        String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
+            String url = urlPrefix + "prj3/" + id + "/" + files[i].getOriginalFilename();
             boardFile.setFileName(files[i].getOriginalFilename());
             boardFile.setFileUrl(url);
 
@@ -120,7 +123,7 @@ public class BoardService {
         // optional -> get메소드
         if (boardFiles.isPresent()) {
             BoardFile boardFile1 = boardFiles.get(); //보드 파일이 존재한다면 파일에 있는걸 boardFile1에 넣음
-            String url = urlPrefix + "prj3/"+ id +"/" + boardFile1.getFileName(); //보드파일1의 파일name을 url에 넣음
+            String url = urlPrefix + "prj3/" + id + "/" + boardFile1.getFileName(); //보드파일1의 파일name을 url에 넣음
             boardFile1.setFileUrl(url); //boardFile1에 setter로 FileUrl필드에 url값을 집어넣음
             String fileUrl = boardFile1.getFileUrl();  //boardFile에 들어간 url값을 fileUrl변수에 넣음
             return fileUrl;
@@ -147,5 +150,17 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
+    public void save(Board saveBoard, String imageURL) {
+        saveBoard.setImageURL(imageURL);
 
+        BoardFile.setFileName(saveBoard.getFileName());
+        boardFile.setFileUrl(imageURL);
+        boardFileRepository.save(boardFile);
+    }
+
+
+//    public void saveWithImageURL(Board saveBoard, String imageURL) {
+//        saveBoard.setImageURL(imageURL);
+//        boardFileRepository.save(board);
+//    }
 }

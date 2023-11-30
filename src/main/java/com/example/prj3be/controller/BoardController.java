@@ -28,14 +28,19 @@ public class BoardController {
     }
 
 
-    @PostMapping("add")
     //파일 추가할때 @RequestBody X
+//    public void add(@Validated Board saveBoard,
+//                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
+//                    BoardFile boardFile) throws IOException {
+//
+//        boardService.save(saveBoard, files, boardFile);
+//    }
+    @PostMapping("add")
     public void add(@Validated Board saveBoard,
-                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
-                    BoardFile boardFile) throws IOException {
-
-        boardService.save(saveBoard, files, boardFile);
+                    @RequestParam(value = "imageURL") String imageURL) {
+        boardService.save(saveBoard, imageURL);
     }
+
 
 
     @GetMapping("id/{id}")
