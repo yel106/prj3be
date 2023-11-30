@@ -1,6 +1,8 @@
 package com.example.prj3be.service;
 
 import com.example.prj3be.dto.SocialTokenDto;
+import com.example.prj3be.jwt.LoginProvider;
+import com.example.prj3be.jwt.TokenProvider;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
@@ -28,6 +30,8 @@ public class LoginService {
 
     @Value("${kakao.client.secret.key}")
     private String kakaoClientSecretKey;
+    private LoginProvider loginProvider;
+    private TokenProvider tokenProvider;
 
     public HashMap<String, Object> getUserInfo(String accessToken) {
         HashMap<String, Object> userInfo = new HashMap<>();
@@ -120,10 +124,11 @@ public class LoginService {
     }
 
     public void updateKakaoToken(int userId) throws Exception {
-        SocialTokenDto kakaoToken = loginProvider.getKakaoToken(userId);
+        SocialTokenDto kakaoToken = loginProvider.getToken(userId);
         String postURL = "http://kauth.kakao.com/oauth/token";
         SocialTokenDto newToken = null;
 
+        // 카카오 oauth에 토큰 갱신 요청 준비
         try {
             URL url = new URL(postURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -147,12 +152,17 @@ public class LoginService {
             while((line = bufferedReader.readLine())!= null) {
                 result.append(line);
             }
+
             System.out.println("response body = " + result);
+
+            //받아온 결과 JSON으로 parsing 하여 저장하기
             JsonElement element = JsonParser.parseString(result.toString());
             Set<String> keySet = element.getAsJsonObject().keySet();
 
-            //새로 발급 받은 accessToken 받아오기
+            //새로 발급 받은 accessToken 추출
             String accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            String refreshToken = "";
+
             //refreshToken은 유효 기간이 1개월 미만일 경우에만 갱신되어 반환되므로 반환되지 않는 경우를 if문으로 처리
             if(keySet.contains("refresh_token")) {
                 refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
@@ -161,29 +171,18 @@ public class LoginService {
             if(refreshToken.equals("")) {
                 newToken = new SocialTokenDto(accessToken, kakaoToken.getRefreshToken());
             } else {
-                newToken = new SocialTokenDto(accessToken, kakaoToken.getRefreshToken());
+                newToken = new SocialTokenDto(accessToken, refreshToken);
             }
 
             bufferedReader.close();
             bufferedWriter.close();
 
+            // Security context 업데이트 및 권한 토큰 부여
             Authentication authentication = tokenProvider.getAuthentication(newToken.getAccessToken());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {
-            int result = 0;
-            if(newToken != null) {
-                result = loginDao.updateKakaoToken(userId, newToken);
-            }
-
-            if(result == 0) {
-                throw new Exception("Token update failed");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

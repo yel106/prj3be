@@ -7,6 +7,8 @@ import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.LoginService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,13 +24,14 @@ import java.net.URI;
 import java.util.HashMap;
 
 @RestController
+@AllArgsConstructor
 public class LoginController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     @Value("${button.image.url}")
     private String socialButtonImagePrefix;
     private LoginService loginService;
-    private final LoginProvider loginProvider;
+    private LoginProvider loginProvider;
 
     public LoginController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder){
         this.tokenProvider = tokenProvider;
@@ -74,7 +77,9 @@ public class LoginController {
 
     @ResponseBody
     @GetMapping("/api/login/kakao")
-    public ResponseEntity<PostLoginRes> kakaoLogin(@RequestParam(required = false) String code) {
+    public ResponseEntity<String> kakaoLogin(@RequestParam(required = false) String code) {
+        String postLoginRes = "";
+
         try{
             //URL에 포함된 code를 이용하여 액세스 토큰 발급
             String accessToken = loginService.getKakaoAccessToken(code);
@@ -84,7 +89,7 @@ public class LoginController {
             HashMap<String, Object> userInfo = loginService.getUserInfo(accessToken);
             System.out.println("userInfo = " + userInfo);
 
-            PostLoginRes postLoginRes = null;
+//            PostLoginRes postLoginRes = null;
 
             //만약 DB에 해당 이메일을 가진 유저가 없다면 회원가입 시키고, 유저 식별자와 JWT 반환
             //전화번호, 성별, 및 기타 개인 정보는 사업자 번호가 없기 때문에 받아올 권한이 없어 테스트 불가능
@@ -108,7 +113,8 @@ public class LoginController {
 
         try {
             // JWT에서 id 추출
-            int userIndexByJwt = jwtService.getUserIndex();
+
+            int userIndexByJwt = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
             // userIndex와 접근한 유저가 같은지 확인
             if(userId != userIndexByJwt) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid User JWT");
