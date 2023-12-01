@@ -27,7 +27,6 @@ public class Comment {
         this.board = board;
     }
 
-    public void setBoardId(Long id) {
 
-    }
+
 }

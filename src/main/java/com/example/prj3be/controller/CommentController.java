@@ -1,10 +1,10 @@
 package com.example.prj3be.controller;
 
-import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
 import com.example.prj3be.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,8 +20,8 @@ public class CommentController {
     }
 
     @PostMapping("add")
-    public Comment save(@RequestBody Comment comment, Long id) { //요청된 본문을 받음
-        Comment write = commentService.write(comment, id);
+    public Comment save(@RequestBody Map<String, Object> map) { //요청된 본문을 받음
+        Comment write = commentService.write(map);
         return write;
     }
 

@@ -9,7 +9,5 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    @Query("SELECT b.id FROM Board b WHERE b.id = :id")
-    Long findBoardId(@Param("id") Long id);
 
 }
