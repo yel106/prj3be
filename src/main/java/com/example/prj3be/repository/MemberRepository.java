@@ -25,6 +25,6 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
     @Query("SELECT m FROM Member m WHERE m.logId = :logId")
     Optional<Member> findOneWithAuthoritiesByLogId(String logId);
 
-    @Query("SELECT m.logId AS logId, m.name AS name, m.email As email, m.address AS address, m.gender AS gender, m.role AS role FROM Member m WHERE m.logId = :logId")
+    @Query("SELECT new com.example.prj3be.dto.MemberInfoDto(m.logId, m.name, m.email, m.address, m.gender, m.role) FROM Member m WHERE m.logId = :logId")
     MemberInfoDto findMemberInfoByLogId(String logId);
 }
