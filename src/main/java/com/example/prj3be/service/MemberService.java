@@ -29,6 +29,12 @@ public class MemberService {
         return member;
     }
 
+    public Member findMemberByLogId(String logId) {
+        Optional<Member> findMember1 = memberRepository.findByLogId(logId);
+        Member member = findMember1.get();
+        return member;
+    }
+
     public void update(Long id, MemberEditFormDto dto) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + id));
@@ -36,11 +42,11 @@ public class MemberService {
         member.setEmail(dto.getEmail());
         member.setAddress(dto.getAddress());
     }
-
     public String getEmail(String email) {
         return memberRepository.findEmailByEmail(email)
                 .orElse(null);
     }
+
     public String getLogId(String logId) {
         return memberRepository.findLogIdByLogId(logId)
                 .orElse(null);

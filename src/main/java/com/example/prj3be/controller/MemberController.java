@@ -5,6 +5,7 @@ import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
+import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -27,6 +30,8 @@ import java.time.LocalDate;
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
         Member member = new Member();
@@ -62,19 +67,27 @@ public class MemberController {
 //        return dto;
 //    }
     @GetMapping
-    public FindMemberDto method2(@RequestHeader("Authorization") String authorization) {
-        System.out.println("authorization = " + authorization);
+    public FindMemberDto method2(@RequestHeader("Authorization") String token) {
+        System.out.println("token1 = " + token);
+        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
+             token = token.substring(7);
+             System.out.println("token2 = " + token);
+        }
+        else{
+            return null;
+        }
+        Authentication authentication = tokenProvider.getAuthentication(token);
 
+        Member findMember = memberService.findMemberByLogId(authentication.getName());
+        FindMemberDto dto = new FindMemberDto();
+        dto.setLogId(findMember.getLogId());
+        dto.setName(findMember.getName());
+        dto.setAddress(findMember.getAddress());
+        dto.setEmail(findMember.getEmail());
+        dto.setGender(findMember.getGender());
+        dto.setRole(findMember.getRole());
 
-//        Member findMember = memberService.findMemberById(id);
-//        FindMemberDto dto = new FindMemberDto();
-//        dto.setLogId(findMember.getLogId());
-//        dto.setName(findMember.getName());
-//        dto.setAddress(findMember.getAddress());
-//        dto.setEmail(findMember.getEmail());
-//        dto.setGender(findMember.getGender());
-//        dto.setRole(findMember.getRole());
-        return null;
+        return dto;
     }
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
