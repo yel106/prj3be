@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class NaverTokenDto {
-    private String accessToken;
-    private String refreshToken;
-    private String tokenType;
-    private int expiresIn;
+    private String access_token;
+    private String refresh_token;
+    private String token_type;
+    private int expires_in;
 }
