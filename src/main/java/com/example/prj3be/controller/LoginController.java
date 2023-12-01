@@ -6,6 +6,8 @@ import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.LoginService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,6 +72,7 @@ public class LoginController {
         return ResponseEntity.ok(socialButtonImagePrefix);
     }
 
+    //카카오 로그인
     @ResponseBody
     @GetMapping("/api/login/kakaoPage")
     public String kakaoLoginPage() {
@@ -136,6 +139,15 @@ public class LoginController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    // 네이버 로그인
+
+    @GetMapping("/api/login/naverPage")
+    public String naverLoginPage() {
+        String redirectNaverURL = loginService.createRedirectNaverURL();
+
+        return redirectNaverURL;
     }
 
 }

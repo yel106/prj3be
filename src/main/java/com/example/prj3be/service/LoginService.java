@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -36,6 +38,10 @@ public class LoginService {
 
     @Value("${kakao.client.secret.key}")
     private String kakaoClientSecretKey;
+
+    @Value("${naver.client.id}")
+    private String naverRestApiKey;
+
     private LoginProvider loginProvider;
     private TokenProvider tokenProvider;
 
@@ -231,5 +237,20 @@ public class LoginService {
         return null;
         //TODO : getToken 함수 완성시키기
     }
+    public String createRedirectNaverURL() {
+        String baseURL = "https://nid.naver.com/oauth2.0/authorize";
+        String redirectUri = "http://localhost:8080/api/login/naver";
 
+        try {
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseURL)
+                    .queryParam("response_type", "code")
+                    .queryParam("client_id", naverRestApiKey)
+                    .queryParam("state", "200") //임의 값
+                    .queryParam("redirect_uri", redirectUri);
+            return builder.toUriString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
