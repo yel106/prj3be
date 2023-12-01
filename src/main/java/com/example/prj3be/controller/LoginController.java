@@ -79,9 +79,12 @@ public class LoginController {
     }
 
     @ResponseBody
+    @CrossOrigin
     @GetMapping("/api/login/kakao")
     public ResponseEntity<HashMap<String, Object>> kakaoLogin(@RequestParam(required = false) String code) {
+        System.out.println("code = " + code);
         HashMap<String, Object> postLoginRes = new HashMap<>();
+        System.out.println("hashMap 선언");
 
         try{
             //URL에 포함된 code를 이용하여 액세스 토큰 발급

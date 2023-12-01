@@ -10,6 +10,7 @@ import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
 import jakarta.servlet.ServletRequest;
 //import jdk.internal.jimage.BasicImageReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,17 +38,18 @@ public class LoginService {
     private String kakaoClientSecretKey;
     private LoginProvider loginProvider;
     private TokenProvider tokenProvider;
+
+    @Autowired
     private MemberRepository memberRepository;
 
     // 버튼 클릭 시 로그인 창으로 이동
     public String createRedirectKakaoURL() {
         try {
-            String encodedRedirectUri = URLEncoder.encode("https://localhost:3000/api/login/kakao", "UTF-8");
+            String redirectUri = "http://localhost:8080/api/login/kakao";
             String loginURL = "https://kauth.kakao.com/oauth/authorize" +
                     "?client_id=" + kakaoRestApiKey +
-                    "&redirect_uri=" + encodedRedirectUri +
-                    "&response_type=code" +
-                    "&prompt=login";
+                    "&redirect_uri=" + redirectUri +
+                    "&response_type=code&prompt=login";
             return loginURL;
         } catch (Exception e) {
             return null;
@@ -59,6 +61,7 @@ public class LoginService {
         String accessToken = "";
         String refreshToken = "";
         String requestURL = "https://kauth.kakao.com/oauth/token";
+        String redirectURL = "http://localhost:8080/api/login/kakao";
 
         try {
             URL url = new URL(requestURL);
@@ -66,19 +69,21 @@ public class LoginService {
 
             conn.setRequestMethod("POST");
             //setDoOutput() = OutputStream으로 Post 데이터 넘겨주는 옵션
-            //Post 요청 수행 시 setDoOutput() 을 true로 설정
+            //Post 요청 수행 시 setDoOutput() [기본값 false] 을 true로 설정
             conn.setDoOutput(true);
 
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            String sb = "grant_type=authorization_code" +
-                    "&client_id=" + kakaoRestApiKey +
-                    "&redirect_uri=http://localhost:3000/api/login/kakao" + //REDIRECT_URI
-                    "&code=" + code;
-            bufferedWriter.write(sb);
+            StringBuilder sb = new StringBuilder();
+            sb.append("grant_type=authorization_code");
+            sb.append("&client_id=" + kakaoRestApiKey);
+            sb.append("&redirect_uri=" + redirectURL);
+            sb.append("&code=" + code);
+            bufferedWriter.write(sb.toString());
             bufferedWriter.flush();
 
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode = " + responseCode);
+            System.out.println(conn.getResponseMessage());
 
             //요청을 통해 얻은 데이터를 InputStreamReader로 읽어오기
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -89,6 +94,8 @@ public class LoginService {
                 result.append(line);
             }
             System.out.println("Response Body = " + result);
+
+            // JSON 형식으로 오기 때문에 parsing 해야함
             JsonElement element = JsonParser.parseString(result.toString());
 
             accessToken = element.getAsJsonObject().get("access_token").getAsString();
