@@ -1,32 +1,30 @@
 package com.example.prj3be.service;
 
-import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.SocialTokenDto;
 import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.repository.MemberRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
-import jakarta.servlet.ServletRequest;
 //import jdk.internal.jimage.BasicImageReader;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.UriComponents;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.http.HttpHeaders;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -41,6 +39,9 @@ public class LoginService {
 
     @Value("${naver.client.id}")
     private String naverRestApiKey;
+
+    @Value("${naver.client.secret}")
+    private String naverClientSecret;
 
     private LoginProvider loginProvider;
     private TokenProvider tokenProvider;
@@ -115,11 +116,11 @@ public class LoginService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        // TODO : 갱신 토큰 어디다가 저장할지 논의 필요
         return accessToken;
     }
 
-    public HashMap<String, Object> getUserInfo(String accessToken) {
+    public HashMap<String, Object> getKakaoUserInfo(String accessToken) {
         HashMap<String, Object> userInfo = new HashMap<>();
         String postURL = "https://kapi.kakao.com/v2/user/me";
 
@@ -239,18 +240,129 @@ public class LoginService {
     }
     public String createRedirectNaverURL() {
         String baseURL = "https://nid.naver.com/oauth2.0/authorize";
-        String redirectUri = "http://localhost:8080/api/login/naver";
 
         try {
+            String redirectUri = "http://localhost:8080/api/login/naver";
+            //naver 요청 시 state 코드를 요구하므로 (의미 없음, 자세한 사항은 LoginService:286~7) 랜덤값 생성
+            SecureRandom random = new SecureRandom(); // 랜덤은 항상 바뀌기 때문에 (aka Math.Random) 하나 고정시키기
+            String state = new BigInteger(130, random).toString(); //스트링으로 변환
+
             UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseURL)
                     .queryParam("response_type", "code")
                     .queryParam("client_id", naverRestApiKey)
-                    .queryParam("state", "200") //임의 값
+                    .queryParam("state", state) //임의 값
                     .queryParam("redirect_uri", redirectUri);
+            System.out.println("builder = " + builder.toUriString());
             return builder.toUriString();
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String getNaverAccessToken(String code, String state, HttpServletResponse response) throws JsonProcessingException {
+        String accessToken = "";
+        String refreshToken = "";
+        String tokenType = "";
+        Integer expiresIn = 0;
+
+        String requestURL = "https://nid.naver.com/oauth2.0/token";
+        String redirectURL = "http://localhost:8080/api/login/naver";
+
+        try {
+            URL url = new URL(requestURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST"); //GET도 가능
+            conn.setDoOutput(true);
+            //안 넣으면 grant_type is missing error 뜸
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(requestURL)
+                    .queryParam("grant_type", "authorization_code")
+                    .queryParam("client_id", naverRestApiKey)
+                    .queryParam("client_secret", naverClientSecret)
+                    .queryParam("code", code)
+                    .queryParam("state", state);
+            System.out.println("builder = " + builder.toUriString());
+            /* 네이버는 사이트 간 요청 위조(cross-site request forgery) 공격을 방지하기 위해
+            애플리케이션에서 생성한 상태(state) 토큰값으로 URL 인코딩을 적용한 값을 사용, 발급 때 필수 */
+
+            bufferedWriter.write(builder.toUriString());
+            bufferedWriter.flush();
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode = " + responseCode);
+            System.out.println("conn.getResponseMessage() = " + conn.getResponseMessage());
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            StringBuilder result = new StringBuilder();
+
+            while((line = bufferedReader.readLine()) != null) {
+                result.append(line);
+            }
+
+            System.out.println("Response Body = " + result);
+
+            JsonElement element = JsonParser.parseString(result.toString());
+
+            if(element.isJsonObject()) {
+                JsonObject jsonObject = element.getAsJsonObject();
+                //에러가 났을 경우 에러 코드와 에러 메시지를 반환하므로, 그것들을 받아 출력하도록 함
+                if(jsonObject.has("error")) {
+                    String error = jsonObject.get("error").getAsString();
+                    String errorDesc = jsonObject.get("error_description").getAsString();
+                    System.out.println("error = " + error);
+                    System.out.println("errorDesc = " + errorDesc);
+                } else {
+                    //에러가 나지 않았을 경우 응답에서 아래 정보들을 추출
+                    // 접근 토큰
+                    accessToken = jsonObject.get("access_token").getAsString();
+                    // 갱신 토큰, 접근 토큰 망료 시 접근 토큰을 다시 발급 받을 때 사용
+                    refreshToken = jsonObject.get("refresh_token").getAsString();
+                    // 접근 토큰의 유효 기간(초 단위)
+                    expiresIn = jsonObject.get("expires_in").getAsInt();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // TODO: 갱신 토큰 어디다가 저장할지 논의 필요
+        return accessToken;
+    }
+
+    public HashMap<String, Object> getNaverUserInfo(String accessToken) {
+        HashMap<String, Object> userInfo = new HashMap<>();
+        String postURL = "https://openapi.naver.com/v1/nid/me";
+
+        try {
+            URL url = new URL(postURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST"); // 마찬가지로 GET, POST 둘 다 지원되지만 POST로 사용
+            conn.setRequestProperty("Authorization", "Bearer" + accessToken);
+            //Authorization: Bearer {접근 토큰} 형식으로 전달하기 위해 요청 해더 생성 (네이버 양식)
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode = " + responseCode);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            StringBuilder result = new StringBuilder();
+
+            while ((line = br.readLine()) != null) {
+                result.append(line);
+            } //끝날 때까지 읽어서 concat
+
+            // 확인용 출력
+            System.out.println("response body = " + result);
+
+            JsonElement element = JsonParser.parseString(result.toString());
+            System.out.println("element = " + element);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

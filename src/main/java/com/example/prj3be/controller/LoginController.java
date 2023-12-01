@@ -3,10 +3,9 @@ package com.example.prj3be.controller;
 import com.example.prj3be.dto.LoginDto;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.jwt.JwtFilter;
-import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.LoginService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.HashMap;
 
 @RestController
@@ -95,21 +93,20 @@ public class LoginController {
             System.out.println("accessToken = " + accessToken);
 
             //액세스 토큰을 이용하여 카카오 서버에서 유저 정보(닉네임, 이메일) 받아오기
-            HashMap<String, Object> userInfo = loginService.getUserInfo(accessToken);
+            HashMap<String, Object> userInfo = loginService.getKakaoUserInfo(accessToken);
             System.out.println("userInfo = " + userInfo);
 
 //            PostLoginRes postLoginRes = null;
 
             //만약 DB에 해당 이메일을 가진 유저가 없다면 회원가입 시키고, 유저 식별자와 JWT 반환
-            //전화번호, 성별, 및 기타 개인 정보는 사업자 번호가 없기 때문에 받아올 권한이 없어 테스트 불가능
+            //성별 및 기타 개인 정보는 사업자 번호가 없기 때문에 받아올 권한이 없어 테스트 불가능
             if(loginService.checkEmail(String.valueOf(userInfo.get("email")))) {
                 return ResponseEntity.ok(null);
-                //TODO: "회원가입시키고, 유저 식별자와 JWT 반환" 완성하기
-                //TODO : 회원가입 후 로그인 창으로 가기 때문에 냅둬도 ㄱㅊ?
+                //TODO: "회원가입 & 로그인 시키고, 유저 식별자와 JWT 반환" 완성하기
             } else {
                 //해당 이메일을 가진 유저가 있다면 기존 유저의 로그인으로 판단하고 유저 식별자와 JWT 반환
                 //TODO: 유저 식별자와 JWT 반환
-                postLoginRes = loginService.getUserInfo(String.valueOf(userInfo.get("email")));
+                postLoginRes = loginService.getKakaoUserInfo(String.valueOf(userInfo.get("email")));
                 return ResponseEntity.ok(postLoginRes);
             }
         } catch (Exception e) {
@@ -148,6 +145,33 @@ public class LoginController {
         String redirectNaverURL = loginService.createRedirectNaverURL();
 
         return redirectNaverURL;
+    }
+
+    @GetMapping("/api/login/naver")
+    public void callBackNaver(@RequestParam(required = false) String code,
+                              @RequestParam(required = true) String state,
+                              @RequestParam(required = false) String error,
+                              @RequestParam(required = false) String error_description,
+                              HttpServletResponse response) throws JsonProcessingException {
+        System.out.println("code = " + code);
+        System.out.println("state = " + state);
+        if(error != null) {
+            System.out.println("error = " + error);
+            System.out.println("error_description = " + error_description);
+        }
+
+        HashMap<String, Object> postLoginRes = new HashMap<>();
+        System.out.println("hashMap 선언");
+
+        try {
+            String accessToken = loginService.getNaverAccessToken(code, state, response);
+            System.out.println("accessToken = " + accessToken);
+
+            HashMap<String, Object> userInfo = loginService.getNaverUserInfo(accessToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
