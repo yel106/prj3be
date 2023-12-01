@@ -61,9 +61,8 @@ public class MemberController {
 //        dto.setRole(findMember.getRole());
 //        return dto;
 //    }
-    @GetMapping()
-    public FindMemberDto method2(HttpServletRequest servletRequest) {
-        String authorization = servletRequest.getHeader("Authorization");
+    @GetMapping
+    public FindMemberDto method2(@RequestHeader("Authorization") String authorization) {
         System.out.println("authorization = " + authorization);
 
 //        Member findMember = memberService.findMemberById(id);

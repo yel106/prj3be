@@ -88,13 +88,9 @@ public class TokenProvider implements InitializingBean {
         System.out.println("TokenProvider.createAccessToken");
         System.out.println("authorities = " + authorities);
 
-        MemberInfoDto memberInfoDto = memberRepository.findMemberInfoByLogId(authentication.getName());
-        System.out.println("memberInfoDto = " + memberInfoDto);
-
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
-                .claim("memberInfo", memberInfoDto)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
