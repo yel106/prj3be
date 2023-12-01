@@ -1,11 +1,13 @@
 package com.example.prj3be.controller;
 
-import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
 import com.example.prj3be.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -15,10 +17,9 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("list")
-    public Comment commentList(Long id) {
-        Comment commentById = commentService.findCommentById(id);
-
-        return commentById;
+    public Page<Comment> commentList(Pageable pageable) {
+        Page<Comment> comments = commentService.commentListAll(pageable);
+        return comments;
     }
 
     @PostMapping("add")

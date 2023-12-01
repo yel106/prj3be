@@ -28,7 +28,6 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
-//    private final ItemRepository itemRepository;
 
     @Value("{image.file.prefix}")
     private String urlPrefix;
@@ -81,7 +80,6 @@ public class BoardService {
         boardRepository.save(board); //jpa의 save()메소드엔 파일을 넣지 못함
 
         Long id = board.getId();
-
 
         for (int i = 0; i < files.length; i++) {
         String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
