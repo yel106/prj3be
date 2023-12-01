@@ -1,6 +1,7 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.dto.LoginDto;
+import com.example.prj3be.dto.NaverTokenDto;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.TokenProvider;
@@ -164,10 +165,10 @@ public class LoginController {
         System.out.println("hashMap 선언");
 
         try {
-            String accessToken = loginService.getNaverAccessToken(code, state, response);
-            System.out.println("accessToken = " + accessToken);
+            NaverTokenDto naverTokenDto = loginService.getNaverAccessToken(code, state, response);
+            System.out.println("naverTokenDto = " + naverTokenDto);
 
-            HashMap<String, Object> userInfo = loginService.getNaverUserInfo(accessToken);
+            loginService.getNaverUserInfo(naverTokenDto);
         } catch (Exception e) {
             e.printStackTrace();
         }
