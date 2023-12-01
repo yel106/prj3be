@@ -1,9 +1,11 @@
 package com.example.prj3be.controller;
 
+import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
 import com.example.prj3be.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @RestController

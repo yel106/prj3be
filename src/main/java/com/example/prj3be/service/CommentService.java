@@ -2,6 +2,7 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
+import com.example.prj3be.repository.BoardRepository;
 import com.example.prj3be.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,21 +16,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
-
-    public Comment write(Map<String, Object> map) {
-        Comment comment = new Comment(null, map.get("content").toString(), new Board(Long.valueOf(map.get("boardId").toString()), null, null, null, null, null, null, null, null));
-        return commentRepository.save(comment);
-    }
+    private final BoardRepository boardRepository;
 
 //    public Comment write(Comment comment, Long id) {
 //
+//
+////        Long boardId = commentRepository.findBoardId(id);
+//
+//
+////        System.out.println("boardId = " + boardId);
 ////        System.out.println("id = " + ids); //null로 나옴
 ////        comment.setBoardId(ids); //comment의 board_id외래키에 board.Id를 대입하고 싶음.
 //
 //        Comment comments = commentRepository.save(comment);
 //        System.out.println("comments = " + comments);
 //        return comments;
+//
+//
 //    }
+
+    public Comment write(Map<String, Object> map) {
+        Comment comment = new Comment(null, map.get("content").toString(), new Board(Long.valueOf(map.get("boardId").toString()), null, null, null, null, null, null, null, null));
+        return commentRepository.save(comment);
+    }
 
     public Comment findCommentById(Long id) {
 //        Optional<Comment> selectCommentById = commentRepository.findById(id);
