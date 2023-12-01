@@ -65,6 +65,7 @@ public class MemberController {
     public FindMemberDto method2(@RequestHeader("Authorization") String authorization) {
         System.out.println("authorization = " + authorization);
 
+
 //        Member findMember = memberService.findMemberById(id);
 //        FindMemberDto dto = new FindMemberDto();
 //        dto.setLogId(findMember.getLogId());
