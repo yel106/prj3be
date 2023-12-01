@@ -15,14 +15,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
+    private final BoardRepository boardRepository;
 
-    public Comment write(Comment comment, Board board) {
+    public Comment write(Comment comment, Long id) {
 
-//        Comment comments = commentRepository.save(comment);
-        Long id = board.getId();
-        comment.setBoardId(id); //comment의 board_id외래키에 board.Id를 대입하고 싶음.
+
+        Long boardId = commentRepository.findBoardId(id);
+
+
+        System.out.println("boardId = " + boardId);
+//        System.out.println("id = " + ids); //null로 나옴
+//        comment.setBoardId(ids); //comment의 board_id외래키에 board.Id를 대입하고 싶음.
+
         Comment comments = commentRepository.save(comment);
+        System.out.println("comments = " + comments);
         return comments;
+
+
     }
 
     public Comment findCommentById(Long id) {
@@ -31,7 +40,7 @@ public class CommentService {
 //        return commentList;
 
         //혹은
-        return commentRepository.findById(id).orElseThrow( ()-> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+        return commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
     }
 
     public Comment update(Long id, Comment comment) {

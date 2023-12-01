@@ -20,8 +20,8 @@ public class CommentController {
     }
 
     @PostMapping("add")
-    public Comment save(@RequestBody Comment comment, Board board) { //요청된 본문을 받음
-        Comment write = commentService.write(comment, board);
+    public Comment save(@RequestBody Comment comment, Long id) { //요청된 본문을 받음
+        Comment write = commentService.write(comment, id);
         return write;
     }
 
