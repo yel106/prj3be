@@ -54,18 +54,7 @@ public class MemberController {
         memberService.signup(member);
     }
 
-//    @GetMapping("{id}")
-//    public FindMemberDto method2(@PathVariable Long id) {
-//        Member findMember = memberService.findMemberById(id);
-//        FindMemberDto dto = new FindMemberDto();
-//        dto.setLogId(findMember.getLogId());
-//        dto.setName(findMember.getName());
-//        dto.setAddress(findMember.getAddress());
-//        dto.setEmail(findMember.getEmail());
-//        dto.setGender(findMember.getGender());
-//        dto.setRole(findMember.getRole());
-//        return dto;
-//    }
+    // 회원 정보
     @GetMapping
     public FindMemberDto method2(@RequestHeader("Authorization") String token) {
         System.out.println("token1 = " + token);
@@ -86,6 +75,8 @@ public class MemberController {
         dto.setEmail(findMember.getEmail());
         dto.setGender(findMember.getGender());
         dto.setRole(findMember.getRole());
+
+        //TODO: 새로운 access token과 refresh token 발급, access token이 만료 되었을 때 refresh token으로 재발급 받기
 
         return dto;
     }

@@ -30,7 +30,8 @@ public class MemberService {
     }
 
     public Member findMemberByLogId(String logId) {
-        Optional<Member> findMember1 = memberRepository.findByLogId(logId);
+        Long id = memberRepository.findIdByLogId(logId);
+        Optional<Member> findMember1 = memberRepository.findById(id);
         Member member = findMember1.get();
         return member;
     }
@@ -67,4 +68,5 @@ public class MemberService {
         }
         return null;
     }
+
 }
