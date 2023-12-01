@@ -54,5 +54,6 @@ public class QBoard extends EntityPathBase<Board> {
         super(Board.class, metadata);
     }
 
-}
+    }
+
 

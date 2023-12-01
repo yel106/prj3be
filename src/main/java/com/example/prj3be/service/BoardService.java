@@ -5,6 +5,7 @@ import com.example.prj3be.domain.BoardFile;
 import com.example.prj3be.domain.QBoard;
 import com.example.prj3be.repository.BoardFileRepository;
 import com.example.prj3be.repository.BoardRepository;
+//import com.example.prj3be.repository.ItemRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
@@ -90,7 +92,7 @@ public class BoardService {
 
 
         for (int i = 0; i < files.length; i++) {
-            String url = urlPrefix + "prj3/" + id + "/" + files[i].getOriginalFilename();
+        String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
             boardFile.setFileName(files[i].getOriginalFilename());
             boardFile.setFileUrl(url);
 
@@ -125,7 +127,7 @@ public class BoardService {
         // optional -> get메소드
         if (boardFiles.isPresent()) {
             BoardFile boardFile1 = boardFiles.get(); //보드 파일이 존재한다면 파일에 있는걸 boardFile1에 넣음
-            String url = urlPrefix + "prj3/" + id + "/" + boardFile1.getFileName(); //보드파일1의 파일name을 url에 넣음
+            String url = urlPrefix + "prj3/"+ id +"/" + boardFile1.getFileName(); //보드파일1의 파일name을 url에 넣음
             boardFile1.setFileUrl(url); //boardFile1에 setter로 FileUrl필드에 url값을 집어넣음
             String fileUrl = boardFile1.getFileUrl();  //boardFile에 들어간 url값을 fileUrl변수에 넣음
             return fileUrl;

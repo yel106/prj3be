@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class Board {
     private String agency;
     private LocalDate releaseDate;
     private Long stockQuantity;
+
     @NotBlank(message = "Image URL cannot be blank")
     private String imageURL;
     private String fileName;
@@ -55,4 +57,11 @@ public class Board {
         this.imageURL = imageURL;
     }
 
+    public void setImageURL(String imageURL) {
+        this.imageUrl = imageURL;
+    }
+
+    public Object getFileName() {
+        return this.fileName;
+    }
 }
