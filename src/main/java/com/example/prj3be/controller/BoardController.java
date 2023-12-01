@@ -38,11 +38,6 @@ public class BoardController {
     @PostMapping("add")
     public void add(@Validated Board saveBoard,
                     @RequestParam(value = "imageURL") String imageURL) {
-        boardService.save(saveBoard, imageURL);
-    }
-    @PostMapping("add")
-    public void add(@Validated Board saveBoard,
-                    @RequestParam(value = "imageURL") String imageURL) {
         System.out.println(saveBoard);
         boardService.save(saveBoard, imageURL);
     }
