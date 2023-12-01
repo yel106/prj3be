@@ -34,6 +34,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final StringPath imageURL = createString("imageURL");
 
+    public final StringPath imageUrl = createString("imageUrl");
+
     public final StringPath price = createString("price");
 
     public final DatePath<java.time.LocalDate> releaseDate = createDate("releaseDate", java.time.LocalDate.class);
@@ -54,6 +56,5 @@ public class QBoard extends EntityPathBase<Board> {
         super(Board.class, metadata);
     }
 
-    }
-
+}
 

@@ -3,9 +3,7 @@ package com.example.prj3be.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
@@ -34,6 +32,7 @@ public class Board {
     private Long stockQuantity;
 
     @NotBlank(message = "Image URL cannot be blank")
+    @Column(name="image_url")
     private String imageURL;
     private String fileName;
 
@@ -43,6 +42,7 @@ public class Board {
 
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
+    private String imageUrl;
 
 
     public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, String imageURL, LocalDate releaseDate, List<Comment> comments) {
@@ -61,7 +61,7 @@ public class Board {
         this.imageUrl = imageURL;
     }
 
-    public Object getFileName() {
+    public String getFileName() {
         return this.fileName;
     }
 }
