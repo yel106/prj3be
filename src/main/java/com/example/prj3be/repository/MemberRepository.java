@@ -1,6 +1,7 @@
 package com.example.prj3be.repository;
 
 import com.example.prj3be.domain.Member;
+import com.example.prj3be.dto.MemberInfoDto;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +24,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
     @EntityGraph(attributePaths = "role")
     @Query("SELECT m FROM Member m WHERE m.logId = :logId")
     Optional<Member> findOneWithAuthoritiesByLogId(String logId);
+
+    @Query("SELECT m.logId AS logId, m.name AS name, m.email As email, m.address AS address, m.gender AS gender, m.role AS role FROM Member m WHERE m.logId = :logId")
+    MemberInfoDto findMemberInfoByLogId(String logId);
 }

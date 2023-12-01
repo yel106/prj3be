@@ -1,20 +1,25 @@
 package com.example.prj3be.jwt;
 
+import com.example.prj3be.domain.FreshToken;
+import com.example.prj3be.dto.MemberInfoDto;
 import com.example.prj3be.dto.TokenDto;
+import com.example.prj3be.repository.FreshTokenRepository;
+import com.example.prj3be.repository.MemberRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -29,6 +34,10 @@ public class TokenProvider implements InitializingBean {
     private final String secret;
     private final long tokenExpiration;
     private Key key;
+    @Autowired
+    private FreshTokenRepository freshTokenRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     //의존성 주입
     public TokenProvider(@Value("${jwt.token.key}")String secret,
@@ -43,13 +52,30 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    @Transactional
     public TokenDto createTokens(Authentication authentication){
         String accessToken = createAccessToken(authentication);
-        String refreshToken = createRefreshToken(authentication);
+        String refreshToken = createRefreshToken();
+        String name = authentication.getName();
 
-        return new TokenDto(accessToken, refreshToken);
+        System.out.println("TokenProvider.createTokens");
+        System.out.println("name = " + name);
+
+        // 기존에 refreshToken이 있다면
+        if(freshTokenRepository.findByLogId(name) != null){
+//            freshTokenRepository.deleteByLogId(name);//안되는 코드
+            freshTokenRepository.deleteById(name);//정상작동 코드
+        }
+        // refreshToken을 DB에 저장
+        FreshToken freshToken = new FreshToken();
+        freshToken.setLogId(name);
+        freshToken.setToken(refreshToken);
+        freshTokenRepository.save(freshToken);
+
+        return new TokenDto(accessToken);
     }
 
+    @Transactional
     //authentication 객체에 포함되어 있는 권한 정보들을 통해 엑세스 토큰을 생성
     public String createAccessToken(Authentication authentication){
         String authorities = authentication.getAuthorities().stream()
@@ -62,24 +88,26 @@ public class TokenProvider implements InitializingBean {
         System.out.println("TokenProvider.createAccessToken");
         System.out.println("authorities = " + authorities);
 
+        MemberInfoDto memberInfoDto = memberRepository.findMemberInfoByLogId(authentication.getName());
+        System.out.println("memberInfoDto = " + memberInfoDto);
+
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .claim("memberInfo", memberInfoDto)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
     }
     // 리프레시 토큰 생성
-    public String createRefreshToken(Authentication authentication){
-        //사용자의 식별 정보 가져오기
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
+    public String createRefreshToken(){
         // 현재 시간과 토큰 만료 시간 설정, 엑세스 토큰의 24배(24시간)
         long now =(new Date()).getTime();
         Date validity = new Date(now+this.tokenExpiration*24);
 
+        System.out.println("TokenProvider.createRefreshToken");
+
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS512)

@@ -1,8 +1,10 @@
 package com.example.prj3be.dto;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
+@RequiredArgsConstructor
 public class MemberInfoDto {
     private String logId;
     private String name;

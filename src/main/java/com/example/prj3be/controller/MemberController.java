@@ -6,12 +6,14 @@ import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,17 +49,32 @@ public class MemberController {
         memberService.signup(member);
     }
 
-    @GetMapping("{id}")
-    public FindMemberDto method2(@PathVariable Long id) {
-        Member findMember = memberService.findMemberById(id);
-        FindMemberDto dto = new FindMemberDto();
-        dto.setLogId(findMember.getLogId());
-        dto.setName(findMember.getName());
-        dto.setAddress(findMember.getAddress());
-        dto.setEmail(findMember.getEmail());
-        dto.setGender(findMember.getGender());
-        dto.setRole(findMember.getRole());
-        return dto;
+//    @GetMapping("{id}")
+//    public FindMemberDto method2(@PathVariable Long id) {
+//        Member findMember = memberService.findMemberById(id);
+//        FindMemberDto dto = new FindMemberDto();
+//        dto.setLogId(findMember.getLogId());
+//        dto.setName(findMember.getName());
+//        dto.setAddress(findMember.getAddress());
+//        dto.setEmail(findMember.getEmail());
+//        dto.setGender(findMember.getGender());
+//        dto.setRole(findMember.getRole());
+//        return dto;
+//    }
+    @GetMapping()
+    public FindMemberDto method2(HttpServletRequest servletRequest) {
+        String authorization = servletRequest.getHeader("Authorization");
+        System.out.println("authorization = " + authorization);
+
+//        Member findMember = memberService.findMemberById(id);
+//        FindMemberDto dto = new FindMemberDto();
+//        dto.setLogId(findMember.getLogId());
+//        dto.setName(findMember.getName());
+//        dto.setAddress(findMember.getAddress());
+//        dto.setEmail(findMember.getEmail());
+//        dto.setGender(findMember.getGender());
+//        dto.setRole(findMember.getRole());
+        return null;
     }
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {

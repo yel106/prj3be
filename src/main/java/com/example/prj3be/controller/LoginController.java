@@ -57,9 +57,8 @@ public class LoginController {
             System.out.println("tokens = " + tokens);
 
             HttpHeaders httpHeaders = new HttpHeaders();
-            // 헤더에 토큰들 담기
+            // 헤더에 토큰 담기
             httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens.getAccessToken());
-            httpHeaders.add("Refresh-Token", tokens.getFreshToken());
 
             System.out.println("httpHeaders = " + httpHeaders);
 
