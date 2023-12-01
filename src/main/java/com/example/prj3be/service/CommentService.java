@@ -15,7 +15,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final BoardRepository boardRepository;
 
     public Comment write(Comment comment, Board board) {
 
