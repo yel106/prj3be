@@ -27,8 +27,9 @@ public class OauthService {
     // 1. redirectURL 만들기
     public String request(SocialLoginType socialLoginType) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
-        socialOauth.getOauthRedirectURL();
+        return socialOauth.getOauthRedirectURL();
     }
+
     // 2. 액세스 토큰 만들기
     public ResponseEntity<String> requestAccessToken(SocialLoginType socialLoginType, String code) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
@@ -43,28 +44,28 @@ public class OauthService {
     }
 
     public GetSocialOAuthRes oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
-        SocialOauth socialOauth = findSocialOauthByType();
+        SocialOauth socialOauth = findSocialOauthByType(socialLoginType);
         ResponseEntity<String> accessTokenResponse = socialOauth.requestAccessToken(code);
         SocialOauthToken oAuthToken = socialOauth.getAccessToken(accessTokenResponse);
         ResponseEntity<String> userInfoResponse = socialOauth.requestUserInfo(oAuthToken);
         SocialUser socialUser = socialOauth.getUserInfo(userInfoResponse);
 
-        String user_id = socialUser.getEmail();
         String name = socialUser.getName();
-
-        //TODO : social user
-        Member member = new Member(name, user_id);
-        member.setPassword(encoder.encode(user_id));
+        String email = socialUser.getEmail();
 
         //DB에 해당 유저가 없는지 조회 후 없으면 저장
-        if(memberRepository.findByEmail(user_id) == null) {
+        if(memberRepository.findByEmail(email) == null) {
+            //TODO : social user
+            Member member = new Member();
+            member.setLogId(name);
+            member.setEmail(email);
+            member.setPassword(encoder.encode(email)); // 이메일을 비밀번호로 인코딩하여 저장 (null 방지)
             memberRepository.save(member);
         }
 
         //UserDetailsImpl userDetails = new UserDetailsImpl(user);
+//        String jwtToken = jwtUtil.generateToken(userDetails);
 
-        String jwtToken = jwtUtil.generateToken(userDetails);
-
-        return new GetSocialOAuthRes(jwtToken, userId, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+        return new GetSocialOAuthRes(jwtToken, email, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
     }
 }
