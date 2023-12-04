@@ -51,6 +51,7 @@ public class BoardService {
         BooleanBuilder builder = new BooleanBuilder();
 
         /* TODO: 카테고리 분류 추가하기*/
+        /* TODO: 카테고리 분류 추가하기*/
         if (category != null && keyword != null) {
             if ("all".equals(category)) {
                 builder.and(board.title.containsIgnoreCase(keyword));

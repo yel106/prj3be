@@ -28,6 +28,7 @@ public class Board {
 
     private String price;
     private String agency;
+    private String content;
     private LocalDate releaseDate;
     private Long stockQuantity;
 
@@ -35,6 +36,7 @@ public class Board {
     @Column(name="image_url")
     private String imageURL;
     private String fileName;
+    private String category;
 
 //    @OneToOne
 //    @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조

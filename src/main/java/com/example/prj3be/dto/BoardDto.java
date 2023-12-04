@@ -22,5 +22,7 @@ public class BoardDto {
     private String Price;
     @NotBlank(message = "" )
     private String imageUrl;
+    @NotBlank(message = "Album Introduction")
+    private String content;
 
 }
