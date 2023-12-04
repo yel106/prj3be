@@ -1,7 +1,7 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.dto.LoginDto;
-import com.example.prj3be.dto.NaverTokenDto;
+import com.example.prj3be.dto.SocialOauthToken;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.TokenProvider;
@@ -73,10 +73,9 @@ public class LoginController {
 
     //카카오 로그인
     @ResponseBody
-    @GetMapping("/api/login/kakaoPage")
+    @GetMapping("/api/login/kakao")
     public String kakaoLoginPage() {
         String redirectKakaoURL = loginService.createRedirectKakaoURL();
-
         return redirectKakaoURL;
     }
 
@@ -165,7 +164,7 @@ public class LoginController {
         System.out.println("hashMap 선언");
 
         try {
-            NaverTokenDto naverTokenDto = loginService.getNaverAccessToken(code, state, response);
+            SocialOauthToken naverTokenDto = loginService.getNaverAccessToken(code, state, response);
             System.out.println("naverTokenDto = " + naverTokenDto);
 
             loginService.getNaverUserInfo(naverTokenDto);
