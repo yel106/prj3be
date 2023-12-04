@@ -25,13 +25,13 @@ public class KakaoOauth implements SocialOauth {
     private String KAKAO_SNS_CLIENT_ID;
     @Value("${social.kakao.redirect.uri}")
     private String KAKAO_SNS_CALLBACK_URL;
-    @Value("${social.kakao.grantType}")
+    @Value("${social.kakao.authorization.grantType}")
     private String KAKAO_SNS_AUTH_TYPE;
     @Value("${social.kakao.authorization.uri}")
     private String KAKAO_SNS_AUTHORIZATION_URI;
     @Value("${social.kakao.token.uri}")
     private String KAKAO_SNS_TOKEN_URI;
-    @Value("${social.kakao.info.uri}")
+    @Value("${social.kakao.user.info.uri}")
     private String KAKAO_SNS_USER_INFO_URI;
 
     private final ObjectMapper objectMapper;

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class GetSocialOAuthRes {
     private String jwtToken;
-    private int user_num;
+    private Long id;
     private String accessToken;
     private String tokenType;
 }
