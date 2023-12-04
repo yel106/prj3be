@@ -42,7 +42,6 @@ public class Board {
 
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
-    private String imageUrl;
 
 
     public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, String imageURL, LocalDate releaseDate, List<Comment> comments) {
@@ -58,7 +57,7 @@ public class Board {
     }
 
     public void setImageURL(String imageURL) {
-        this.imageUrl = imageURL;
+        this.imageURL = imageURL;
     }
 
     public String getFileName() {
