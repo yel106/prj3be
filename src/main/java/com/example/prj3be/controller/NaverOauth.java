@@ -40,7 +40,7 @@ public class NaverOauth implements SocialOauth {
     private String NAVER_SNS_USER_INFO_URI;
 
     private final ObjectMapper objectMapper;
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Override
     public String getOauthRedirectURL() {

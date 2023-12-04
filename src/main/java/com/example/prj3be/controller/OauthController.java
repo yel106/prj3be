@@ -5,6 +5,7 @@ import com.example.prj3be.domain.GetSocialOAuthRes;
 import com.example.prj3be.exception.OAuthException;
 import com.example.prj3be.service.OauthService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.query.sqm.sql.ConversionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/auth")
 public class OauthController {
     private final OauthService oauthService;
