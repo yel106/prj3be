@@ -32,9 +32,7 @@ public class Board {
     private LocalDate releaseDate;
     private Long stockQuantity;
 
-    @NotBlank(message = "Image URL cannot be blank")
-    @Column(name="image_url")
-    private String imageURL;
+
     private String fileName;
     private String category;
 
@@ -55,12 +53,10 @@ public class Board {
         this.agency = agency;
         this.releaseDate = releaseDate;
         this.comments = comments;
-        this.imageURL = imageURL;
+
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
+
 
     public String getFileName() {
         return this.fileName;

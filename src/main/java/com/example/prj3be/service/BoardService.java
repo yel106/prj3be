@@ -31,7 +31,7 @@ public class BoardService {
     private final BoardFileRepository boardFileRepository;
 //    private final ItemRepository itemRepository;
 
-    @Value("{image.file.prefix}")
+    @Value("${image.file.prefix}")
     private String urlPrefix;
 
     @Value("${aws.s3.bucket.name}")
@@ -84,11 +84,12 @@ public class BoardService {
 //    }
 
 
-    public void save(Board board, MultipartFile[] files, BoardFile boardFile) throws IOException {
+    public void save(Board board, MultipartFile[] files) throws IOException {
 
         boardRepository.save(board); //jpa의 save()메소드엔 파일을 넣지 못함
 
         Long id = board.getId();
+        BoardFile boardFile = new BoardFile();
 
 
         for (int i = 0; i < files.length; i++) {
@@ -154,14 +155,14 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
-    public void save(Board saveBoard, String imageURL) {
-        saveBoard.setImageURL(imageURL);
-        BoardFile boardFile = new BoardFile();
-        boardFile.setFileName(saveBoard.getFileName());
-        boardFile.setFileUrl(imageURL);
-        boardRepository.save(saveBoard);
-        boardFileRepository.save(boardFile);
-    }
+//    public void save(Board saveBoard, String imageURL) {
+//        saveBoard.setImageURL(imageURL);
+//        BoardFile boardFile = new BoardFile();
+//        boardFile.setFileName(saveBoard.getFileName());
+//        boardFile.setFileUrl(imageURL);
+//        boardRepository.save(saveBoard);
+//        boardFileRepository.save(boardFile);
+//    }
 
 
 

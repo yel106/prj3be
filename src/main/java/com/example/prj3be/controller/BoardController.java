@@ -37,9 +37,9 @@ public class BoardController {
 //    }
     @PostMapping("add")
     public void add(@Validated Board saveBoard,
-                    @RequestParam(value = "imageURL") String imageURL) {
+                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
         System.out.println(saveBoard);
-        boardService.save(saveBoard, imageURL);
+        boardService.save(saveBoard, files);
     }
 
 
