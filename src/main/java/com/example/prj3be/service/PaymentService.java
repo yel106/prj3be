@@ -89,4 +89,21 @@ public class PaymentService {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         return headers;
     }
+
+    public Map canclePayment(String memberEmail, String paymentKey, String cancelReason) {
+        Payment payment = paymentRepository.findByPaymentKeyAndMember_Email(paymentKey,memberEmail).orElseThrow(() -> {
+            throw new CustomLogicException(ExceptionCode.PAYMENT_NOT_FOUND);
+        });
+        return payCancel(paymentKey,cancelReason);
+    }
+
+    private Map payCancel(String paymentKey, String cancelReason) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = getHeaders();
+        Map<String, Object> params = new HashMap<>();
+        params.put("cancelReason",cancelReason);
+        return restTemplate.postForObject(PaymentConfig.URL + paymentKey + "/cancel",
+                new HttpEntity<>(params, headers),
+                Map.class);
+    }
 }

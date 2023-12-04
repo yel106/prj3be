@@ -1,6 +1,7 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.config.PaymentConfig;
+import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.PaymentDto;
 import com.example.prj3be.dto.PaymentRequestDto;
 import com.example.prj3be.dto.PaymentResDto;
@@ -39,6 +40,11 @@ public class PaymentController {
         String orderId = dto.getPaymentUid();
         Long amount = dto.getAmount();
         return ResponseEntity.ok().body(paymentService.tossPaymentSuccess(paymentKey,orderId,amount));
+    }
+    // 결제 취소 로직
+    @PostMapping("/toss/cancel")
+    public ResponseEntity tossPaymentCancel(Member member, @RequestParam String paymentKey, @RequestParam String cancelReason) {
+        return ResponseEntity.ok().body(paymentService.canclePayment(member.getEmail(),paymentKey,cancelReason));
     }
 
 }
