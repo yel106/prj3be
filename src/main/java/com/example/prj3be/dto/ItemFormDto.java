@@ -18,8 +18,11 @@ public class ItemFormDto {
     private String Agency;
     @NotBlank(message = "What is the type of album?")
     private AlbumFormat AlbumFormat;
+    @NotBlank(message = "" )
+    private String fileUrl;
     @NotBlank(message = "Register Price of product")
     private String Price;
+
 }
 
 

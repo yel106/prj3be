@@ -44,7 +44,7 @@ public class Board {
     private List<Comment> comments = new ArrayList<>();
 
 
-    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, String imageURL, LocalDate releaseDate, List<Comment> comments) {
+    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, List<Comment> comments) {
         this.id = id;
         this.title = title;
         this.artist = artist;
