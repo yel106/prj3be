@@ -104,7 +104,9 @@ public class OauthService {
             System.out.println("httpHeaders = " + httpHeaders);
             //JWT token 생성하고 그 토큰을 GetSocialOAuthRes에 저장
             TokenDto tokenDto = new TokenDto(jwt);
-            return new GetSocialOAuthRes(tokenDto.getToken(), member.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+            GetSocialOAuthRes oAuthRes = new GetSocialOAuthRes(tokenDto.getToken(), member.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+            System.out.println("oAuthRes = " + oAuthRes);
+            return oAuthRes;
         } catch (AuthenticationException e){
             System.out.println("인증 실패 :"+e.getMessage());
             return null;

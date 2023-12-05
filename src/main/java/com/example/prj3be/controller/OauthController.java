@@ -7,7 +7,9 @@ import com.example.prj3be.service.OauthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.query.sqm.sql.ConversionException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +32,13 @@ public class OauthController {
     }
 
     @GetMapping("/{socialLoginType}/callback")
-    public GetSocialOAuthRes oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
+    public ResponseEntity<GetSocialOAuthRes> oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
                                         @RequestParam(name="code") String code) throws IOException {
         SocialLoginType type = SocialLoginType.valueOf(socialLoginType.toUpperCase());
-        return oauthService.oAuthLogin(type, code);
+        GetSocialOAuthRes oAuthRes = oauthService.oAuthLogin(type, code);
+        System.out.println("callback의 리턴 statement 이전");
+
+        return ResponseEntity.ok(oAuthRes);
     }
 
     @ExceptionHandler(OAuthException.class)

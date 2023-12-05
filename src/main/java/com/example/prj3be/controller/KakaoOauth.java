@@ -97,7 +97,7 @@ public class KakaoOauth implements SocialOauth {
         System.out.println("accountObject = " + accountObject);
 
         return SocialUser.builder()
-                .id((Long) jsonObject.get("id"))
+                .id(jsonObject.get("id"))
                 .name((String) profileObject.get("nickname"))
                 .email((String) accountObject.get("email"))
                 .build();
