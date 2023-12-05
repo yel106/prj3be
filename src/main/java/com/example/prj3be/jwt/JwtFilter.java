@@ -8,11 +8,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.List;
 
 //jwt 커스텀 필터
 public class JwtFilter extends GenericFilterBean {
@@ -30,17 +32,24 @@ public class JwtFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         //실제 토큰을 가져옴
         String jwt = resolveToken(httpServletRequest);
+        System.out.println("JwtFilter.doFilter");
+        System.out.println("jwt = " + jwt);
         String requestURI = httpServletRequest.getRequestURI();
+        System.out.println("requestURI = " + requestURI);
 
-        //토큰이 정상적인 경우
-        if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)){
+        // 아예 refresh token을 토큰부터 구별하는게 더 깔끔해지긴 할 것 같음
+        // 리프레쉬 토큰인 경우
+        if (requestURI.equals("/refreshToken")) {
+            logger.info("JWT token 리프레쉬");
+        }// 토큰이 정상적인 경우
+        else if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)){
             //토큰에서 authentication 가져와서
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             //security context에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
-        }else{
-            logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+            logger.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+        } else{
+            logger.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
 
         filterChain.doFilter(servletRequest, servletResponse);

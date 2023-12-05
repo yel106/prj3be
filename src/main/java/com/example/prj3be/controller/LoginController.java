@@ -3,6 +3,7 @@ package com.example.prj3be.controller;
 import com.example.prj3be.dto.LoginDto;
 import com.example.prj3be.dto.MemberInfoDto;
 import com.example.prj3be.dto.TokenDto;
+import com.example.prj3be.jwt.JwtAuthenticationEntryPoint;
 import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.LoginProvider;
 import com.example.prj3be.jwt.TokenProvider;
@@ -19,6 +20,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,6 +38,28 @@ public class LoginController {
     @Value("${button.image.url}")
     private String socialButtonImagePrefix;
 
+    @GetMapping("/refreshToken")
+    public TokenDto byRefreshToken(@RequestHeader("Authorization")String refreshToken){
+        System.out.println("LoginController.byRefreshToken");
+        System.out.println("refreshToken = " + refreshToken);
+        if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
+            refreshToken = refreshToken.substring(7);
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken = tokenProvider.updateTokensByRefreshToken(refreshToken);
+
+
+//        UsernamePasswordAuthenticationToken authenticationToken =
+//                new UsernamePasswordAuthenticationToken(loginDto.getLogId(), "1234");
+
+        System.out.println("LoginController.byRefreshToken");
+        System.out.println("authenticationToken = " + authenticationToken);
+
+//          String jwt = tokenProvider.createToken(authentication);
+        TokenDto tokens = tokenProvider.createTokens(authenticationToken);
+
+        return tokens;
+    }
     @PostMapping("/login")
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto){
         System.out.println("loginDto.getLogId() = " + loginDto.getLogId());
@@ -43,6 +68,7 @@ public class LoginController {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getLogId(), loginDto.getPassword());
 
+        System.out.println("LoginController.authorize");
         System.out.println("authenticationToken = " + authenticationToken);
 
         try {
@@ -56,13 +82,13 @@ public class LoginController {
 
             System.out.println("tokens = " + tokens);
 
-            HttpHeaders httpHeaders = new HttpHeaders();
-            // 헤더에 토큰 담기
-            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens.getAccessToken());
+//            HttpHeaders httpHeaders = new HttpHeaders();
+//            // 헤더에 토큰 담기
+//            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens.getAccessToken());
+//
+//            System.out.println("httpHeaders = " + httpHeaders);
 
-            System.out.println("httpHeaders = " + httpHeaders);
-
-            return new ResponseEntity<>(new TokenDto(tokens.getAccessToken()), httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(new TokenDto(tokens.getAccessToken(), tokens.getRefreshToken()), HttpStatus.OK);
         } catch (AuthenticationException e){
             System.out.println("인증 실패 :"+e.getMessage());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

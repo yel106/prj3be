@@ -7,6 +7,7 @@ import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.MemberService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -56,30 +58,36 @@ public class MemberController {
 
     // 회원 정보
     @GetMapping
-    public FindMemberDto method2(@RequestHeader("Authorization") String token) {
-        System.out.println("token1 = " + token);
-        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
-             token = token.substring(7);
-             System.out.println("token2 = " + token);
-        }
-        else{
-            return null;
-        }
-        Authentication authentication = tokenProvider.getAuthentication(token);
+    public FindMemberDto method2() {
+//        System.out.println("token1 = " + token);
+//        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
+//             token = token.substring(7);
+//             System.out.println("token2 = " + token);
+//        }
+//        else{
+//            return null;
+//        }
+        //TODO: 토큰 유효성 검증
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("MemberController.method2");
+            System.out.println("authentication = " + authentication);
+            Member findMember = memberService.findMemberByLogId(authentication.getName());
+            FindMemberDto dto = new FindMemberDto();
+            dto.setLogId(findMember.getLogId());
+            dto.setName(findMember.getName());
+            dto.setAddress(findMember.getAddress());
+            dto.setEmail(findMember.getEmail());
+            dto.setGender(findMember.getGender());
+            dto.setRole(findMember.getRole());
 
-        Member findMember = memberService.findMemberByLogId(authentication.getName());
-        FindMemberDto dto = new FindMemberDto();
-        dto.setLogId(findMember.getLogId());
-        dto.setName(findMember.getName());
-        dto.setAddress(findMember.getAddress());
-        dto.setEmail(findMember.getEmail());
-        dto.setGender(findMember.getGender());
-        dto.setRole(findMember.getRole());
+            return dto;
+            //TODO: 토큰이 만료된 경우 사용자가 보내온 refresh token과 DB의 refresh token을 비교하여 동일할 때 access token 재발급
+
 
         //TODO: 새로운 access token과 refresh token 발급, access token이 만료 되었을 때 refresh token으로 재발급 받기
 
-        return dto;
     }
+
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
             memberService.update(id,dto);

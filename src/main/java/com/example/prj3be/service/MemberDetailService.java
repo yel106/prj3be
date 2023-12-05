@@ -50,6 +50,7 @@ public class MemberDetailService implements UserDetailsService {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole().name());
 
 //        System.out.println("grantedAuthorities = " + grantedAuthorities);
+        System.out.println("MemberDetailService.createUser");
         System.out.println("grantedAuthority = " + grantedAuthority);
 
         return new User(member.getLogId(), member.getPassword(), Collections.singletonList(grantedAuthority));

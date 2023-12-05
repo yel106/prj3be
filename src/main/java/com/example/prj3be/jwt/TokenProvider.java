@@ -1,10 +1,11 @@
 package com.example.prj3be.jwt;
 
 import com.example.prj3be.domain.FreshToken;
-import com.example.prj3be.dto.MemberInfoDto;
+import com.example.prj3be.dto.LoginDto;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.repository.FreshTokenRepository;
 import com.example.prj3be.repository.MemberRepository;
+import com.example.prj3be.service.MemberDetailService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -14,17 +15,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -36,14 +38,19 @@ public class TokenProvider implements InitializingBean {
     private Key key;
     @Autowired
     private FreshTokenRepository freshTokenRepository;
-    @Autowired
+
     private MemberRepository memberRepository;
+    private MemberDetailService memberDetailService;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     //의존성 주입
     public TokenProvider(@Value("${jwt.token.key}")String secret,
-                         @Value("${jwt.token.expiration}")long tokenExpiration){
+                         @Value("${jwt.token.expiration}")long tokenExpiration, AuthenticationManagerBuilder authenticationManagerBuilder, MemberRepository memberRepository){
         this.secret = secret;
         this.tokenExpiration = tokenExpiration * 1000;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.memberRepository = memberRepository;
+        this.memberDetailService = new MemberDetailService(memberRepository);
     }
 
     @Override
@@ -55,7 +62,7 @@ public class TokenProvider implements InitializingBean {
     @Transactional
     public TokenDto createTokens(Authentication authentication){
         String accessToken = createAccessToken(authentication);
-        String refreshToken = createRefreshToken();
+        String refreshToken = createRefreshToken(authentication);
         String name = authentication.getName();
 
         System.out.println("TokenProvider.createTokens");
@@ -72,7 +79,7 @@ public class TokenProvider implements InitializingBean {
         freshToken.setToken(refreshToken);
         freshTokenRepository.save(freshToken);
 
-        return new TokenDto(accessToken);
+        return new TokenDto(accessToken, refreshToken);
     }
 
     @Transactional
@@ -83,7 +90,7 @@ public class TokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         long now =(new Date()).getTime();
-        Date validity = new Date(now+this.tokenExpiration);
+        Date validity = new Date(now+3600*100);
 
         System.out.println("TokenProvider.createAccessToken");
         System.out.println("authorities = " + authorities);
@@ -96,18 +103,64 @@ public class TokenProvider implements InitializingBean {
                 .compact();
     }
     // 리프레시 토큰 생성
-    public String createRefreshToken(){
+    public String createRefreshToken(Authentication authentication){
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
         // 현재 시간과 토큰 만료 시간 설정, 엑세스 토큰의 24배(24시간)
         long now =(new Date()).getTime();
-        Date validity = new Date(now+this.tokenExpiration*24);
+        System.out.println("now = " + now);
+        Date validity = new Date(now+3600*1000);
 
         System.out.println("TokenProvider.createRefreshToken");
 
         return Jwts.builder()
+                .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
+    }
+
+
+    //refresh 토큰을 이용해서 토큰들 재발급
+    @Transactional
+    public UsernamePasswordAuthenticationToken updateTokensByRefreshToken(String refreshToken){
+        System.out.println("refreshToken = " + refreshToken);
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        System.out.println("TokenProvider.updateTokensByRefreshToken");
+        System.out.println("logId = " + logId);
+//        String role = memberRepository.findRoleByLogId(logId);
+//        System.out.println("role = " + role);
+        //TODO: role로 할 때는 괜찮음
+        Authentication authentication = getAuthentication(refreshToken);
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+//        UserDetails userDetails = memberDetailService.loadUserByUsername(logId);
+//        System.out.println("userDetails = " + userDetails);
+
+//        List<GrantedAuthority> authority = Collections.singletonList(new SimpleGrantedAuthority(role));
+
+//        System.out.println("authority = " + authority);
+//
+//        User user = new User(logId, "", authority);
+//
+//        System.out.println("user = " + user);
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(logId, password);
+//        System.out.println("authenticationToken = " + authenticationToken);
+//
+//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        System.out.println("TokenProvider.updateTokensByRefreshToken");
+//        System.out.println("authentication = " + authentication);
+//
+//        TokenDto tokens = createTokens(authentication);
+//        System.out.println("tokens = " + tokens);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(logId, "", authorities);
+        System.out.println("TokenProvider.updateTokensByRefreshToken");
+        System.out.println("authenticationToken = " + authenticationToken);
+        return authenticationToken;
     }
 
 
@@ -125,6 +178,9 @@ public class TokenProvider implements InitializingBean {
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
+        System.out.println("TokenProvider.getAuthentication");
+        System.out.println("authorities = " + authorities);
+        System.out.println("claims.getSubject() = " + claims.getSubject());
 
         // 권한 정보들로 유저 객체 만들기
         User principal = new User(claims.getSubject(), "", authorities);//사용자식별정보, 패스워드, 권한정보
