@@ -56,6 +56,11 @@ public class BoardController {
     public List<String> getURL(@PathVariable Long id) {
         return boardService.getBoardURL(id);
     }
+
+
+
+
+
     @PutMapping("/edit/{id}")
     public void update(@PathVariable Long id, @RequestBody Board updateBboard) {
         boardService.update(id, updateBboard);
