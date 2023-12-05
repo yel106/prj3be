@@ -1,6 +1,7 @@
 package com.example.prj3be.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -41,8 +42,11 @@ public class Board {
 //    private Item item;
 
     @OneToMany(mappedBy = "board")
+    @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
-
+    @OneToMany(mappedBy = "board")
+    @JsonManagedReference
+    private List<BoardFile> boardFiles = new ArrayList<>();
 
     public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, List<Comment> comments) {
         this.id = id;
@@ -55,9 +59,6 @@ public class Board {
         this.comments = comments;
 
     }
-
-
-
     public String getFileName() {
         return this.fileName;
     }

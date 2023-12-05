@@ -1,6 +1,7 @@
 package com.example.prj3be.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class BoardFile {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
+    @JsonBackReference
     private Board board;
 
     public BoardFile(Long id, String fileName, String fileUrl) {
