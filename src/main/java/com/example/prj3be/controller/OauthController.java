@@ -18,20 +18,15 @@ import java.io.IOException;
 @RequestMapping("/api/auth")
 public class OauthController {
     private final OauthService oauthService;
-    private final HttpServletResponse response;
 
     @GetMapping("/{socialLoginType}")
-    public void socialLoginType(@PathVariable(name="socialLoginType") String socialLoginType) {
-        SocialLoginType type = SocialLoginType.valueOf(socialLoginType.toUpperCase());
+    public String socialLoginType(@PathVariable(name="socialLoginType") String socialLoginType) {
+        SocialLoginType type = SocialLoginType.valueOf(socialLoginType);
         System.out.println("socialLoginType = " + type);
         String redirectUrl = oauthService.request(type);
         System.out.println("redirectUrl = " + redirectUrl);
-        try {
-            response.sendRedirect(redirectUrl);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+        return redirectUrl;
     }
 
     @GetMapping("/{socialLoginType}/callback")
