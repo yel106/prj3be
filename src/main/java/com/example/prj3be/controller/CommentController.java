@@ -5,6 +5,7 @@ import com.example.prj3be.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,17 +25,18 @@ public class CommentController {
 
     @PostMapping("add")
     public Comment save(@RequestBody Map<String, Object> map) { //요청된 본문을 받음
-        Comment write = commentService.write(map);
-        return write;
+        Comment CommentWrite = commentService.write(map);
+        return CommentWrite;
     }
 
+    @PutMapping("update/{id}")
+    public Comment update(@PathVariable Long id, @RequestBody Comment updateComment) {
+        Comment editComment = commentService.update(id, updateComment);
+        return editComment;
+    }
 
-
-
-
-
-
-
-
-
+    @DeleteMapping("delete/{id}")
+    public void delete(@PathVariable Long id) {
+        commentService.delete(id);
+    }
 }

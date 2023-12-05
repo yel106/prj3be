@@ -18,32 +18,30 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
 
+    public Page<Comment> commentListAll(Pageable pageable) {
+        Page<Comment> commentALl = commentRepository.findAll(pageable);
+        return commentALl;
+    }
+
     public Comment write(Map<String, Object> map) {
         Comment comment = new Comment(null, map.get("content").toString(), new Board(Long.valueOf(map.get("boardId").toString()), null, null, null, null, null, null, null, null));
         return commentRepository.save(comment);
     }
 
-    public Page<Comment> commentListAll(Pageable pageable) {
-        Page<Comment> commentALl = commentRepository.findAll(pageable);
-        return commentALl;
-
-        //혹은
-//        return commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
-    }
-
-    public Comment update(Long id, Comment comment) {
-        Optional<Comment> comment1 = commentRepository.findById(id);
-        Comment content = comment1.get();
-        if (comment1.isPresent()) {
-            content.setId(content.getId());
-            content.setContent(content.getContent());
+    public Comment update(Long id, Comment updateComment) {
+        Optional<Comment> contents = commentRepository.findById(id);
+        if (contents.isPresent()) {
+            Comment content = contents.get();
+            content.setId(updateComment.getId());
+            content.setContent(updateComment.getContent());
+            return commentRepository.save(content);
+        } else {
+            throw new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다.");
         }
-        return content;
     }
 
     public void delete(Long id) {
         commentRepository.deleteById(id);
     }
-
 
 }
