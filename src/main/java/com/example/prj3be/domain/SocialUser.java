@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class SocialUser {
-   public String id;
+   public Object id; //네이버는 String, 카카오는 Long
    public String email;
    public boolean verifiedEmail;
    public String name;

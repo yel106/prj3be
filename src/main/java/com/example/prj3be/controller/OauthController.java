@@ -30,9 +30,10 @@ public class OauthController {
     }
 
     @GetMapping("/{socialLoginType}/callback")
-    public GetSocialOAuthRes oAuthLogin(@PathVariable(name="socialLoginType") SocialLoginType socialLoginType,
+    public GetSocialOAuthRes oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
                                         @RequestParam(name="code") String code) throws IOException {
-        return oauthService.oAuthLogin(socialLoginType, code);
+        SocialLoginType type = SocialLoginType.valueOf(socialLoginType.toUpperCase());
+        return oauthService.oAuthLogin(type, code);
     }
 
     @ExceptionHandler(OAuthException.class)
