@@ -39,14 +39,15 @@ public class KakaoOauth implements SocialOauth {
 
     @Override
     public String getOauthRedirectURL() {
-        MultiValueMap<String, String> queryParms = new LinkedMultiValueMap<>();
-        queryParms.set("response_type", "code");
-        queryParms.set("client_id", KAKAO_SNS_CLIENT_ID);
-        queryParms.set("redirect_uri", KAKAO_SNS_CALLBACK_URL);
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.set("response_type", "code");
+        queryParams.set("client_id", KAKAO_SNS_CLIENT_ID);
+        queryParams.set("redirect_uri", KAKAO_SNS_CALLBACK_URL);
+        queryParams.set("prompt", "login");
 
         return UriComponentsBuilder
                 .fromUriString(KAKAO_SNS_AUTHORIZATION_URI)
-                .queryParams(queryParms)
+                .queryParams(queryParams)
                 .encode().build().toString();
     }
 

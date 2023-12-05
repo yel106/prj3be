@@ -36,8 +36,8 @@ public class GoogleOauth implements SocialOauth {
     @Override
     public String getOauthRedirectURL() {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.set("scope", "https://www.googleapis.com/auth/userinfo.email" +
-                "https://www.googleapis.com/auth/userinfo.profile");
+        queryParams.set("scope", "https://www.googleapis.com/auth/userinfo.email");
+        queryParams.set("scope", "https://www.googleapis.com/auth/userinfo.profile");
         queryParams.set("response_type", "code");
         queryParams.set("client_id", GOOGLE_SNS_CLIENT_ID);
         queryParams.set("redirect_uri", GOOGLE_SNS_CALLBACK_URL);
