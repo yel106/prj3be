@@ -57,6 +57,10 @@ public class BoardService {
                 builder.and(board.title.containsIgnoreCase(keyword));
             } else if ("CD".equals(category)) {
                 builder.and(board.title.containsIgnoreCase(keyword));
+            }else if ("CASSETTE".equals(category)){
+                builder.and(board.title.containsIgnoreCase(keyword));
+            }else if ("VINYL".equals(category)){
+                builder.and(board.title.containsIgnoreCase(keyword));
             }
         }
 
