@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,7 +30,6 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
-//    private final ItemRepository itemRepository;
 
     @Value("${image.file.prefix}")
     private String urlPrefix;
@@ -38,10 +38,10 @@ public class BoardService {
     private String bucket;
 
     private final S3Client s3;
-    @Autowired
-    public BoardService(BoardRepository boardRepository1, BoardFileRepository boardRepository, S3Client s3){
-        this.boardRepository = boardRepository1;
-        this.boardFileRepository = boardRepository;
+
+    public BoardService(BoardRepository boardRepository, BoardFileRepository boardFileRepository, S3Client s3){
+        this.boardRepository = boardRepository;
+        this.boardFileRepository = boardFileRepository;
         this.s3 = s3;
     }
 
@@ -90,21 +90,23 @@ public class BoardService {
 
         Long id = board.getId();
         BoardFile boardFile = new BoardFile();
+        Optional<Board> findBoard = boardRepository.findById(id);
+        Board savedBoard = findBoard.get();
 
 
         for (int i = 0; i < files.length; i++) {
-        String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
+            String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
             boardFile.setFileName(files[i].getOriginalFilename());
             boardFile.setFileUrl(url);
-
+            boardFile.setBoard(savedBoard);
             boardFileRepository.save(boardFile);    //boardFile 테이블에 files 정보(fileName, fileUrl) 저장
-            upload(files[i]);
+            upload(files[i], id);
         }
     }
 
     //AWS s3에 파일 업로드
-    private void upload(MultipartFile files) throws IOException {
-        String key = files.getOriginalFilename();
+    private void upload(MultipartFile file,Long id) throws IOException {
+        String key = "prj3/" + id + "/" +file.getOriginalFilename();
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -112,7 +114,7 @@ public class BoardService {
                 .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
 
-        s3.putObject(objectRequest, RequestBody.fromInputStream(files.getInputStream(), files.getSize()));
+        s3.putObject(objectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
     }
 
     public String get(Long id, BoardFile boardFile) {
@@ -153,6 +155,10 @@ public class BoardService {
 
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public List<String> getBoardURL(Long id) {
+        return boardFileRepository.findFileUrlsByBoardId(id);
     }
 
 //    public void save(Board saveBoard, String imageURL) {

@@ -1,9 +1,8 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Board;
-import com.example.prj3be.domain.BoardFile;
 import com.example.prj3be.service.BoardService;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -11,13 +10,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/board")
 public class BoardController {
     private final BoardService boardService;
+
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
+
 
     @GetMapping("list")
     public Page<Board> list(Pageable pageable,
@@ -26,7 +30,6 @@ public class BoardController {
         Page<Board> boardListPage = boardService.boardListAll(pageable, category, keyword);
         return boardListPage;
     }
-
 
     //파일 추가할때 @RequestBody X
 //    public void add(@Validated Board saveBoard,
@@ -46,10 +49,13 @@ public class BoardController {
 
 
     @GetMapping("id/{id}")
-    public Optional<Board> get(@PathVariable Long id) {
-        return boardService.getBoardById(id);
+    public Board get(@PathVariable Long id) {
+        return boardService.getBoardById(id).orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
     }
-
+    @GetMapping("file/id/{id}")
+    public List<String> getURL(@PathVariable Long id) {
+        return boardService.getBoardURL(id);
+    }
     @PutMapping("/edit/{id}")
     public void update(@PathVariable Long id, @RequestBody Board updateBboard) {
         boardService.update(id, updateBboard);
