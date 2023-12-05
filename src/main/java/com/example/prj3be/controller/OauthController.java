@@ -21,13 +21,17 @@ public class OauthController {
     private final HttpServletResponse response;
 
     @GetMapping("/{socialLoginType}")
-    public void socialLoginType(@PathVariable(name="socialLoginType") SocialLoginType socialLoginType) {
-        String redirectUrl = oauthService.request(socialLoginType);
+    public void socialLoginType(@PathVariable(name="socialLoginType") String socialLoginType) {
+        SocialLoginType type = SocialLoginType.valueOf(socialLoginType.toUpperCase());
+        System.out.println("socialLoginType = " + type);
+        String redirectUrl = oauthService.request(type);
+        System.out.println("redirectUrl = " + redirectUrl);
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @GetMapping("/{socialLoginType}/callback")
