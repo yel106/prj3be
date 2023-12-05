@@ -21,7 +21,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class OauthService {
     private final List<SocialOauth> socialOauthList;
     private final MemberRepository memberRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
 
     // 1. redirectURL 만들기
@@ -78,12 +78,13 @@ public class OauthService {
             member.setPassword(encoder.encode(email));
             // user로 role 지정
             member.setRole(Role.USER);
+            member.setActivated(true);
             // 회원 등록
             memberRepository.save(member);
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(member.getLogId(), member.getPassword());
+                new UsernamePasswordAuthenticationToken(member.getLogId(), member.getEmail());
 
         System.out.println("authenticationToken = " + authenticationToken);
 

@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,8 @@ public class MemberDetailService implements UserDetailsService {
             throw new RuntimeException(username+"이 활성화 되어 있지 않습니다.");
         }
 
-        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-                .collect(Collectors.toList());
-
-        System.out.println("grantedAuthorities = " + grantedAuthorities);
-
-        return new User(member.getLogId(), member.getPassword(), grantedAuthorities);
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole().name());
+        System.out.println("grantedAuthority = " + grantedAuthority);
+        return new User(member.getLogId(), member.getPassword(), Collections.singletonList(grantedAuthority));
     }
 }
