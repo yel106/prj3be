@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class AlbumGenre {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //    private String genreName;
