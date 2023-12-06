@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,8 +22,13 @@ public class BoardController {
 
     @GetMapping("list")
     public Page<Board> list(Pageable pageable,
+                            @RequestParam Map<String, Object> params,
                             @RequestParam(value = "c", defaultValue = "all") String category,
                             @RequestParam(value = "k", defaultValue = "") String keyword) {
+        System.out.println("pageable = " + pageable);
+        System.out.println("params = " + params);
+
+
         Page<Board> boardListPage = boardService.boardListAll(pageable, category, keyword);
         return boardListPage;
     }

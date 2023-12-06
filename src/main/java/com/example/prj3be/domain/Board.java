@@ -3,6 +3,7 @@ package com.example.prj3be.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,9 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private AlbumFormat albumFormat;
 
+//    @Enumerated(EnumType.STRING)
+//    private AlbumDetail albumDetail;
+
     private String price;
     private String agency;
     private LocalDate releaseDate;
@@ -37,6 +41,7 @@ public class Board {
     private List<Comment> comments = new ArrayList<>();
 
 
+    /* 생성자 추가 해야함*/
     public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, Long stockQuantity, List<Comment> comments) {
         this.id = id;
         this.title = title;
