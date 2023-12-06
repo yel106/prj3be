@@ -15,4 +15,5 @@ public interface BoardFileRepository extends JpaRepository<BoardFile, Long> {
     @Query("SELECT bf.fileUrl FROM BoardFile bf WHERE bf.board.id = :boardId")
     List<String> findFileUrlsByBoardId(@Param("boardId") Long boardId);
 
+    Long deleteBoardFileByBoardId(Long id);
 }
