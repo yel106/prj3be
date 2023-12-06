@@ -46,17 +46,17 @@ public class LoginController {
             refreshToken = refreshToken.substring(7);
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken = tokenProvider.updateTokensByRefreshToken(refreshToken);
+        Authentication authentication = tokenProvider.updateTokensByRefreshToken(refreshToken);
 
 
 //        UsernamePasswordAuthenticationToken authenticationToken =
 //                new UsernamePasswordAuthenticationToken(loginDto.getLogId(), "1234");
 
         System.out.println("LoginController.byRefreshToken");
-        System.out.println("authenticationToken = " + authenticationToken);
+        System.out.println("authentication = " + authentication);
 
 //          String jwt = tokenProvider.createToken(authentication);
-        TokenDto tokens = tokenProvider.createTokens(authenticationToken);
+        TokenDto tokens = tokenProvider.createTokens(authentication);
 
         return tokens;
     }

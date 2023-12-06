@@ -125,21 +125,23 @@ public class TokenProvider implements InitializingBean {
 
     //refresh 토큰을 이용해서 토큰들 재발급
     @Transactional
-    public UsernamePasswordAuthenticationToken updateTokensByRefreshToken(String refreshToken){
+    public Authentication updateTokensByRefreshToken(String refreshToken){
         System.out.println("refreshToken = " + refreshToken);
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
         System.out.println("TokenProvider.updateTokensByRefreshToken");
         System.out.println("logId = " + logId);
+        
 //        String role = memberRepository.findRoleByLogId(logId);
 //        System.out.println("role = " + role);
+//        List<GrantedAuthority> authority = Collections.singletonList(new SimpleGrantedAuthority(role));
+
         //TODO: role로 할 때는 괜찮음
-        Authentication authentication = getAuthentication(refreshToken);
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        //getAuthentication을 통해 User객체를 만들어낼 때는 userId가 필요하다->오버로딩
+        Authentication authentication = getAuthentication(refreshToken, logId);
+
 
 //        UserDetails userDetails = memberDetailService.loadUserByUsername(logId);
 //        System.out.println("userDetails = " + userDetails);
-
-//        List<GrantedAuthority> authority = Collections.singletonList(new SimpleGrantedAuthority(role));
 
 //        System.out.println("authority = " + authority);
 //
@@ -157,10 +159,10 @@ public class TokenProvider implements InitializingBean {
 //        TokenDto tokens = createTokens(authentication);
 //        System.out.println("tokens = " + tokens);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(logId, "", authorities);
-        System.out.println("TokenProvider.updateTokensByRefreshToken");
-        System.out.println("authenticationToken = " + authenticationToken);
-        return authenticationToken;
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(logId, "", authorities);
+//        System.out.println("TokenProvider.updateTokensByRefreshToken");
+//        System.out.println("authenticationToken = " + authenticationToken);
+        return authentication;
     }
 
 
@@ -184,6 +186,26 @@ public class TokenProvider implements InitializingBean {
 
         // 권한 정보들로 유저 객체 만들기
         User principal = new User(claims.getSubject(), "", authorities);//사용자식별정보, 패스워드, 권한정보
+
+        //유저객체, 토큰, 권한 객체로 Authentication 리턴
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+    public Authentication getAuthentication(String token, String logId){
+        // 토큰을 이용해 클레임 생성
+        Claims claims = Jwts.parserBuilder() //jwt 파싱 빌더 생성
+                .setSigningKey(key) //jwt 검증 키 설정
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        // 클레임에서 권한 정보 빼내기 클레임에서 auth 키에 해당하는 값을 가져오고 배열 만들기, SimpleGrantedAutority 객체로 매핑하기
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+        // 권한 정보들로 유저 객체 만들기
+        User principal = new User(logId, "", authorities);//사용자식별정보, 패스워드, 권한정보
 
         //유저객체, 토큰, 권한 객체로 Authentication 리턴
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
