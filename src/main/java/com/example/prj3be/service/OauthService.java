@@ -79,6 +79,7 @@ public class OauthService {
             // user로 role 지정
             member.setRole(Role.USER);
             member.setActivated(true);
+            member.setSocialLogin(true);
             // 회원 등록
             memberRepository.save(member);
         }
