@@ -9,11 +9,13 @@ import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -32,7 +34,6 @@ import java.time.LocalDate;
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
 
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
@@ -58,7 +59,7 @@ public class MemberController {
 
     // 회원 정보
     @GetMapping
-    public FindMemberDto method2() {
+    public ResponseEntity<FindMemberDto> method2() {
 //        System.out.println("token1 = " + token);
 //        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
 //             token = token.substring(7);
@@ -67,10 +68,12 @@ public class MemberController {
 //        else{
 //            return null;
 //        }
-        //TODO: 토큰 유효성 검증
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println("MemberController.method2");
-            System.out.println("authentication = " + authentication);
+        // access token Jwt Filter에서 SecurityContextHolder에 넣어줌
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("MemberController.method2");
+        System.out.println("authentication = " + authentication);
+        if(!authentication.getName().equals("anonymousUser")) {
+            System.out.println("authentication.getName() = " + authentication.getName());
             Member findMember = memberService.findMemberByLogId(authentication.getName());
             FindMemberDto dto = new FindMemberDto();
             dto.setLogId(findMember.getLogId());
@@ -80,12 +83,10 @@ public class MemberController {
             dto.setGender(findMember.getGender());
             dto.setRole(findMember.getRole());
 
-            return dto;
-            //TODO: 토큰이 만료된 경우 사용자가 보내온 refresh token과 DB의 refresh token을 비교하여 동일할 때 access token 재발급
+            return ResponseEntity.ok(dto);
+        }
 
-
-        //TODO: 새로운 access token과 refresh token 발급, access token이 만료 되었을 때 refresh token으로 재발급 받기
-
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @PutMapping("/edit/{id}")
