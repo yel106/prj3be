@@ -1,7 +1,6 @@
 package com.example.prj3be.jwt;
 
 import com.example.prj3be.domain.FreshToken;
-import com.example.prj3be.dto.LoginDto;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.repository.FreshTokenRepository;
 import com.example.prj3be.repository.MemberRepository;
@@ -19,9 +18,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,47 +123,16 @@ public class TokenProvider implements InitializingBean {
     //refresh 토큰을 이용해서 토큰들 재발급
     @Transactional
     public Authentication updateTokensByRefreshToken(String refreshToken){
-        System.out.println("refreshToken = " + refreshToken);
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
-        System.out.println("TokenProvider.updateTokensByRefreshToken");
-        System.out.println("logId = " + logId);
-        
-//        String role = memberRepository.findRoleByLogId(logId);
-//        System.out.println("role = " + role);
-//        List<GrantedAuthority> authority = Collections.singletonList(new SimpleGrantedAuthority(role));
+        System.out.println("TokenProvider.updateTokensByRefreshToken's logId = " + logId);
 
-        //TODO: role로 할 때는 괜찮음
-        //getAuthentication을 통해 User객체를 만들어낼 때는 userId가 필요하다->오버로딩
         Authentication authentication = getAuthentication(refreshToken, logId);
 
-
-//        UserDetails userDetails = memberDetailService.loadUserByUsername(logId);
-//        System.out.println("userDetails = " + userDetails);
-
-//        System.out.println("authority = " + authority);
-//
-//        User user = new User(logId, "", authority);
-//
-//        System.out.println("user = " + user);
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(logId, password);
-//        System.out.println("authenticationToken = " + authenticationToken);
-//
-//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        System.out.println("TokenProvider.updateTokensByRefreshToken");
-//        System.out.println("authentication = " + authentication);
-//
-//        TokenDto tokens = createTokens(authentication);
-//        System.out.println("tokens = " + tokens);
-
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(logId, "", authorities);
-//        System.out.println("TokenProvider.updateTokensByRefreshToken");
-//        System.out.println("authenticationToken = " + authenticationToken);
         return authentication;
     }
 
 
-    //토큰의 정보를 이용해 Authentication 객체 리턴
+    //엑세스 토큰의 정보를 이용해 Authentication 객체 리턴
     public Authentication getAuthentication(String token){
         // 토큰을 이용해 클레임 생성
         Claims claims = Jwts.parserBuilder() //jwt 파싱 빌더 생성
@@ -190,6 +156,8 @@ public class TokenProvider implements InitializingBean {
         //유저객체, 토큰, 권한 객체로 Authentication 리턴
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
+
+    // 리프레시 토큰의 정보를 이용해 Authentication 객체 리턴
     public Authentication getAuthentication(String token, String logId){
         // 토큰을 이용해 클레임 생성
         Claims claims = Jwts.parserBuilder() //jwt 파싱 빌더 생성

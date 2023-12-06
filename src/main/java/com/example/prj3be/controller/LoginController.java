@@ -40,22 +40,15 @@ public class LoginController {
 
     @GetMapping("/refreshToken")
     public TokenDto byRefreshToken(@RequestHeader("Authorization")String refreshToken){
-        System.out.println("LoginController.byRefreshToken");
-        System.out.println("refreshToken = " + refreshToken);
+        System.out.println("LoginController.byRefreshToken's refreshToken = " + refreshToken);
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
             refreshToken = refreshToken.substring(7);
         }
 
         Authentication authentication = tokenProvider.updateTokensByRefreshToken(refreshToken);
 
+        System.out.println("LoginController.byRefreshToken's authentication = " + authentication);
 
-//        UsernamePasswordAuthenticationToken authenticationToken =
-//                new UsernamePasswordAuthenticationToken(loginDto.getLogId(), "1234");
-
-        System.out.println("LoginController.byRefreshToken");
-        System.out.println("authentication = " + authentication);
-
-//          String jwt = tokenProvider.createToken(authentication);
         TokenDto tokens = tokenProvider.createTokens(authentication);
 
         return tokens;
