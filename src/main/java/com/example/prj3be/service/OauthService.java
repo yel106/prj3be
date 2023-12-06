@@ -2,10 +2,10 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.constant.Role;
 import com.example.prj3be.constant.SocialLoginType;
-import com.example.prj3be.controller.SocialOauth;
+import com.example.prj3be.controller.oauth.SocialOauth;
 import com.example.prj3be.domain.GetSocialOAuthRes;
 import com.example.prj3be.domain.Member;
-import com.example.prj3be.domain.SocialUser;
+import com.example.prj3be.dto.SocialUser;
 import com.example.prj3be.dto.SocialOauthToken;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.exception.OAuthException;
@@ -14,7 +14,6 @@ import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -64,6 +63,7 @@ public class OauthService {
         SocialOauthToken oAuthToken = socialOauth.getAccessToken(accessTokenResponse);
         ResponseEntity<String> userInfoResponse = socialOauth.requestUserInfo(oAuthToken);
         SocialUser socialUser = socialOauth.getUserInfo(userInfoResponse);
+        System.out.println("socialUser = " + socialUser);
 
         String name = socialUser.getName();
         String email = socialUser.getEmail();
@@ -79,7 +79,7 @@ public class OauthService {
             // user로 role 지정
             member.setRole(Role.USER);
             member.setActivated(true);
-            member.setSocialLogin(true);
+//            member.setSocialLogin(true); //소셜 로그인 계정이니 true
             // 회원 등록
             memberRepository.save(member);
         }
@@ -103,9 +103,10 @@ public class OauthService {
             httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
             System.out.println("httpHeaders = " + httpHeaders);
-            //JWT token 생성하고 그 토큰을 GetSocialOAuthRes에 저장
-            TokenDto tokenDto = new TokenDto(jwt);
-            GetSocialOAuthRes oAuthRes = new GetSocialOAuthRes(tokenDto.getToken(), member.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+            //httpHeader에 jwtToken 저장
+            //client 쪽 로컬 스토리지에 소셜 토큰 관련 정보 저장하기 위해 필요한 정보들 dto로 묶어서 전송
+            //소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in
+            GetSocialOAuthRes oAuthRes = new GetSocialOAuthRes(jwt, member.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
             System.out.println("oAuthRes = " + oAuthRes);
             return oAuthRes;
         } catch (AuthenticationException e){

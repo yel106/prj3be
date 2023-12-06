@@ -1,4 +1,4 @@
-package com.example.prj3be.controller;
+package com.example.prj3be.controller.oauth;
 
 import com.example.prj3be.constant.SocialLoginType;
 import com.example.prj3be.domain.GetSocialOAuthRes;
@@ -40,6 +40,8 @@ public class OauthController {
 
         return ResponseEntity.ok(oAuthRes);
     }
+
+//    @GetMapping()
 
     @ExceptionHandler(OAuthException.class)
     public ResponseEntity<String> oAuthExceptionHandleer(OAuthException e) {

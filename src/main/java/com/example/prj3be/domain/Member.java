@@ -38,9 +38,6 @@ public class Member extends BaseTimeEntity{
     @Column(name="activated")
     private Boolean activated;
 
-    @Column(name = "social_login", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean socialLogin;
-
     @ManyToMany
     @JoinTable(
             name="member_authority",
@@ -49,6 +46,6 @@ public class Member extends BaseTimeEntity{
     )
     private Set<Authority> authorities;
     public Member() {
-        this.socialLogin = false;
+
     }
 }

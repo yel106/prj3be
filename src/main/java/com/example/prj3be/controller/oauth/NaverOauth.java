@@ -1,6 +1,6 @@
-package com.example.prj3be.controller;
+package com.example.prj3be.controller.oauth;
 
-import com.example.prj3be.domain.SocialUser;
+import com.example.prj3be.dto.SocialUser;
 import com.example.prj3be.dto.SocialOauthToken;
 import com.example.prj3be.exception.OAuthException;
 import com.fasterxml.jackson.core.JsonProcessingException;
