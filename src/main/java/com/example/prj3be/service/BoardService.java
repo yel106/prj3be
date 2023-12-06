@@ -153,7 +153,12 @@ public class BoardService {
         if (boardById.isPresent()) {
             Board board1 = boardById.get();
             board1.setTitle(updateBoard.getTitle());
+            board1.setArtist(updateBoard.getArtist());
             board1.setPrice(updateBoard.getPrice());
+            board1.setReleaseDate(updateBoard.getReleaseDate());
+            board1.setContent(updateBoard.getContent());
+
+//            앨범 포멧은 변경할 수 없는 걸로 해서 추가 안했어요.
         }
     }
 
