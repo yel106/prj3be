@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -148,7 +149,7 @@ public class BoardService {
         return boardRepository.findById(id);
     }
 
-    public void update(Long id, Board updateBoard) {
+    public Board update(Long id, Board updateBoard) {
         Optional<Board> boardById = boardRepository.findById(id);
         if (boardById.isPresent()) {
             Board board1 = boardById.get();
@@ -159,7 +160,23 @@ public class BoardService {
             board1.setContent(updateBoard.getContent());
 
 //            앨범 포멧은 변경할 수 없는 걸로 해서 추가 안했어요.
+            return boardRepository.save(board1);
         }
+        return null;
+    }
+
+    public void update(Long id, Board updateBboard, MultipartFile uploadFiles) throws IOException {
+        Board updatedBoard = update(id, updateBboard);
+        boardFileRepository.deleteBoardFileByBoardId(id);
+
+        BoardFile boardFile = new BoardFile();
+        String url = urlPrefix + "prj3/"+ id +"/" + uploadFiles.getOriginalFilename();
+        boardFile.setFileName(uploadFiles.getOriginalFilename());
+        boardFile.setFileUrl(url);
+        boardFile.setBoard(updatedBoard);
+        boardFileRepository.save(boardFile);    //boardFile 테이블에 files 정보(fileName, fileUrl) 저장
+        upload(uploadFiles, id);
+
     }
 
     public void delete(Long id) {
@@ -170,6 +187,7 @@ public class BoardService {
     public List<String> getBoardURL(Long id) {
         return boardFileRepository.findFileUrlsByBoardId(id);
     }
+
 
 //    public void save(Board saveBoard, String imageURL) {
 //        saveBoard.setImageURL(imageURL);

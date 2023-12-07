@@ -62,8 +62,18 @@ public class BoardController {
 
 
     @PutMapping("/edit/{id}")
-    public void update(@PathVariable Long id, @RequestBody Board updateBboard) {
-        boardService.update(id, updateBboard);
+    public void update(@PathVariable Long id,
+                       Board updateBboard,
+                       @RequestParam(value = "uploadFiles", required = false) MultipartFile uploadFiles) throws IOException {
+        System.out.println("updateBboard = " + updateBboard);
+        System.out.println("uploadFiles = " + uploadFiles);
+
+        if (uploadFiles == null) {
+            boardService.update(id, updateBboard);
+
+        } else {
+            boardService.update(id, updateBboard, uploadFiles);
+        }
     }
 
     @DeleteMapping("remove/{id}")
