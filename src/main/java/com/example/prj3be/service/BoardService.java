@@ -1,8 +1,6 @@
 package com.example.prj3be.service;
 
-import com.example.prj3be.domain.Board;
-import com.example.prj3be.domain.BoardFile;
-import com.example.prj3be.domain.QBoard;
+import com.example.prj3be.domain.*;
 import com.example.prj3be.repository.BoardFileRepository;
 import com.example.prj3be.repository.BoardRepository;
 import com.querydsl.core.BooleanBuilder;
@@ -22,6 +20,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.example.prj3be.domain.QAlbumGenre.albumGenre;
+import static com.example.prj3be.domain.QBoard.board;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -38,18 +39,56 @@ public class BoardService {
     private final S3Client s3;
 
 
-    public Page<Board> boardListAll(Pageable pageable, String category, String keyword) {
+    public Page<Board> boardListAll(Pageable pageable, String category, String[] genre, String keyword) {
         QBoard board = QBoard.board;
         BooleanBuilder builder = new BooleanBuilder();
 
-        /* TODO: 카테고리 분류 추가하기*/
         if (category != null && keyword != null) {
             if ("all".equals(category)) {
                 builder.and(board.title.containsIgnoreCase(keyword));
             } else if ("CD".equals(category)) {
+                builder.and(board.albumFormat.eq(AlbumFormat.CD));
+                builder.and(board.title.containsIgnoreCase(keyword));
+            } else if ("vinyl".equals(category)) {
+                builder.and(board.albumFormat.eq(AlbumFormat.VINYL));
+                builder.and(board.title.containsIgnoreCase(keyword));
+            } else if ("cassettetape".equals(category)) {
+                builder.and(board.albumFormat.eq(AlbumFormat.CASSETTETAPE));
                 builder.and(board.title.containsIgnoreCase(keyword));
             }
+
         }
+
+//         any(): List컬렉션 내의 요소들에 대한 조건 설정
+//        if (!genre.isEmpty()) {
+//            if ("all".equals(genre)) {
+//                builder.and(board.title.containsIgnoreCase(keyword));
+//            } else if ("INDIE".equals(genre)) {
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
+//            } else if ("OST".equals(genre)) {
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
+//            } else if ("K_POP".equals(genre)) {
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
+//            } else if ("POP".equals(genre)) {
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
+//            }
+//        }
+
+        if (genre != null) {
+            if ("all".equals(genre)) {
+                builder.and(board.title.containsIgnoreCase(keyword));
+            } else if ("INDIE".equals(genre)) {
+                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
+            } else if ("OST".equals(genre)) {
+                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
+            } else if ("K_POP".equals(genre)) {
+                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
+            } else if ("POP".equals(genre)) {
+                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
+            }
+        }
+
+
 
         Predicate predicate = builder.hasValue() ? builder.getValue() : null; //삼항연산자
 
@@ -59,21 +98,6 @@ public class BoardService {
             return boardRepository.findAll(pageable);
         }
     }
-
-//    private Predicate createPredicate(String category, String keyword, QBoard board) {
-//        BooleanBuilder builder = new BooleanBuilder();
-//
-//        if( keyword != null && !keyword.trim().isEmpty()) {
-//            builder.and(board.title.containsIgnoreCase(keyword));
-//        }
-
-
-//        if(!"all".equals(category)) {
-//            builder.and(board.title.containsIgnoreCase(keyword));
-//        }
-//        return builder;
-//    }
-
 
     public void save(Board board, MultipartFile[] files, BoardFile boardFile) throws IOException {
 

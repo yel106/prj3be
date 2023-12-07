@@ -1,6 +1,7 @@
 package com.example.prj3be.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -40,9 +41,11 @@ public class Board {
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board")
+    private List<AlbumGenre> albumGenres = new ArrayList<>();
 
-    /* 생성자 추가 해야함*/
-    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, Long stockQuantity, List<Comment> comments) {
+
+    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, Long stockQuantity, List<Comment> comments, List<AlbumGenre> albumGenres) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -52,5 +55,6 @@ public class Board {
         this.releaseDate = releaseDate;
         this.stockQuantity = stockQuantity;
         this.comments = comments;
+        this.albumGenres = albumGenres;
     }
 }

@@ -24,12 +24,13 @@ public class BoardController {
     public Page<Board> list(Pageable pageable,
                             @RequestParam Map<String, Object> params,
                             @RequestParam(value = "c", defaultValue = "all") String category,
+                            @RequestParam(value="g", defaultValue = "all") String[] genre,
                             @RequestParam(value = "k", defaultValue = "") String keyword) {
         System.out.println("pageable = " + pageable);
         System.out.println("params = " + params);
 
 
-        Page<Board> boardListPage = boardService.boardListAll(pageable, category, keyword);
+        Page<Board> boardListPage = boardService.boardListAll(pageable, category, genre, keyword);
         return boardListPage;
     }
 

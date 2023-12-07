@@ -24,7 +24,7 @@ public class CommentService {
     }
 
     public Comment write(Map<String, Object> map) {
-        Comment comment = new Comment(null, map.get("content").toString(), new Board(Long.valueOf(map.get("boardId").toString()), null, null, null, null, null, null, null, null));
+        Comment comment = new Comment(null, map.get("content").toString(), new Board(Long.valueOf(map.get("boardId").toString()), null, null, null, null, null, null, null, null, null));
         return commentRepository.save(comment);
     }
 

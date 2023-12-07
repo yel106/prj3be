@@ -24,6 +24,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final EnumPath<AlbumFormat> albumFormat = createEnum("albumFormat", AlbumFormat.class);
 
+    public final ListPath<AlbumGenre, QAlbumGenre> albumGenres = this.<AlbumGenre, QAlbumGenre>createList("albumGenres", AlbumGenre.class, QAlbumGenre.class, PathInits.DIRECT2);
+
     public final StringPath artist = createString("artist");
 
     public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
