@@ -4,11 +4,14 @@ import com.example.prj3be.domain.AlbumDetail;
 import com.example.prj3be.domain.AlbumGenre;
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.repository.AlbumGenreRepository;
+import com.example.prj3be.repository.BoardRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
 
 //@DataJpaTest
 @SpringBootTest
@@ -18,35 +21,17 @@ public class AlbumGereRepositoryTest {
 
     @Autowired
     private AlbumGenreRepository repository;
+    @Autowired
+    private BoardRepository boardRepository;
 
     @Test
     public void method1() {
-        AlbumGenre genre = new AlbumGenre();
-        genre.setAlbumDetail(AlbumDetail.K_POP);
-        Board b = new Board();
-        b.setId(4413L);
-        genre.setBoard(b);
-        repository.save(genre);
-
-        AlbumGenre genre1 = new AlbumGenre();
-        genre.setAlbumDetail(AlbumDetail.POP);
-//        b.setId(4413L);
-        genre.setBoard(b);
-        repository.save(genre1);
-
-//        AlbumGenre genre2 = new AlbumGenre();
-//        genre.setAlbumDetail(AlbumDetail.K_POP);
-//        genre.setBoard(b);
-//        repository.save(genre2);
-//
-//        genre2 = new AlbumGenre();
-//        genre.setAlbumDetail(AlbumDetail.K_POP);
-//        genre.setBoard(b);
-//        repository.save(genre2);
-//
-//        genre2 = new AlbumGenre();
-//        genre.setAlbumDetail(AlbumDetail.INDIE);
-//        genre.setBoard(b);
-//        repository.save(genre2);
+        Optional<Board> byId = boardRepository.findById(4404L);
+        Board bts = byId.orElseThrow();
+        AlbumGenre genre2 = new AlbumGenre();
+        genre2.setId(79L);
+        genre2.setBoard(bts);
+        genre2.setAlbumDetail(AlbumDetail.K_POP);
+        repository.save(genre2);
     }
 }
