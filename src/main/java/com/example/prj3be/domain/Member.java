@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="member")
@@ -34,11 +35,16 @@ public class Member extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     private Role role; //ADMIN,USER
 
-    //order에 일대다 연관관계 매핑
-    @OneToMany(mappedBy = "member")
-    private List<Order> orders = new ArrayList<Order>();
+    @Column(name="activated")
+    private Boolean activated;
 
+//    @ManyToMany
+//    @JoinTable(
+//            name="member_authority",
+//            joinColumns = {@JoinColumn(name="member_id", referencedColumnName = "member_id")},
+//            inverseJoinColumns = {@JoinColumn(name="authority_name", referencedColumnName = "authority_name")}
+//    )
+//    private Set<Authority> authorities;
     public Member() {
     }
-
 }
