@@ -41,7 +41,6 @@ public class OauthController {
         return ResponseEntity.ok(oAuthRes);
     }
 
-//    @GetMapping()
 
     @ExceptionHandler(OAuthException.class)
     public ResponseEntity<String> oAuthExceptionHandleer(OAuthException e) {

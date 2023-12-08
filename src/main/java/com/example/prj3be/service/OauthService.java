@@ -101,14 +101,21 @@ public class OauthService {
 
             System.out.println("jwt = " + tokens);
 
+            //httpHeader에 jwtToken 저장
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens);
 
             System.out.println("httpHeaders = " + httpHeaders);
-            //httpHeader에 jwtToken 저장
-            //client 쪽 로컬 스토리지에 소셜 토큰 관련 정보 저장하기 위해 필요한 정보들 dto로 묶어서 전송
-            //소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in
-            GetSocialOAuthRes oAuthRes = new GetSocialOAuthRes(tokens.getAccessToken(), member.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+
+            //SocialLoginTokens에 소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in 저장
+            GetSocialOAuthRes oAuthRes = new GetSocialOAuthRes();
+            oAuthRes.setLogId(name);
+            oAuthRes.setSocialLoginType(socialLoginType);
+            oAuthRes.setAccessToken(oAuthToken.getAccess_token());
+            oAuthRes.setRefreshToken(oAuthToken.getRefresh_token());
+            oAuthRes.setExpiresIn(oAuthToken.getExpires_in());
+            oAuthRes.setTokenType(oAuthToken.getToken_type());
+
             System.out.println("oAuthRes = " + oAuthRes);
             return oAuthRes;
         } catch (AuthenticationException e){
