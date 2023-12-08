@@ -6,6 +6,7 @@ import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.jwt.TokenProvider;
+//import com.example.prj3be.dto.SocialMemberDto;
 import com.example.prj3be.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +57,14 @@ public class MemberController {
         member.setActivated(true);
         memberService.signup(member);
     }
+//    @PostMapping("add/social")
+//    public void socialMethod(@Validated @RequestBody SocialMemberDto dto){
+//        Member member = new Member();
+//        member.setName(dto.getName());
+//        member.setEmail(dto.getEmail());
+//        member.setRole(Role.USER);
+//        memberService.signup(member);
+//    }
 
     // 회원 정보
     @GetMapping

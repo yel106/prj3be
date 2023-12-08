@@ -4,6 +4,7 @@ import com.example.prj3be.domain.Member;
 import com.example.prj3be.domain.QMember;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.repository.MemberRepository;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Optional;
 
 @Service
@@ -43,11 +43,11 @@ public class MemberService {
         member.setEmail(dto.getEmail());
         member.setAddress(dto.getAddress());
     }
+
     public String getEmail(String email) {
         return memberRepository.findEmailByEmail(email)
                 .orElse(null);
     }
-
     public String getLogId(String logId) {
         return memberRepository.findLogIdByLogId(logId)
                 .orElse(null);
@@ -55,18 +55,23 @@ public class MemberService {
 
     public Page<Member> findMemberList(Pageable pageable,String keyword,String category) {
         QMember member = QMember.member;
-        Predicate predicate = createPredicate(keyword, category, member);
+        BooleanBuilder builder = new BooleanBuilder();
 
-        return memberRepository.findAll(predicate, pageable);
-    }
-
-    private Predicate createPredicate(String keyword, String category, QMember member) {
-        if ("all".equals(category)) {
-            return member.name.containsIgnoreCase(keyword);
-        } else if ("logId".equals(category)) {
-            return member.logId.containsIgnoreCase(keyword);
+        if (category != null && keyword != null) {
+            if ("all".equals(category)) {
+                builder.and(member.name.containsIgnoreCase(keyword));
+            } else if ("logId".equals(category)) {
+                builder.and(member.logId.containsIgnoreCase(keyword));
+            }
         }
-        return null;
+        Predicate predicate = builder.hasValue() ? builder.getValue() : null;
+
+        if (predicate != null) {
+            return memberRepository.findAll(predicate, pageable);
+        } else {
+             return memberRepository.findAll(pageable);
+        }
     }
+
 
 }
