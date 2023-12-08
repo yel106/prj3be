@@ -5,23 +5,14 @@ import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
-import com.example.prj3be.jwt.TokenProvider;
+import com.example.prj3be.dto.SocialMemberDto;
 import com.example.prj3be.service.MemberService;
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -33,13 +24,11 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
-
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
         Member member = new Member();
         member.setLogId(dto.getLogId());
-        member.setPassword(passwordEncoder.encode(dto.getPassword()));
+        member.setPassword(dto.getPassword());
         member.setName(dto.getName());
         member.setEmail(dto.getEmail());
         if (dto.getFirstDigit()== 1 || dto.getFirstDigit()== 3) {
@@ -53,42 +42,29 @@ public class MemberController {
         member.setAddress(dto.getAddress());
         Role role = Role.valueOf(String.valueOf(dto.getRole()));
         member.setRole(role);
-        member.setActivated(true);
+        memberService.signup(member);
+    }
+    @PostMapping("add/social")
+    public void socialMethod(@Validated @RequestBody SocialMemberDto dto){
+        Member member = new Member();
+        member.setName(dto.getName());
+        member.setEmail(dto.getEmail());
+        member.setRole(Role.USER);
         memberService.signup(member);
     }
 
-    // 회원 정보
-    @GetMapping
-    public ResponseEntity<FindMemberDto> method2() {
-//        System.out.println("token1 = " + token);
-//        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
-//             token = token.substring(7);
-//             System.out.println("token2 = " + token);
-//        }
-//        else{
-//            return null;
-//        }
-        // access token Jwt Filter에서 SecurityContextHolder에 넣어줌
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("MemberController.method2");
-        System.out.println("authentication = " + authentication);
-        if(!authentication.getName().equals("anonymousUser")) {
-            System.out.println("authentication.getName() = " + authentication.getName());
-            Member findMember = memberService.findMemberByLogId(authentication.getName());
-            FindMemberDto dto = new FindMemberDto();
-            dto.setLogId(findMember.getLogId());
-            dto.setName(findMember.getName());
-            dto.setAddress(findMember.getAddress());
-            dto.setEmail(findMember.getEmail());
-            dto.setGender(findMember.getGender());
-            dto.setRole(findMember.getRole());
-
-            return ResponseEntity.ok(dto);
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @GetMapping("{id}")
+    public FindMemberDto method2(@PathVariable Long id) {
+        Member findMember = memberService.findMemberById(id);
+        FindMemberDto dto = new FindMemberDto();
+        dto.setLogId(findMember.getLogId());
+        dto.setName(findMember.getName());
+        dto.setAddress(findMember.getAddress());
+        dto.setEmail(findMember.getEmail());
+        dto.setGender(findMember.getGender());
+        dto.setRole(findMember.getRole());
+        return dto;
     }
-
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
             memberService.update(id,dto);
