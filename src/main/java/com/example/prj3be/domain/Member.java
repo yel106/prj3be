@@ -18,7 +18,7 @@ import java.util.Set;
 public class Member extends BaseTimeEntity{
     @Id
     @Column(name="member_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String logId; //로그인용 아이디
     private String password;
@@ -38,13 +38,13 @@ public class Member extends BaseTimeEntity{
     @Column(name="activated")
     private Boolean activated;
 
-    @ManyToMany
-    @JoinTable(
-            name="member_authority",
-            joinColumns = {@JoinColumn(name="member_id", referencedColumnName = "member_id")},
-            inverseJoinColumns = {@JoinColumn(name="authority_name", referencedColumnName = "authority_name")}
-    )
-    private Set<Authority> authorities;
+//    @ManyToMany
+//    @JoinTable(
+//            name="member_authority",
+//            joinColumns = {@JoinColumn(name="member_id", referencedColumnName = "member_id")},
+//            inverseJoinColumns = {@JoinColumn(name="authority_name", referencedColumnName = "authority_name")}
+//    )
+//    private Set<Authority> authorities;
     public Member() {
 
     }
