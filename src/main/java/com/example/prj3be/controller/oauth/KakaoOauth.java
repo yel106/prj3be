@@ -52,6 +52,19 @@ public class KakaoOauth implements SocialOauth {
     }
 
     @Override
+    public String getOauthRefreshURL() {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.set("grant_type", "refresh_token");
+        queryParams.set("client_id", KAKAO_SNS_CLIENT_ID);
+        queryParams.set("refresh_token", "@@@@@@"); //TODO: fix
+
+        return UriComponentsBuilder
+                .fromUriString(KAKAO_SNS_TOKEN_URI)
+                .queryParams(queryParams)
+                .encode().build().toString();
+    }
+
+    @Override
     public ResponseEntity<String> requestAccessToken(String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE));

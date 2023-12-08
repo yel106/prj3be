@@ -57,6 +57,19 @@ public class NaverOauth implements SocialOauth {
     }
 
     @Override
+    public String getOauthRefreshURL() {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.set("grant_type", "refresh_token");
+        queryParams.set("client_id", NAVER_SNS_CLIENT_ID);
+        queryParams.set("client_secret", NAVER_SNS_CLIENT_SECRET);
+        queryParams.set("refresh_token", "@@@@@@@@"); //TODO: fix
+        return UriComponentsBuilder
+                .fromUriString(NAVER_SNS_TOKEN_URI)
+                .queryParams(queryParams)
+                .encode().build().toString();
+    }
+
+    @Override
     public ResponseEntity<String> requestAccessToken(String code) {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         try {

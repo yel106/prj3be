@@ -48,6 +48,20 @@ public class GoogleOauth implements SocialOauth {
     }
 
     @Override
+    public String getOauthRefreshURL() {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.set("client_id", GOOGLE_SNS_CLIENT_ID);
+        queryParams.set("client_secret", GOOGLE_SNS_CLIENT_SECRET);
+        queryParams.set("refresh_token", "@@@@@@"); //TODO: fix
+        queryParams.set("grant_type", "refresh_token");
+
+        return UriComponentsBuilder
+                .fromUriString(GOOGLE_SNS_TOKEN_BASE_URL)
+                .queryParams(queryParams)
+                .encode().build().toString();
+    }
+
+    @Override
     public ResponseEntity<String> requestAccessToken(String code) {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.set("code", code);

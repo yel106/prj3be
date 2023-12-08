@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface SocialOauth {
     String getOauthRedirectURL();
+    String getOauthRefreshURL();
     ResponseEntity<String> requestAccessToken(String code);
     SocialOauthToken getAccessToken(ResponseEntity<String> response) throws JsonProcessingException;
     ResponseEntity<String> requestUserInfo(SocialOauthToken oauthToken);
