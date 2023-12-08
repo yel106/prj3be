@@ -12,7 +12,6 @@ import lombok.Setter;
 public class AlbumGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "albumGenre_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)

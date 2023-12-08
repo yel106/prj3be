@@ -1,6 +1,7 @@
 package com.example.prj3be.service;
 
 import com.example.prj3be.domain.*;
+
 import com.example.prj3be.repository.BoardFileRepository;
 import com.example.prj3be.repository.BoardRepository;
 import com.querydsl.core.BooleanBuilder;
@@ -28,7 +29,7 @@ import static com.example.prj3be.domain.QBoard.board;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
@@ -63,33 +64,33 @@ public class BoardService {
         }
 
 //         any(): List컬렉션 내의 요소들에 대한 조건 설정
-//        if (!genre.isEmpty()) {
-//            if ("all".equals(genre)) {
-//                builder.and(board.title.containsIgnoreCase(keyword));
-//            } else if ("INDIE".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
-//            } else if ("OST".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
-//            } else if ("K_POP".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
-//            } else if ("POP".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
-//            }
-//        }
-
-        if (genre != null) {
+//        if (!genre.) {
             if ("all".equals(genre)) {
                 builder.and(board.title.containsIgnoreCase(keyword));
             } else if ("INDIE".equals(genre)) {
-                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
+                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
             } else if ("OST".equals(genre)) {
-                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
+                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
             } else if ("K_POP".equals(genre)) {
-                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
+                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
             } else if ("POP".equals(genre)) {
-                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
+                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
             }
-        }
+//        }
+
+//        if (genre != null) {
+//            if ("all".equals(genre)) {
+//                builder.and(board.title.containsIgnoreCase(keyword));
+//            } else if ("INDIE".equals(genre)) {
+//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
+//            } else if ("OST".equals(genre)) {
+//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
+//            } else if ("K_POP".equals(genre)) {
+//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
+//            } else if ("POP".equals(genre)) {
+//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
+//            }
+//        }
 
         Predicate predicate = builder.hasValue() ? builder.getValue() : null; //삼항연산자
 
@@ -116,7 +117,7 @@ public class BoardService {
 
 
     public void save(Board board, MultipartFile[] files) throws IOException {
-
+        board.setId(10L);
         boardRepository.save(board); //jpa의 save()메소드엔 파일을 넣지 못함
 
         Long id = board.getId();
@@ -155,20 +156,20 @@ public class BoardService {
         Optional<Board> board = boardRepository.findById(id);
 
         //파일 table에서 id로 파일명을 알아온 후에 boadFiles에 집어넣음
-        Optional<BoardFile> boardFiles = boardFileRepository.findById(id);
+//        Optional<BoardFile> boardFiles = boardFileRepository.findById(id);
 
         //Optional은 foreach 사용 불가. Optional은 set메소드 이용해서 내부의 값 직접 설정할수 없음
         // optional -> get메소드
-        if (boardFiles.isPresent()) {
-            BoardFile boardFile1 = boardFiles.get(); //보드 파일이 존재한다면 파일에 있는걸 boardFile1에 넣음
-            String url = urlPrefix + "prj3/"+ id +"/" + boardFile1.getFileName(); //보드파일1의 파일name을 url에 넣음
-            boardFile1.setFileUrl(url); //boardFile1에 setter로 FileUrl필드에 url값을 집어넣음
-            String fileUrl = boardFile1.getFileUrl();  //boardFile에 들어간 url값을 fileUrl변수에 넣음
-            return fileUrl;
-        } else {
-            return null;
-        }
-
+//        if (boardFiles.isPresent()) {
+//            BoardFile boardFile1 = boardFiles.get(); //보드 파일이 존재한다면 파일에 있는걸 boardFile1에 넣음
+//            String url = urlPrefix + "prj3/"+ id +"/" + boardFile1.getFileName(); //보드파일1의 파일name을 url에 넣음
+//            boardFile1.setFileUrl(url); //boardFile1에 setter로 FileUrl필드에 url값을 집어넣음
+//            String fileUrl = boardFile1.getFileUrl();  //boardFile에 들어간 url값을 fileUrl변수에 넣음
+//            return fileUrl;
+//        } else {
+//            return null;
+//        }
+        return "ddd";
     }
 
     public Optional<Board> getBoardById(Long id) {
@@ -193,7 +194,7 @@ public class BoardService {
 
     public void update(Long id, Board updateBboard, MultipartFile uploadFiles) throws IOException {
         Board updatedBoard = update(id, updateBboard);
-        boardFileRepository.deleteBoardFileByBoardId(id);
+//        boardFileRepository.deleteBoardFileByBoardId(id);
 
         BoardFile boardFile = new BoardFile();
         String url = urlPrefix + "prj3/"+ id +"/" + uploadFiles.getOriginalFilename();
@@ -215,7 +216,7 @@ public class BoardService {
     }
 
 
-    public BoardService(BoardRepository boardRepository, BoardFileRepository boardFileRepository, S3Client s3){
+    public BoardService(BoardRepository boardRepository,BoardFileRepository boardFileRepository, S3Client s3){
         this.boardRepository = boardRepository;
         this.boardFileRepository = boardFileRepository;
         this.s3 = s3;

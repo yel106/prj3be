@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @RequestMapping("/api/board")
 public class BoardController {
     private final BoardService boardService;
@@ -38,25 +38,31 @@ public class BoardController {
     }
 
 
+//    @PostMapping("add")
+//    //파일 추가할때 @RequestBody X
+//    public void add(@Validated Board saveBoard,
+//                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
+//                    BoardFile boardFile) throws IOException {
+//
+//        boardService.save(saveBoard, files, boardFile);
+//    }
+
+
     @PostMapping("add")
-    //파일 추가할때 @RequestBody X
     public void add(@Validated Board saveBoard,
-                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
-                    BoardFile boardFile) throws IOException {
-
-        boardService.save(saveBoard, files, boardFile);
-    }
-
-
-    @GetMapping("id/{id}")
-    public Optional<Board> get(@PathVariable Long id) {
-        return boardService.getBoardById(id);
+                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
+        System.out.println(saveBoard);
+        boardService.save(saveBoard, files);
     }
 
     //희연이 코드
+//    @GetMapping("id/{id}")
+//    public Board get(@PathVariable Long id) {
+//        return boardService.getBoardById(id).orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+//    }
     @GetMapping("id/{id}")
-    public Board get(@PathVariable Long id) {
-        return boardService.getBoardById(id).orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+    public Optional<Board> get(@PathVariable Long id) {
+        return boardService.getBoardById(id);
     }
 
     @PutMapping("/edit/{id}")
@@ -80,12 +86,7 @@ public class BoardController {
     }
 
 
-    @PostMapping("add")
-    public void add(@Validated Board saveBoard,
-                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
-        System.out.println(saveBoard);
-        boardService.save(saveBoard, files);
-    }
+
 
     @GetMapping("file/id/{id}")
     public List<String> getURL(@PathVariable Long id) {

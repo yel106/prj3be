@@ -69,11 +69,9 @@ public class Board {
         this.agency = agency;
         this.releaseDate = releaseDate;
         this.stockQuantity = stockQuantity;
-        this.comments = comments;
-        this.albumGenres = albumGenres;
+//        this.comments = comments;
+//        this.albumGenres = albumGenres;
 
     }
-    public String getFileName() {
-        return this.fileName;
-    }
+
 }
