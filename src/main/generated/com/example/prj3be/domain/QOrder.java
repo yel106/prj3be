@@ -28,6 +28,14 @@ public class QOrder extends EntityPathBase<Order> {
 
     public final QMember member;
 
+    public final StringPath itemName = createString("itemName");
+
+    public final StringPath orderUid = createString("orderUid");
+
+    public final QPayment payment;
+
+    public final NumberPath<Long> price = createNumber("price", Long.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
 
@@ -53,6 +61,10 @@ public class QOrder extends EntityPathBase<Order> {
     public QOrder(Class<? extends Order> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new QMember(forProperty("member")) : null;
+<<<<<<< HEAD
+=======
+        this.payment = inits.isInitialized("payment") ? new QPayment(forProperty("payment"), inits.get("payment")) : null;
+>>>>>>> origin/master
     }
 
 }

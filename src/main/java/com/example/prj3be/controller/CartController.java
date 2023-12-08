@@ -2,7 +2,7 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.dto.CartInfoDto;
 import com.example.prj3be.dto.CartItemDto;
-//import com.example.prj3be.service.CartService;
+import com.example.prj3be.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartController {
 //    private final CartService cartService;
-//
+
 //    @PostMapping(value="/cart")
 //    public @ResponseBody ResponseEntity order(@RequestBody @Valid CartItemDto cartItemDto,
 //                                              BindingResult bindingResult, Principal principal) {

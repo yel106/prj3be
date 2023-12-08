@@ -27,9 +27,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2'
 
-    //security
+//    //security
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
-    //Oauth2
+//    //Oauth2
 //    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
     compileOnly 'org.projectlombok:lombok'
@@ -40,7 +40,6 @@ dependencies {
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.2'
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-
     //Querydsl추가
     implementation'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor"com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
