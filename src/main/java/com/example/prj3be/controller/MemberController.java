@@ -5,6 +5,7 @@ import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
+import com.example.prj3be.dto.SocialMemberDto;
 import com.example.prj3be.service.MemberService;
 import lombok.RequiredArgsConstructor;
 
@@ -41,6 +42,14 @@ public class MemberController {
         member.setAddress(dto.getAddress());
         Role role = Role.valueOf(String.valueOf(dto.getRole()));
         member.setRole(role);
+        memberService.signup(member);
+    }
+    @PostMapping("add/social")
+    public void socialMethod(@Validated @RequestBody SocialMemberDto dto){
+        Member member = new Member();
+        member.setName(dto.getName());
+        member.setEmail(dto.getEmail());
+        member.setRole(Role.USER);
         memberService.signup(member);
     }
 
