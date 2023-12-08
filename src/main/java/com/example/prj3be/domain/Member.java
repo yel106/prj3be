@@ -46,5 +46,6 @@ public class Member extends BaseTimeEntity{
 //    )
 //    private Set<Authority> authorities;
     public Member() {
+
     }
 }
