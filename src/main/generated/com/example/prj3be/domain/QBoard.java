@@ -20,13 +20,31 @@ public class QBoard extends EntityPathBase<Board> {
 
     public static final QBoard board = new QBoard("board");
 
+    public final StringPath agency = createString("agency");
+
+    public final EnumPath<AlbumFormat> albumFormat = createEnum("albumFormat", AlbumFormat.class);
+
+    public final StringPath artist = createString("artist");
+
+    public final ListPath<BoardFile, QBoardFile> boardFiles = this.<BoardFile, QBoardFile>createList("boardFiles", BoardFile.class, QBoardFile.class, PathInits.DIRECT2);
+
+    public final StringPath category = createString("category");
+
     public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
 
     public final StringPath content = createString("content");
 
+    public final StringPath fileName = createString("fileName");
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final ListPath<Item, QItem> items = this.<Item, QItem>createList("items", Item.class, QItem.class, PathInits.DIRECT2);
+    public final StringPath price = createString("price");
+
+    public final DatePath<java.time.LocalDate> releaseDate = createDate("releaseDate", java.time.LocalDate.class);
+
+    public final NumberPath<Long> stockQuantity = createNumber("stockQuantity", Long.class);
+
+    public final StringPath title = createString("title");
 
     public QBoard(String variable) {
         super(Board.class, forVariable(variable));

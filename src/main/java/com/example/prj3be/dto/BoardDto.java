@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.LocalDate;
-@Data
-public class ItemFormDto {
 
+@Data
+public class BoardDto {
     @NotBlank(message = "Register Album Title")
     private String Title;
     @NotBlank(message = "Input the Artist's Name")
@@ -17,12 +17,12 @@ public class ItemFormDto {
     @NotBlank(message = "Where is the album released?")
     private String Agency;
     @NotBlank(message = "What is the type of album?")
-    private AlbumFormat AlbumFormat;
-    @NotBlank(message = "" )
-    private String fileUrl;
+    private com.example.prj3be.domain.AlbumFormat AlbumFormat;
     @NotBlank(message = "Register Price of product")
     private String Price;
+    @NotBlank(message = "" )
+    private String fileUrl;
+    @NotBlank(message = "Album Introduction")
+    private String content;
 
 }
-
-
