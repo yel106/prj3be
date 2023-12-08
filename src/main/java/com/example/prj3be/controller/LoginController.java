@@ -35,7 +35,7 @@ public class LoginController {
     private final LoginService loginService;
 //    private final LoginProvider loginProvider;
 
-    @Value("${button.image.url}")
+    @Value("${image.file.prefix}")
     private String socialButtonImagePrefix;
 
     @GetMapping("/refreshToken")
