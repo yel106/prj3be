@@ -21,6 +21,8 @@ public class BoardDto {
     @NotBlank(message = "Register Price of product")
     private String Price;
     @NotBlank(message = "" )
-    private String imageUrl;
+    private String fileUrl;
+    @NotBlank(message = "Album Introduction")
+    private String content;
 
 }

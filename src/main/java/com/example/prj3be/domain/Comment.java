@@ -1,5 +1,6 @@
 package com.example.prj3be.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class Comment {
     private String content;
 
     @JsonIgnore
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
@@ -31,7 +33,4 @@ public class Comment {
         this.content = content;
         this.board = board;
     }
-
-
-
 }

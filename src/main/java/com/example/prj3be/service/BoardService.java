@@ -6,6 +6,7 @@ import com.example.prj3be.repository.BoardRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,8 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.prj3be.domain.QAlbumGenre.albumGenre;
@@ -88,8 +91,6 @@ public class BoardService {
             }
         }
 
-
-
         Predicate predicate = builder.hasValue() ? builder.getValue() : null; //삼항연산자
 
         if (predicate != null) {
@@ -99,25 +100,44 @@ public class BoardService {
         }
     }
 
-    public void save(Board board, MultipartFile[] files, BoardFile boardFile) throws IOException {
+//    private Predicate createPredicate(String category, String keyword, QBoard board) {
+//        BooleanBuilder builder = new BooleanBuilder();
+//
+//        if( keyword != null && !keyword.trim().isEmpty()) {
+//            builder.and(board.title.containsIgnoreCase(keyword));
+//        }
+
+
+//        if(!"all".equals(category)) {
+//            builder.and(board.title.containsIgnoreCase(keyword));
+//        }
+//        return builder;
+//    }
+
+
+    public void save(Board board, MultipartFile[] files) throws IOException {
 
         boardRepository.save(board); //jpa의 save()메소드엔 파일을 넣지 못함
 
         Long id = board.getId();
+        BoardFile boardFile = new BoardFile();
+        Optional<Board> findBoard = boardRepository.findById(id);
+        Board savedBoard = findBoard.get();
+
 
         for (int i = 0; i < files.length; i++) {
-        String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
+            String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
             boardFile.setFileName(files[i].getOriginalFilename());
             boardFile.setFileUrl(url);
-
+            boardFile.setBoard(savedBoard);
             boardFileRepository.save(boardFile);    //boardFile 테이블에 files 정보(fileName, fileUrl) 저장
-            upload(files[i]);
+            upload(files[i], id);
         }
     }
 
     //AWS s3에 파일 업로드
-    private void upload(MultipartFile files) throws IOException {
-        String key = files.getOriginalFilename();
+    private void upload(MultipartFile file,Long id) throws IOException {
+        String key = "prj3/" + id + "/" +file.getOriginalFilename();
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -125,7 +145,7 @@ public class BoardService {
                 .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
 
-        s3.putObject(objectRequest, RequestBody.fromInputStream(files.getInputStream(), files.getSize()));
+        s3.putObject(objectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
     }
 
     public String get(Long id, BoardFile boardFile) {
@@ -155,18 +175,65 @@ public class BoardService {
         return boardRepository.findById(id);
     }
 
-    public void update(Long id, Board updateBoard) {
+    public Board update(Long id, Board updateBoard) {
         Optional<Board> boardById = boardRepository.findById(id);
         if (boardById.isPresent()) {
             Board board1 = boardById.get();
             board1.setTitle(updateBoard.getTitle());
+            board1.setArtist(updateBoard.getArtist());
             board1.setPrice(updateBoard.getPrice());
+            board1.setReleaseDate(updateBoard.getReleaseDate());
+            board1.setContent(updateBoard.getContent());
+
+//            앨범 포멧은 변경할 수 없는 걸로 해서 추가 안했어요.
+            return boardRepository.save(board1);
         }
+        return null;
+    }
+
+    public void update(Long id, Board updateBboard, MultipartFile uploadFiles) throws IOException {
+        Board updatedBoard = update(id, updateBboard);
+        boardFileRepository.deleteBoardFileByBoardId(id);
+
+        BoardFile boardFile = new BoardFile();
+        String url = urlPrefix + "prj3/"+ id +"/" + uploadFiles.getOriginalFilename();
+        boardFile.setFileName(uploadFiles.getOriginalFilename());
+        boardFile.setFileUrl(url);
+        boardFile.setBoard(updatedBoard);
+        boardFileRepository.save(boardFile);    //boardFile 테이블에 files 정보(fileName, fileUrl) 저장
+        upload(uploadFiles, id);
+
     }
 
     public void delete(Long id) {
+        boardFileRepository.deleteBoardFileByBoardId(id);
         boardRepository.deleteById(id);
     }
 
+    public List<String> getBoardURL(Long id) {
+        return boardFileRepository.findFileUrlsByBoardId(id);
+    }
 
+
+    public BoardService(BoardRepository boardRepository, BoardFileRepository boardFileRepository, S3Client s3){
+        this.boardRepository = boardRepository;
+        this.boardFileRepository = boardFileRepository;
+        this.s3 = s3;
+    }
+
+//    public void save(Board saveBoard, String imageURL) {
+//        saveBoard.setImageURL(imageURL);
+//        BoardFile boardFile = new BoardFile();
+//        boardFile.setFileName(saveBoard.getFileName());
+//        boardFile.setFileUrl(imageURL);
+//        boardRepository.save(saveBoard);
+//        boardFileRepository.save(boardFile);
+//    }
+
+
+
+//    public void saveWithImageURL(Board saveBoard, String imageURL) {
+//        saveBoard.setImageURL(imageURL);
+//        boardFileRepository.save(board);
+//    }
 }

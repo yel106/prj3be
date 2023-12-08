@@ -3,7 +3,7 @@
 //import com.example.prj3be.domain.Member;
 //import org.mapstruct.Mapper;
 //
-//@Mapper(componentModel = "spring")
+//@Mapper(componentModel = "spring" )
 //public interface MemberMapper {
 //    Member memberEditFormDtoToMember(MemberEditFormDto memberEditFormDto);
 //    Member memberFormDtoToMember(MemberFormDto memberFormDto);
