@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter @Setter
 public class BoardFile {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "boardFile_id")
     private Long id;
     private String fileName;
