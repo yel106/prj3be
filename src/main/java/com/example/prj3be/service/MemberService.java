@@ -68,4 +68,11 @@ public class MemberService {
     }
 
 
+    public Member findMemberByLogId(String logId) {
+        Long id = memberRepository.findIdByLogId(logId);
+        Optional<Member> findMember1 = memberRepository.findById(id);
+        Member member = findMember1.get();
+
+        return member;
+    }
 }
