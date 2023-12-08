@@ -1,5 +1,6 @@
 package com.example.prj3be.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,13 +12,13 @@ import lombok.Setter;
 public class AlbumGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "albumGenre_id")
     private Long id;
 
-    //    private String genreName;
     @Enumerated(EnumType.STRING)
     private AlbumDetail albumDetail;
 
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
