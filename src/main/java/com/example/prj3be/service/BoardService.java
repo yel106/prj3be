@@ -30,7 +30,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
 
-    @Value("{image.file.prefix}")
+    @Value("${image.file.prefix}")
     private String urlPrefix;
 
     @Value("${aws.s3.bucket.name}")
