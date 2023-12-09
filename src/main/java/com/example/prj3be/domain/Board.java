@@ -31,22 +31,12 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private AlbumFormat albumFormat;
 
-    //    @Enumerated(EnumType.STRING)
-//    private AlbumDetail albumDetail;
-
     private String price;
     private String agency;
     private String content;
     private LocalDate releaseDate;
     private Long stockQuantity;
 
-
-//    private String fileName;
-//    private String category;
-
-//    @OneToOne
-//    @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조
-//    private Item item;
 
     @OneToMany(mappedBy = "board")
     @JsonManagedReference
@@ -69,9 +59,8 @@ public class Board {
         this.agency = agency;
         this.releaseDate = releaseDate;
         this.stockQuantity = stockQuantity;
-//        this.comments = comments;
-//        this.albumGenres = albumGenres;
-
+        this.comments = comments;
+        this.albumGenres = albumGenres;
     }
 
 }
