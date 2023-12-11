@@ -1,4 +1,4 @@
-package com.example.prj3be.controller.oauth;
+package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.dto.SocialUser;
 import com.example.prj3be.dto.SocialOauthToken;
@@ -43,20 +43,6 @@ public class GoogleOauth implements SocialOauth {
 
         return UriComponentsBuilder
                 .fromUriString(GOOGLE_SNS_BASE_URL)
-                .queryParams(queryParams)
-                .encode().build().toString();
-    }
-
-    @Override
-    public String getOauthRefreshURL() {
-        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.set("client_id", GOOGLE_SNS_CLIENT_ID);
-        queryParams.set("client_secret", GOOGLE_SNS_CLIENT_SECRET);
-        queryParams.set("refresh_token", "@@@@@@"); //TODO: fix
-        queryParams.set("grant_type", "refresh_token");
-
-        return UriComponentsBuilder
-                .fromUriString(GOOGLE_SNS_TOKEN_BASE_URL)
                 .queryParams(queryParams)
                 .encode().build().toString();
     }

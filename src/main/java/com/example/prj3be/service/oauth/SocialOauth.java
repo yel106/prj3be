@@ -1,4 +1,4 @@
-package com.example.prj3be.controller.oauth;
+package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.constant.SocialLoginType;
 import com.example.prj3be.dto.SocialUser;
@@ -35,12 +35,6 @@ public interface SocialOauth {
     ResponseEntity<String> requestUserInfo(SocialOauthToken oauthToken);
     //10-1 - requestUserInfo를 통해 받아온 정보 저장
     SocialUser getUserInfo(ResponseEntity<String> userInfoRes) throws JsonProcessingException;
-/*
-    ResponseEntity<Object> updateToken(String socialType); 토큰 갱신 방식
-    ResponseEntity<Object> logout(String socialType); //로그아웃
-*/
-
-    String getOauthRefreshURL(); //토큰 갱신 요청 URL을 생성하는 메소드
 
     // 인스턴스 타입을 확인하고 그에 따라 SocialLoginType의 Enum 인스턴스 반환
     default SocialLoginType type() {

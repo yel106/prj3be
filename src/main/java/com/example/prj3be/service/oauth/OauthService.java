@@ -1,9 +1,9 @@
-package com.example.prj3be.service;
+package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.constant.Role;
 import com.example.prj3be.constant.SocialLoginType;
-import com.example.prj3be.controller.oauth.SocialOauth;
-import com.example.prj3be.domain.GetSocialOAuthRes;
+import com.example.prj3be.service.oauth.SocialOauth;
+import com.example.prj3be.domain.SocialToken;
 import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.SocialUser;
 import com.example.prj3be.dto.SocialOauthToken;
@@ -38,7 +38,7 @@ public class OauthService {
     // 1. redirectURL 만들기
     public String request(SocialLoginType socialLoginType) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
-        System.out.println("socialOauth = " + socialOauth);
+//        System.out.println("socialOauth = " + socialOauth);
         return socialOauth.getOauthRedirectURL();
     }
 
@@ -50,7 +50,7 @@ public class OauthService {
                 .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
     }
 
-    public GetSocialOAuthRes oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
+    public SocialToken oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
         SocialOauth socialOauth = findSocialOauthByType(socialLoginType);
         ResponseEntity<String> accessTokenResponse = socialOauth.requestAccessToken(code);
         SocialOauthToken oAuthToken = socialOauth.getAccessToken(accessTokenResponse);
@@ -101,16 +101,16 @@ public class OauthService {
             System.out.println("httpHeaders = " + httpHeaders);
 
             //SocialLoginTokens에 소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in 저장
-            GetSocialOAuthRes oAuthRes = new GetSocialOAuthRes();
-            oAuthRes.setLogId(name);
-            oAuthRes.setSocialLoginType(socialLoginType);
-            oAuthRes.setAccessToken(oAuthToken.getAccess_token());
-            oAuthRes.setRefreshToken(oAuthToken.getRefresh_token());
-            oAuthRes.setExpiresIn(oAuthToken.getExpires_in());
-            oAuthRes.setTokenType(oAuthToken.getToken_type());
+            SocialToken tokenInfo = new SocialToken();
+            tokenInfo.setLogId(name);
+            tokenInfo.setSocialLoginType(socialLoginType);
+            tokenInfo.setAccessToken(oAuthToken.getAccess_token());
+            tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
+            tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
+            tokenInfo.setTokenType(oAuthToken.getToken_type());
 
-            System.out.println("oAuthRes = " + oAuthRes);
-            return oAuthRes;
+            System.out.println("tokenInfo = " + tokenInfo);
+            return tokenInfo;
         } catch (AuthenticationException e){
             System.out.println("인증 실패 :"+e.getMessage());
             return null;

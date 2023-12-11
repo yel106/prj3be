@@ -1,4 +1,4 @@
-package com.example.prj3be.controller.oauth;
+package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.dto.SocialUser;
 import com.example.prj3be.dto.SocialOauthToken;
@@ -47,19 +47,6 @@ public class KakaoOauth implements SocialOauth {
 
         return UriComponentsBuilder
                 .fromUriString(KAKAO_SNS_AUTHORIZATION_URI)
-                .queryParams(queryParams)
-                .encode().build().toString();
-    }
-
-    @Override
-    public String getOauthRefreshURL() {
-        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.set("grant_type", "refresh_token");
-        queryParams.set("client_id", KAKAO_SNS_CLIENT_ID);
-        queryParams.set("refresh_token", "@@@@@@"); //TODO: fix
-
-        return UriComponentsBuilder
-                .fromUriString(KAKAO_SNS_TOKEN_URI)
                 .queryParams(queryParams)
                 .encode().build().toString();
     }

@@ -1,15 +1,12 @@
-package com.example.prj3be.controller.oauth;
+package com.example.prj3be.controller;
 
 import com.example.prj3be.constant.SocialLoginType;
-import com.example.prj3be.domain.GetSocialOAuthRes;
+import com.example.prj3be.domain.SocialToken;
 import com.example.prj3be.exception.OAuthException;
-import com.example.prj3be.service.OauthService;
-import jakarta.servlet.http.HttpServletResponse;
+import com.example.prj3be.service.oauth.OauthService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.query.sqm.sql.ConversionException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,10 +29,10 @@ public class OauthController {
     }
 
     @GetMapping("/{socialLoginType}/callback")
-    public ResponseEntity<GetSocialOAuthRes> oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
-                                        @RequestParam(name="code") String code) throws IOException {
+    public ResponseEntity<SocialToken> oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
+                                                  @RequestParam(name="code") String code) throws IOException {
         SocialLoginType type = SocialLoginType.valueOf(socialLoginType.toUpperCase());
-        GetSocialOAuthRes oAuthRes = oauthService.oAuthLogin(type, code);
+        SocialToken oAuthRes = oauthService.oAuthLogin(type, code);
         System.out.println("callback의 리턴 statement 이전");
 
         return ResponseEntity.ok(oAuthRes);
