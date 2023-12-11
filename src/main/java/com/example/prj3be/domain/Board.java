@@ -37,6 +37,8 @@ public class Board {
     private LocalDate releaseDate;
     private Long stockQuantity;
 
+    @OneToMany(mappedBy = "board")
+    private List <Likes> likes_board;
 
     @OneToMany(mappedBy = "board")
     @JsonManagedReference

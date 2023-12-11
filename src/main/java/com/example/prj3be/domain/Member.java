@@ -45,6 +45,10 @@ public class Member extends BaseTimeEntity{
 //            inverseJoinColumns = {@JoinColumn(name="authority_name", referencedColumnName = "authority_name")}
 //    )
 //    private Set<Authority> authorities;
+
+    @OneToMany(mappedBy = "member")
+    private List<Likes> likes_member;
+
     public Member() {
 
     }
