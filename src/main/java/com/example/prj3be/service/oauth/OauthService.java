@@ -63,7 +63,7 @@ public class OauthService {
         String email = socialUser.getEmail();
 
         //DB에 해당 유저가 없는지 조회
-        Member existingMember = memberRepository.findByEmailAndLogId(email, name);
+        Member existingMember = memberRepository.findByEmailAndLogId(email, email);
 
         //정보 받을 객체 선언, 생성 + 초기화는 하지 않음
         Member member;
@@ -71,7 +71,7 @@ public class OauthService {
 
         if(existingMember == null) {
             member = new Member();
-            member.setLogId(name);
+            member.setLogId(email);
             member.setName(name);
             member.setEmail(email);
             member.setPassword(encoder.encode(email));
