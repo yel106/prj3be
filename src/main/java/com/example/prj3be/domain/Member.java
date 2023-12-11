@@ -38,6 +38,9 @@ public class Member extends BaseTimeEntity{
     @Column(name="activated")
     private Boolean activated;
 
+    @Column(name="is_social_member", nullable = false)
+    private Boolean isSocialMember = false;
+
 //    @ManyToMany
 //    @JoinTable(
 //            name="member_authority",

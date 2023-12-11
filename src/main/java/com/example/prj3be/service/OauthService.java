@@ -42,14 +42,7 @@ public class OauthService {
         return socialOauth.getOauthRedirectURL();
     }
 
-    // 2. 액세스 토큰 만들기
-    public ResponseEntity<String> requestAccessToken(SocialLoginType socialLoginType, String code) {
-        SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
-        System.out.println("socialOauth = " + socialOauth);
-        System.out.println("code = " + code);
-        return socialOauth.requestAccessToken(code);
-    }
-    // 3. 소셜 타입 찾기
+    // 1-2. 소셜 타입 찾기
     private SocialOauth findSocialOauthByType(SocialLoginType socialLoginType) {
         return socialOauthList.stream()
                 .filter(x -> x.type() == socialLoginType)
@@ -79,7 +72,7 @@ public class OauthService {
             // user로 role 지정
             member.setRole(Role.USER);
             member.setActivated(true);
-//            member.setSocialLogin(true); //소셜 로그인 계정이니 true
+            member.setIsSocialMember(true);
             // 회원 등록
             memberRepository.save(member);
         }

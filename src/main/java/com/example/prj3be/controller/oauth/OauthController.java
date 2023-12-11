@@ -21,12 +21,12 @@ import java.io.IOException;
 public class OauthController {
     private final OauthService oauthService;
 
-    @GetMapping("/{socialLoginType}")
+    @GetMapping("/{socialLoginType}") //MemberLogin.js > handleSocialLogin
     public String socialLoginType(@PathVariable(name="socialLoginType") String socialLoginType) {
         SocialLoginType type = SocialLoginType.valueOf(socialLoginType);
-        System.out.println("socialLoginType = " + type);
+//        System.out.println("socialLoginType = " + type);
         String redirectUrl = oauthService.request(type);
-        System.out.println("redirectUrl = " + redirectUrl);
+//        System.out.println("redirectUrl = " + redirectUrl);
 
         return redirectUrl;
     }
