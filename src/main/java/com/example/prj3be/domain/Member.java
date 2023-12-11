@@ -21,7 +21,7 @@ public class Member extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="log_id", nullable = true)
+    @Column(name="log_id")
     private String logId; //로그인용 아이디
     private String password;
     private String name;

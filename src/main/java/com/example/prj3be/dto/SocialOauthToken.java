@@ -12,4 +12,5 @@ public class SocialOauthToken {
     private String token_type;
     private String id_token;
     private String refresh_token;
+    private Integer refresh_token_expires_in;
 }

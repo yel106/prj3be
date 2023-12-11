@@ -75,7 +75,7 @@ public class OauthService {
             member.setName(name);
             member.setEmail(email);
             member.setPassword(encoder.encode(email));
-            member.setRole(Role.USER); // user로 role 지정
+            member.setRole(Role.ROLE_USER); // user로 role 지정
             member.setActivated(true);
             member.setIsSocialMember(true);
             memberRepository.save(member);
@@ -89,6 +89,7 @@ public class OauthService {
             tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
             tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
             tokenInfo.setTokenType(oAuthToken.getToken_type());
+            tokenInfo.setRefreshTokenExpiresIn(oAuthToken.getRefresh_token_expires_in());
             socialTokenRepository.save(tokenInfo);
             System.out.println("New token created : " + tokenInfo);
         } else {

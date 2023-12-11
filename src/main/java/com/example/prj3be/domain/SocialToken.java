@@ -19,8 +19,9 @@ public class SocialToken {
     private Long id;
     private SocialLoginType socialLoginType;
     private String accessToken;
-    private String refreshToken;
     private Integer expiresIn;
+    private String refreshToken;
+    private Integer refreshTokenExpiresIn;
     private String tokenType;
     @LastModifiedDate
     private LocalDateTime regTime;

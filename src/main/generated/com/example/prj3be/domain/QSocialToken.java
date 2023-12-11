@@ -32,6 +32,8 @@ public class QSocialToken extends EntityPathBase<SocialToken> {
 
     public final StringPath refreshToken = createString("refreshToken");
 
+    public final NumberPath<Integer> refreshTokenExpiresIn = createNumber("refreshTokenExpiresIn", Integer.class);
+
     public final DateTimePath<java.time.LocalDateTime> regTime = createDateTime("regTime", java.time.LocalDateTime.class);
 
     public final EnumPath<com.example.prj3be.constant.SocialLoginType> socialLoginType = createEnum("socialLoginType", com.example.prj3be.constant.SocialLoginType.class);
