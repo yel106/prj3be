@@ -130,7 +130,10 @@ public class TokenProvider implements InitializingBean {
 
         return authentication;
     }
-
+    //로그아웃 시 refreshToken 삭제
+    public void deleteRefreshToken(String logId) {
+        freshTokenRepository.deleteById(logId);
+    }
 
     //엑세스 토큰의 정보를 이용해 Authentication 객체 리턴
     public Authentication getAuthentication(String token){
@@ -156,7 +159,6 @@ public class TokenProvider implements InitializingBean {
         //유저객체, 토큰, 권한 객체로 Authentication 리턴
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
-
     // 리프레시 토큰의 정보를 이용해 Authentication 객체 리턴
     public Authentication getAuthentication(String token, String logId){
         // 토큰을 이용해 클레임 생성
@@ -179,6 +181,7 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
     // 토큰의 유효성 검증을 수행
+
     public boolean validateToken(String token){
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
