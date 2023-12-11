@@ -10,13 +10,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@EntityListeners(value= {AuditingEntityListener.class})
+@EntityListeners(AuditingEntityListener.class)
 @Table(name="social_token")
 @Getter @Setter
 public class SocialToken {
     @Id
-    @Column(name="log_id") //JWT access Token에서 추출할 수 있는 정보로 지정 (fresh_token과 통일)
-    private String logId;
+    @Column(name="member_id") //JWT access Token에서 추출할 수 있는 정보로 지정 (fresh_token과 통일)
+    private Long id;
     private SocialLoginType socialLoginType;
     private String accessToken;
     private String refreshToken;
@@ -24,4 +24,8 @@ public class SocialToken {
     private String tokenType;
     @LastModifiedDate
     private LocalDateTime regTime;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id", referencedColumnName = "member_id",  insertable=false, updatable=false)
+    private Member member;
 }

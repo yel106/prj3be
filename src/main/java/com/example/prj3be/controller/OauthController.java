@@ -29,13 +29,11 @@ public class OauthController {
     }
 
     @GetMapping("/{socialLoginType}/callback")
-    public ResponseEntity<SocialToken> oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
+    public void oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
                                                   @RequestParam(name="code") String code) throws IOException {
         SocialLoginType type = SocialLoginType.valueOf(socialLoginType.toUpperCase());
-        SocialToken oAuthRes = oauthService.oAuthLogin(type, code);
+        oauthService.oAuthLogin(type, code);
         System.out.println("callback의 리턴 statement 이전");
-
-        return ResponseEntity.ok(oAuthRes);
     }
 
 

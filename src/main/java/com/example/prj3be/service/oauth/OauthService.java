@@ -2,7 +2,7 @@ package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.constant.Role;
 import com.example.prj3be.constant.SocialLoginType;
-import com.example.prj3be.service.oauth.SocialOauth;
+import com.example.prj3be.repository.SocialTokenRepository;
 import com.example.prj3be.domain.SocialToken;
 import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.SocialUser;
@@ -31,6 +31,7 @@ import java.util.List;
 public class OauthService {
     private final List<SocialOauth> socialOauthList;
     private final MemberRepository memberRepository;
+    private final SocialTokenRepository socialTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
@@ -50,7 +51,7 @@ public class OauthService {
                 .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
     }
 
-    public SocialToken oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
+    public void oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
         SocialOauth socialOauth = findSocialOauthByType(socialLoginType);
         ResponseEntity<String> accessTokenResponse = socialOauth.requestAccessToken(code);
         SocialOauthToken oAuthToken = socialOauth.getAccessToken(accessTokenResponse);
@@ -61,27 +62,42 @@ public class OauthService {
         String name = socialUser.getName();
         String email = socialUser.getEmail();
 
-        Member member = new Member();
-        member.setLogId(name);
-        member.setEmail(email);
+        //DB에 해당 유저가 없는지 조회
+        Member existingMember = memberRepository.findByEmailAndLogId(email, name);
 
-        //DB에 해당 유저가 없는지 조회 후 없으면 저장
-        if(memberRepository.findByEmail(email) == null) {
-            // 이메일을 비밀번호로 인코딩하여 저장 (null 방지)
+        //정보 받을 객체 선언, 생성 + 초기화는 하지 않음
+        Member member;
+        SocialToken tokenInfo;
+
+        if(existingMember == null) {
+            member = new Member();
+            member.setLogId(name);
+            member.setName(name);
+            member.setEmail(email);
             member.setPassword(encoder.encode(email));
-            // user로 role 지정
-            member.setRole(Role.USER);
+            member.setRole(Role.USER); // user로 role 지정
             member.setActivated(true);
             member.setIsSocialMember(true);
-            // 회원 등록
             memberRepository.save(member);
-        }
+            System.out.println("New member created : " + member);
 
-        System.out.println("member = " + member);
+            //SocialToken에 소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in 저장
+            tokenInfo = new SocialToken();
+            tokenInfo.setId(member.getId());
+            tokenInfo.setSocialLoginType(socialLoginType);
+            tokenInfo.setAccessToken(oAuthToken.getAccess_token());
+            tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
+            tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
+            tokenInfo.setTokenType(oAuthToken.getToken_type());
+            socialTokenRepository.save(tokenInfo);
+            System.out.println("New token created : " + tokenInfo);
+        } else {
+            member = existingMember;
+            System.out.println("Existing member : " + member);
+        }
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getLogId(), member.getEmail());
-
         System.out.println("authenticationToken = " + authenticationToken);
 
         try {
@@ -99,21 +115,8 @@ public class OauthService {
             httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens);
 
             System.out.println("httpHeaders = " + httpHeaders);
-
-            //SocialLoginTokens에 소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in 저장
-            SocialToken tokenInfo = new SocialToken();
-            tokenInfo.setLogId(name);
-            tokenInfo.setSocialLoginType(socialLoginType);
-            tokenInfo.setAccessToken(oAuthToken.getAccess_token());
-            tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
-            tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
-            tokenInfo.setTokenType(oAuthToken.getToken_type());
-
-            System.out.println("tokenInfo = " + tokenInfo);
-            return tokenInfo;
         } catch (AuthenticationException e){
             System.out.println("인증 실패 :"+e.getMessage());
-            return null;
         }
     }
 }
