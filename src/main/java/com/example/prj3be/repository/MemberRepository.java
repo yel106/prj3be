@@ -1,7 +1,6 @@
 package com.example.prj3be.repository;
 
 import com.example.prj3be.domain.Member;
-import com.example.prj3be.dto.MemberInfoDto;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

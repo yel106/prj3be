@@ -77,7 +77,7 @@ public class OauthService {
             // 이메일을 비밀번호로 인코딩하여 저장 (null 방지)
             member.setPassword(encoder.encode(email));
             // user로 role 지정
-            member.setRole(Role.USER);
+            member.setRole(Role.ROLE_USER);
             member.setActivated(true);
 //            member.setSocialLogin(true); //소셜 로그인 계정이니 true
             // 회원 등록

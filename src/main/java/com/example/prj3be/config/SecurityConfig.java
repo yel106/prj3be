@@ -19,7 +19,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig{
     private final TokenProvider tokenProvider;
     private CorsFilter corsFilter;

@@ -20,13 +20,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,12 +43,14 @@ public class LoginController {
     private String socialButtonImagePrefix;
 
     @GetMapping("/accessToken")
-    public ResponseEntity isTokenValid(@RequestHeader("Authorization")String accessToken){
+    public ResponseEntity<String> isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
             accessToken = accessToken.substring(7);
         }
         if(tokenProvider.validateToken(accessToken)){
-            return ResponseEntity.ok().build();
+            String authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList().get(0).toString();
+
+            return ResponseEntity.ok(authority);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
