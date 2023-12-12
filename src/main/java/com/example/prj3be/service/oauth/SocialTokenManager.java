@@ -13,6 +13,7 @@ public interface SocialTokenManager {
     // 변환 끝난 토큰 정보를 테이블에 업데이트하는 메소드
 
     void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap);
+    //접근 토큰을 이용한 연동 해제 요청 및 토큰 데이터 삭제
     ResponseEntity<String> revokeToken(Long id);
 
 }

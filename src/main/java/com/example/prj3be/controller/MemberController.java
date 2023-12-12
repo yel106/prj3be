@@ -155,6 +155,4 @@ public class MemberController {
         }
         return age;
     }
-
-
 }

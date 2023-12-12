@@ -94,4 +94,10 @@ public class LoginController {
         return ResponseEntity.ok(socialButtonImagePrefix);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+
+        return null;
+    }
+
 }
