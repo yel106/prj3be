@@ -29,15 +29,15 @@ public class AppConfig {
 
         return s3;
     }
-    @Bean
-    public WebMvcConfigurer corsConfigure() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@Nullable CorsRegistry registry) {
-                if (registry != null) {
-                    registry.addMapping("/**").allowedOrigins("*");
-                }
-            }
-        };
-    }
+//    @Bean
+//    public WebMvcConfigurer corsConfigure() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(@Nullable CorsRegistry registry) {
+//                if (registry != null) {
+//                    registry.addMapping("/**").allowedOrigins("*");
+//                }
+//            }
+//        };
+//    }
 }
