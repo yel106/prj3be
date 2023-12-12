@@ -17,6 +17,14 @@ public class LikeController {
 
     private final LikeService service;
 
+    @PostMapping(params = "id")
+    public ResponseEntity<Map<String, Object>> like(Long id,
+                                                    @SessionAttribute(value= "login", required = false)Member login) {
+
+        System.out.println("id = " + id);
+
+        return ResponseEntity.ok(service.updateLike(id, login));
+    }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>>like(Likes like,
