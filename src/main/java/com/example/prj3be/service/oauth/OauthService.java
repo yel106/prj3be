@@ -76,7 +76,8 @@ public class OauthService {
             member.setName(name);
             member.setEmail(email);
             member.setPassword(encoder.encode(email));
-            member.setRole(Role.ROLE_USER); // user로 role 지정
+            // user로 role 지정
+            member.setRole(Role.ROLE_USER);
             member.setActivated(true);
             member.setIsSocialMember(true);
             memberRepository.save(member);

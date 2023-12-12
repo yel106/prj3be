@@ -5,6 +5,8 @@ import com.example.prj3be.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,12 +41,12 @@ public class BoardController {
 //        boardService.save(saveBoard, files, boardFile);
 //    }
     @PostMapping("add")
+    @PreAuthorize("hasRole('ADMIN')")
     public void add(@Validated Board saveBoard,
                     @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
         System.out.println(saveBoard);
         boardService.save(saveBoard, files);
     }
-
 
 
 
@@ -62,6 +64,7 @@ public class BoardController {
 
 
     @PutMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(@PathVariable Long id,
                        Board updateBboard,
                        @RequestParam(value = "uploadFiles", required = false) MultipartFile uploadFiles) throws IOException {
@@ -77,6 +80,7 @@ public class BoardController {
     }
 
     @DeleteMapping("remove/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
 

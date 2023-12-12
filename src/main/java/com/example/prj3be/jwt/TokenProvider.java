@@ -126,11 +126,20 @@ public class TokenProvider implements InitializingBean {
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
         System.out.println("TokenProvider.updateTokensByRefreshToken's logId = " + logId);
 
-        Authentication authentication = getAuthentication(refreshToken, logId);
-
-        return authentication;
+        try {
+            Authentication authentication = getAuthentication(refreshToken, logId);
+            return authentication;
+        }catch (JwtException e){
+            System.out.println("업데이트 토큰즈 캐치문");
+            deleteRefreshToken(logId);
+        }
+        return null;
     }
-
+    //로그아웃 시 refreshToken 삭제
+    public void deleteRefreshToken(String refreshToken) {
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        freshTokenRepository.deleteById(logId);
+    }
 
     //엑세스 토큰의 정보를 이용해 Authentication 객체 리턴
     public Authentication getAuthentication(String token){
@@ -156,22 +165,22 @@ public class TokenProvider implements InitializingBean {
         //유저객체, 토큰, 권한 객체로 Authentication 리턴
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
-
     // 리프레시 토큰의 정보를 이용해 Authentication 객체 리턴
-    public Authentication getAuthentication(String token, String logId){
+    public Authentication getAuthentication(String token, String logId) throws JwtException{
+        System.out.println("리프레시 토큰 getAuthentication 진입");
         // 토큰을 이용해 클레임 생성
         Claims claims = Jwts.parserBuilder() //jwt 파싱 빌더 생성
                 .setSigningKey(key) //jwt 검증 키 설정
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
+        System.out.println("클레임 생성");
         // 클레임에서 권한 정보 빼내기 클레임에서 auth 키에 해당하는 값을 가져오고 배열 만들기, SimpleGrantedAutority 객체로 매핑하기
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-
+        System.out.println("클레임에서 권한 정보 빼내기");
         // 권한 정보들로 유저 객체 만들기
         User principal = new User(logId, "", authorities);//사용자식별정보, 패스워드, 권한정보
 
@@ -179,6 +188,7 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
     // 토큰의 유효성 검증을 수행
+
     public boolean validateToken(String token){
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
