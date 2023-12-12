@@ -1,7 +1,10 @@
 name: Deploy workflow on production environment
 on:
   push:
-    branches: ["master"]
+    branches: [ "master" ]
+  pull_request:
+    branches:
+      - master
 
 env:
   PROJECT_NAME: prj3-be
