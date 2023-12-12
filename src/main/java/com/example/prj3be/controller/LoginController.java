@@ -55,7 +55,7 @@ public class LoginController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     @GetMapping("/refreshToken")
-    public TokenDto byRefreshToken(@RequestHeader("Authorization")String refreshToken){
+    public ResponseEntity<TokenDto> byRefreshToken(@RequestHeader("Authorization")String refreshToken){
         System.out.println("LoginController.byRefreshToken's refreshToken = " + refreshToken);
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
             refreshToken = refreshToken.substring(7);
@@ -64,10 +64,12 @@ public class LoginController {
         Authentication authentication = tokenProvider.updateTokensByRefreshToken(refreshToken);
 
         System.out.println("LoginController.byRefreshToken's authentication = " + authentication);
-
+        if(authentication == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         TokenDto tokens = tokenProvider.createTokens(authentication);
 
-        return tokens;
+        return ResponseEntity.ok(tokens);
     }
     @PostMapping("/login")
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto){
@@ -105,13 +107,13 @@ public class LoginController {
     }
 
     @GetMapping("/api/logout")
-    public ResponseEntity logout(){
-        String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity logout(@RequestHeader("Authorization")String refreshToken){
+        if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
+            refreshToken = refreshToken.substring(7);
+        }
 
-        System.out.println("logId = " + logId);
-
-        if(!logId.equals("anonymousUser")){
-            tokenProvider.deleteRefreshToken(logId);
+        if(refreshToken != null){
+            tokenProvider.deleteRefreshToken(refreshToken);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

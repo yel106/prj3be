@@ -42,7 +42,6 @@ public class BoardController {
 //    }
     @PostMapping("add")
     @PreAuthorize("hasRole('ADMIN')")
-//    @Secured("ROLE_ADMIN")
     public void add(@Validated Board saveBoard,
                     @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
         System.out.println(saveBoard);
@@ -65,6 +64,7 @@ public class BoardController {
 
 
     @PutMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(@PathVariable Long id,
                        Board updateBboard,
                        @RequestParam(value = "uploadFiles", required = false) MultipartFile uploadFiles) throws IOException {
@@ -80,6 +80,7 @@ public class BoardController {
     }
 
     @DeleteMapping("remove/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
 
