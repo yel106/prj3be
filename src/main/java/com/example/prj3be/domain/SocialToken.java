@@ -21,7 +21,6 @@ public class SocialToken {
     private String accessToken;
     private Integer expiresIn;
     private String refreshToken;
-    private Integer refreshTokenExpiresIn;
     private String tokenType;
     @LastModifiedDate
     private LocalDateTime regTime;

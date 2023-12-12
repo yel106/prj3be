@@ -17,7 +17,7 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
     String findRefreshTokenById(Long id);
 
     @Query("SELECT st.accessToken FROM SocialToken st WHERE st.id = :id")
-    String findAccessTokenByLogId(Long id);
+    String findAccessTokenById(Long id);
 
     @Modifying
     @Transactional
@@ -25,7 +25,6 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
             "SET st.accessToken = :#{#tokenInfoMap['accessToken']}, " +
             "    st.tokenType = :#{#tokenInfoMap['tokenType']}, " +
             "    st.refreshToken = :#{#tokenInfoMap['refreshToken']}, " +
-            "    st.refreshTokenExpiresIn = :#{#tokenInfoMap['refreshTokenExpiresIn']}, " +
             "    st.expiresIn = :#{#tokenInfoMap['expiresIn']} " +
             "WHERE st.id = :id ")
     int updateTokenInfo(Long id, Map<String, Object> tokenInfoMap);

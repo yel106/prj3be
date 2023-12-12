@@ -2,15 +2,22 @@ package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.repository.SocialTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +30,7 @@ public class NaverTokenManager implements SocialTokenManager {
     private String NAVER_SNS_TOKEN_URI;
 
     private final SocialTokenRepository socialTokenRepository;
+    private final RestTemplate restTemplate;
 
     @Override
     public boolean isTokenExpired(Long id) {
@@ -47,17 +55,25 @@ public class NaverTokenManager implements SocialTokenManager {
 
     @Override
     public ResponseEntity<String> checkAndRefreshToken(Long id) {
-        return null;
+        String refreshURI = getRefreshUri(id);
+        HttpHeaders headers = new HttpHeaders();
+        return restTemplate.exchange(refreshURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
     }; //토큰 갱신 요청하는 메소드
-    // 요청해서 받은 토큰 정보를 토대로 테이블 갱신하는 메소드
     @Override
     public Map<String, Object> processRefreshResponse(ResponseEntity<String> response) {
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(Objects.requireNonNull(response.getBody()));
         Map<String, Object> tokenInfoMap = new HashMap<>();
-        return null;
+
+        tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
+        tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
+        tokenInfoMap.put("tokenType", jsonObject.get("token_type"));
+        tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
+
+        return tokenInfoMap;
     };
 
     @Override
-    public void updateTokenInfo(Long id, Map<String, Object> tokenInfo) {
-
+    public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
+        socialTokenRepository.updateTokenInfo(id, tokenInfoMap);
     };
 }

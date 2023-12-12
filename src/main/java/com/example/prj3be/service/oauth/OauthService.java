@@ -89,7 +89,6 @@ public class OauthService {
             tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
             tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
             tokenInfo.setTokenType(oAuthToken.getToken_type());
-            tokenInfo.setRefreshTokenExpiresIn(oAuthToken.getRefresh_token_expires_in());
             socialTokenRepository.save(tokenInfo);
             System.out.println("New token created : " + tokenInfo);
         } else {

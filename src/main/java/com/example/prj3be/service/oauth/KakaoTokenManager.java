@@ -34,14 +34,14 @@ public class KakaoTokenManager implements SocialTokenManager {
     }; // 토큰 만료 여부 체크하는 논리형 메소드
     @Override
     public ResponseEntity<String> checkAndRefreshToken(Long id) {
-        String accessToken = socialTokenRepository.findAccessTokenByLogId(id);
+        String accessToken = socialTokenRepository.findAccessTokenById(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE));
         headers.add("Authorization", "Bearer " + accessToken); //Bearer 뒤 공백 꼭 필요, 절대로 삭제하지 않기
 
-        String refreshUri = getRefreshUri(id);
+        String refreshURI = getRefreshUri(id);
 
-        return restTemplate.exchange(refreshUri, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+        return restTemplate.exchange(refreshURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
     }; //토큰 갱신 요청하는 메소드
     @Override
     public String getRefreshUri(Long id) {
@@ -66,7 +66,6 @@ public class KakaoTokenManager implements SocialTokenManager {
         tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
         tokenInfoMap.put("tokenType", jsonObject.get("token_type"));
         tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
-        tokenInfoMap.put("refreshTokenExpiresIn", jsonObject.get("refresh_token_expires_in"));
         tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
 
         return tokenInfoMap;
