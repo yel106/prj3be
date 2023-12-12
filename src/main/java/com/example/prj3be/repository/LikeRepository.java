@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
 @Repository
 public interface LikeRepository extends JpaRepository<Likes, Long> {
 
@@ -13,6 +16,8 @@ public interface LikeRepository extends JpaRepository<Likes, Long> {
     void deleteByBoardIdAndMemberId(Long id, Long id1);
 
     int countByBoardId(Long id);
+
+    List<Likes> findByBoardId(Long id);
 
     @Repository
     public interface LikesRepository extends JpaRepository<Likes, Long> {
