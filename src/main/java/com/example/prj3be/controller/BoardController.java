@@ -87,6 +87,7 @@ public class BoardController {
         }
     }
 
+
     @DeleteMapping("remove/{id}")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);

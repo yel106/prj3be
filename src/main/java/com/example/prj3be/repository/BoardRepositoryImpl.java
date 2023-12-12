@@ -103,13 +103,13 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         } else return null;
     }
 
-    private OrderSpecifier[] getSortCondition(final Sort sort) {
-        final List<OrderSpecifier> orders = new ArrayList<>();
-
-        if(sort.isEmpty()) {
-            return new OrderSpecifier[]{new OrderSpecifier(DESC, board.id)}
-        }
-    }
+//    private OrderSpecifier[] getSortCondition(final Sort sort) {
+//        final List<OrderSpecifier> orders = new ArrayList<>();
+//
+//        if(sort.isEmpty()) {
+//            return new OrderSpecifier[]{new OrderSpecifier(DESC, board.id)}
+//        }
+//    }
 
     private void method(final Sort.Order sortOder, final List<OrderSpecifier> orderSpecifiers) {
         //정렬 방식 지정할때 사용되는 열거형(enum) 타입
@@ -119,6 +119,5 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         }
 
 
-
-
     }
+}
