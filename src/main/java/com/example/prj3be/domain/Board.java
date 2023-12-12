@@ -31,15 +31,12 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private AlbumFormat albumFormat;
 
-    //    @Enumerated(EnumType.STRING)
-//    private AlbumDetail albumDetail;
-
-    private String price;
+    private String albumGenre;
+    private Double price;
     private String agency;
     private String content;
     private LocalDate releaseDate;
     private Long stockQuantity;
-
 
 //    private String fileName;
 //    private String category;
@@ -56,18 +53,23 @@ public class Board {
     private List<BoardFile> boardFiles = new ArrayList<>();
 
 
-    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, Long stockQuantity, List<Comment> comments, List<AlbumGenre> albumGenres) {
+    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String albumGenre, Double price, String agency, String content, LocalDate releaseDate, Long stockQuantity, List<Comment> comments, List<AlbumGenre> albumGenres, List<BoardFile> boardFiles) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.albumFormat = albumFormat;
+        this.albumGenre = albumGenre;
         this.price = price;
         this.agency = agency;
+        this.content = content;
         this.releaseDate = releaseDate;
         this.stockQuantity = stockQuantity;
         this.comments = comments;
         this.albumGenres = albumGenres;
-
+        this.boardFiles = boardFiles;
     }
 
+    public Board(Long boardId, Object o, Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
+    }
 }
+

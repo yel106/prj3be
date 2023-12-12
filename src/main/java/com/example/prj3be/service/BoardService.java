@@ -43,56 +43,39 @@ public class BoardService {
     private final S3Client s3;
 
 
-//    public Page<Board> boardListAll(Pageable pageable, String category, String[] genre, String keyword) {
+    public Page<Board> boardListAll(Pageable pageable, String title, AlbumFormat albumFormat, List<AlbumDetail> albumDetails, String minPrice, String maxPrice) {
+        QBoard qBoard = board;
+        BooleanBuilder builder = new BooleanBuilder();
 
+        //Title 검색조건
+        if (title != null && !title.isEmpty()) {
+            builder.and(qBoard.title.containsIgnoreCase(title));
+        }
+        //AlbumFormat 검색조건
+        if ( albumFormat !=null) {
+            builder.and(qBoard.albumFormat.eq(albumFormat));
+        }
+        //AlbumDetail 검색조건
+        if (albumDetails !=null && !albumDetails.isEmpty()) {
+            BooleanBuilder genreBuilder = new BooleanBuilder();
+            for (AlbumDetail detail :
+                    albumDetails) {
+                genreBuilder.or(qBoard.albumGenres.any().albumDetail.eq(detail));
+            }
+            builder.and(genreBuilder);
+        }
 
-//        QBoard board = QBoard.board;
-//        BooleanBuilder builder = new BooleanBuilder();
-//
-//        if (category != null && keyword != null) {
-//            if ("all".equals(category)) {
-//                builder.and(board.title.containsIgnoreCase(keyword));
-//            } else if ("CD".equals(category)) {
-//                builder.and(board.albumFormat.eq(AlbumFormat.CD));
-//                builder.and(board.title.containsIgnoreCase(keyword));
-//            } else if ("vinyl".equals(category)) {
-//                builder.and(board.albumFormat.eq(AlbumFormat.VINYL));
-//                builder.and(board.title.containsIgnoreCase(keyword));
-//            } else if ("cassettetape".equals(category)) {
-//                builder.and(board.albumFormat.eq(AlbumFormat.CASSETTETAPE));
-//                builder.and(board.title.containsIgnoreCase(keyword));
-//            }
-//
-//        }
-//
-////         any(): List컬렉션 내의 요소들에 대한 조건 설정
-////        if (!genre.) {
-//            if ("all".equals(genre)) {
-//                builder.and(board.title.containsIgnoreCase(keyword));
-//            } else if ("INDIE".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
-//            } else if ("OST".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
-//            } else if ("K_POP".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
-//            } else if ("POP".equals(genre)) {
-//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
-//            }
-//
-//
-//        Predicate predicate = builder.hasValue() ? builder.getValue() : null; //삼항연산자
-//
-//        if (predicate != null) {
-//            return boardRepository.findAll(predicate, pageable);
-//        } else {
-//            return boardRepository.findAll(pageable);
-//        }
-//    }
-
-    //새로 만들고 있는 부분
-//    public Page<List<Board>> boardListAll(AlbumFormat albumFormat, String keyword) {
-//        return boardRepository.searchAlbum(AlbumFormat albumFormat, String keyword);
-//    }
+        //가격 검색조건
+        if (minPrice != null && !minPrice.isEmpty()) {
+            double minPriceValue = Double.parseDouble(minPrice);
+            builder.and(qBoard.price.goe(minPriceValue));
+        }
+        if (maxPrice != null && !maxPrice.isEmpty()) {
+            double maxPriceValue = Double.parseDouble(maxPrice);
+            builder.and(qBoard.price.loe(maxPriceValue));
+        }
+        return boardRepository.findAll(builder, pageable);
+    }
 
 
     public void save(Board board, MultipartFile[] files) throws IOException {
@@ -129,7 +112,6 @@ public class BoardService {
     }
 
     public String get(Long id, BoardFile boardFile) {
-
 
 //        id로 board에 있는 id, title, price값을 가져와서 board에 넣음
         Optional<Board> board = boardRepository.findById(id);

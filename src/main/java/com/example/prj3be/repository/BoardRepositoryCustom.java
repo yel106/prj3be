@@ -13,7 +13,7 @@ import java.util.List;
 public interface BoardRepositoryCustom{
 
     //메소드 작성, 구현은 impl
-    public List<Board> searchAlbum(String keyword, Pageable pageable);
+//    public List<Board> searchAlbum(String keyword, Pageable pageable);
 
 
 }

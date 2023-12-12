@@ -24,6 +24,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final EnumPath<AlbumFormat> albumFormat = createEnum("albumFormat", AlbumFormat.class);
 
+    public final StringPath albumGenre = createString("albumGenre");
+
     public final ListPath<AlbumGenre, QAlbumGenre> albumGenres = this.<AlbumGenre, QAlbumGenre>createList("albumGenres", AlbumGenre.class, QAlbumGenre.class, PathInits.DIRECT2);
 
     public final StringPath artist = createString("artist");
@@ -36,7 +38,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath price = createString("price");
+    public final NumberPath<Double> price = createNumber("price", Double.class);
 
     public final DatePath<java.time.LocalDate> releaseDate = createDate("releaseDate", java.time.LocalDate.class);
 

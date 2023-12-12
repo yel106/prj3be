@@ -1,5 +1,7 @@
 package com.example.prj3be.controller;
 
+import com.example.prj3be.domain.AlbumDetail;
+import com.example.prj3be.domain.AlbumFormat;
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.BoardFile;
 import com.example.prj3be.service.BoardService;
@@ -11,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 //@RequiredArgsConstructor
@@ -22,37 +26,19 @@ public class BoardController {
     private final BoardService boardService;
 
 
+    @GetMapping("list")
+    public Page<Board> list(Pageable pageable,
+                            @RequestParam(required = false) String title,
+                            @RequestParam(required = false) AlbumFormat albumFormat,
+                            @RequestParam(required = false) String[] albumDetails,
+                            @RequestParam(required = false) String minPrice,
+                            @RequestParam(required = false) String maxPrice) {
 
-//    @GetMapping("list")
-//    public Page<Board> list(Pageable pageable,
-//                            @RequestParam Map<String, Object> params,
-//                            @RequestParam(value = "c", defaultValue = "all") String category,
-//                            @RequestParam(value="g", defaultValue = "all") String[] genre,
-//                            @RequestParam(value = "k", defaultValue = "") String keyword) {
-//        System.out.println("pageable = " + pageable);
-//        System.out.println("params = " + params);
-//
-//
-//        Page<Board> boardListPage = boardService.boardListAll(pageable, category, genre, keyword);
-//        return boardListPage;
-//    }
+        List<AlbumDetail> albumDetailList = (albumDetails == null) ? null : Arrays.stream(albumDetails).map(AlbumDetail::valueOf).collect(Collectors.toList());
 
-//    @GetMapping("list")
-//    public Page<List<Board>> list(Pageable pageable,
-//                            @RequestParam Map<String, Object> params,
-//                            @RequestParam(value = "c", defaultValue = "all") String category,
-//                            @RequestParam(value="g", defaultValue = "all") String[] genre,
-//                            @RequestParam(value = "k", defaultValue = "") String keyword) {
-//        System.out.println("pageable = " + pageable);
-//        System.out.println("params = " + params);
-//
-//
-//        Page<Board> boardListPage = boardService.boardListAll(pageable, category, genre, keyword);
-//        return boardListPage;
-//    }
-
-
-
+        Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice);
+        return boardListPage;
+    }
 
 
     @PostMapping("add")
@@ -67,6 +53,7 @@ public class BoardController {
 //    public Board get(@PathVariable Long id) {
 //        return boardService.getBoardById(id).orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
 //    }
+
     @GetMapping("id/{id}")
     public Optional<Board> get(@PathVariable Long id) {
         return boardService.getBoardById(id);
@@ -92,8 +79,6 @@ public class BoardController {
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
     }
-
-
 
 
     @GetMapping("file/id/{id}")

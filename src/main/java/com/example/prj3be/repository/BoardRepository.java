@@ -8,8 +8,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 //조건 주는 방법 : where조건절 사용, boolean builder 두가지가 있음
 public interface BoardRepository extends
         JpaRepository<Board, Long>,
-        QuerydslPredicateExecutor<Board>,
-        BoardRepositoryCustom {
+        QuerydslPredicateExecutor<Board>{
 
 }
 
