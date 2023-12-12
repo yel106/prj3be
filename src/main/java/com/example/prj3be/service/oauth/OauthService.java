@@ -14,6 +14,7 @@ import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -51,7 +52,7 @@ public class OauthService {
                 .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
     }
 
-    public void oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
+    public ResponseEntity<TokenDto> oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
         SocialOauth socialOauth = findSocialOauthByType(socialLoginType);
         ResponseEntity<String> accessTokenResponse = socialOauth.requestAccessToken(code);
         SocialOauthToken oAuthToken = socialOauth.getAccessToken(accessTokenResponse);
@@ -113,10 +114,12 @@ public class OauthService {
             //httpHeader에 jwtToken 저장
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens);
-
             System.out.println("httpHeaders = " + httpHeaders);
+
+            return new ResponseEntity<>(new TokenDto(tokens.getAccessToken(), tokens.getRefreshToken()), HttpStatus.OK);
         } catch (AuthenticationException e){
             System.out.println("인증 실패 :"+e.getMessage());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 }

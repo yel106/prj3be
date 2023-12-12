@@ -2,6 +2,7 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.constant.SocialLoginType;
 import com.example.prj3be.domain.SocialToken;
+import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.exception.OAuthException;
 import com.example.prj3be.service.oauth.OauthService;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,12 @@ public class OauthController {
     }
 
     @GetMapping("/{socialLoginType}/callback")
-    public void oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
+    public ResponseEntity<TokenDto> oAuthLogin(@PathVariable(name="socialLoginType") String socialLoginType,
                                                   @RequestParam(name="code") String code) throws IOException {
         SocialLoginType type = SocialLoginType.valueOf(socialLoginType.toUpperCase());
-        oauthService.oAuthLogin(type, code);
+        ResponseEntity<TokenDto> tokenDto = oauthService.oAuthLogin(type, code);
         System.out.println("callback의 리턴 statement 이전");
+        return tokenDto;
     }
 
 
