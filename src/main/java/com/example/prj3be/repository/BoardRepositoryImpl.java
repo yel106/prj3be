@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.prj3be.domain.QAlbumGenre.albumGenre;
@@ -48,7 +49,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
 
     //1차 분류: CD, VINYL, CASSETTETAPE
-    //아래 방식 안되면 이 방식으로 다시 써보기.
+    //아래 방식 안되면 이 방식으로 다시 써보기
 //    private BooleanExpression SelectedAlbumFormat(AlbumFormat albumFormat) {
 //      if(albumFormat.equals("CD")) {
 //          return filterByCD();
@@ -116,7 +117,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         if (sortOder.isAscending()) {
             direction = ASC;
         }
-
-
     }
+
+
 }
