@@ -76,7 +76,7 @@ public class NaverTokenManager implements SocialTokenManager {
     };
 
     @Override
-    public ResponseEntity<String> revokeToken(Long id) {
+    public ResponseEntity revokeToken(Long id) {
         String accessToken = socialTokenRepository.findAccessTokenById(id);
 
         HttpHeaders headers = new HttpHeaders();
@@ -92,18 +92,30 @@ public class NaverTokenManager implements SocialTokenManager {
                 .queryParams(queryParams)
                 .encode().build().toString();
 
+        return tryRevokeToken(id, headers, revokeTokenURI);
+    }
+
+    @Override
+    public ResponseEntity socialLogout(Long id) {
+        //TODO: 여기도 완전 탈퇴인지 아닌지 확인
+        return null;
+    }
+
+    @Override
+    public ResponseEntity tryRevokeToken(Long id, HttpHeaders headers, String revokeTokenURI) {
         try {
-            ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+            ResponseEntity response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 socialTokenRepository.findAndDeleteTokenById(id);
             }
             return response;
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
-            return ResponseEntity.status(e.getRawStatusCode()).body("Error: " + e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getRawStatusCode()).build();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }

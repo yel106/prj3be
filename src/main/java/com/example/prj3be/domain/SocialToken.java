@@ -17,6 +17,7 @@ public class SocialToken {
     @Id
     @Column(name="member_id") //JWT access Token에서 추출할 수 있는 정보로 지정 (fresh_token과 통일)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private SocialLoginType socialLoginType;
     private String accessToken;
     private Integer expiresIn;

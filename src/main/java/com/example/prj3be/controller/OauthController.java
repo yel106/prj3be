@@ -1,7 +1,6 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.constant.SocialLoginType;
-import com.example.prj3be.domain.SocialToken;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.exception.OAuthException;
 import com.example.prj3be.service.oauth.OauthService;
@@ -23,7 +22,7 @@ public class OauthController {
     public String socialLoginType(@PathVariable(name="socialLoginType") String socialLoginType) {
         SocialLoginType type = SocialLoginType.valueOf(socialLoginType);
 //        System.out.println("socialLoginType = " + type);
-        String redirectUrl = oauthService.request(type);
+        String redirectUrl = oauthService.loginRequest(type);
 //        System.out.println("redirectUrl = " + redirectUrl);
 
         return redirectUrl;

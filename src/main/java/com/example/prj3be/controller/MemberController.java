@@ -62,14 +62,6 @@ public class MemberController {
     // 회원 정보
     @GetMapping
     public ResponseEntity<FindMemberDto> method2() {
-//        System.out.println("token1 = " + token);
-//        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
-//             token = token.substring(7);
-//             System.out.println("token2 = " + token);
-//        }
-//        else{
-//            return null;
-//        }
         // access token Jwt Filter에서 SecurityContextHolder에 넣어줌
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("MemberController.method2");
@@ -150,4 +142,15 @@ public class MemberController {
         }
         return age;
     }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteAccount(@PathVariable Long id) {
+        // TODO 계정 삭제 전 참조 무결성을 위해 점검해야할 것:
+        // social 멤버인지, 맞다면 social Token 삭제됐는지
+        // (레코드 전체, socialTokenRepository -> findAndDeleteTokenById 사용)
+        // fresh_token 삭제 됐는지
+        // payment에서 해당 멤버 관련 레코드 삭제됐는지
+        // 해당 멤버별  like 삭제됐는지
+    }
+
 }

@@ -6,6 +6,7 @@ import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.jwt.JwtAuthenticationEntryPoint;
 import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.TokenProvider;
+import com.example.prj3be.service.oauth.OauthService;
 import jakarta.servlet.http.HttpServletRequest;
 import com.example.prj3be.service.LoginService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,6 +38,7 @@ public class LoginController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final LoginService loginService;
+    private final OauthService oauthService;
 //    private final LoginProvider loginProvider;
 
     @Value("${image.file.prefix}")
@@ -88,16 +90,9 @@ public class LoginController {
 
             System.out.println("authentication = " + authentication);
 
-//            String jwt = tokenProvider.createToken(authentication);
             TokenDto tokens = tokenProvider.createTokens(authentication);
 
             System.out.println("tokens = " + tokens);
-
-//            HttpHeaders httpHeaders = new HttpHeaders();
-//            // 헤더에 토큰 담기
-//            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokens.getAccessToken());
-//
-//            System.out.println("httpHeaders = " + httpHeaders);
 
             return new ResponseEntity<>(new TokenDto(tokens.getAccessToken(), tokens.getRefreshToken()), HttpStatus.OK);
         } catch (AuthenticationException e){
@@ -113,7 +108,10 @@ public class LoginController {
         }
 
         if(refreshToken != null){
-            tokenProvider.deleteRefreshToken(refreshToken);
+            Long id = tokenProvider.deleteRefreshToken(refreshToken);
+            if(id != null) {
+                return oauthService.logoutRequest(id);
+            }
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -123,12 +121,6 @@ public class LoginController {
     @GetMapping("/api/login/image")
     public ResponseEntity<String> socialButtonImage() {
         return ResponseEntity.ok(socialButtonImagePrefix);
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
-
-        return null;
     }
 
 }

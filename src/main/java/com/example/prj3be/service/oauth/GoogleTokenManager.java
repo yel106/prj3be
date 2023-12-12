@@ -80,7 +80,13 @@ public class GoogleTokenManager implements SocialTokenManager {
     };
 
     @Override
-    public ResponseEntity<String> revokeToken(Long id) {
+    public ResponseEntity socialLogout(Long id) {
+        //TODO: 여기도 로그아웃인지 아니면 탈퇴인지 확인
+        return null;
+    }
+
+    @Override
+    public ResponseEntity revokeToken(Long id) {
         String accessToken = socialTokenRepository.findAccessTokenById(id);
         HttpHeaders headers = new HttpHeaders();
 
@@ -88,17 +94,23 @@ public class GoogleTokenManager implements SocialTokenManager {
                 .queryParam("token", accessToken)
                 .encode().build().toString();
 
+        return tryRevokeToken(id, headers, revokeTokenURI);
+    }
+
+    @Override
+    public ResponseEntity tryRevokeToken(Long id, HttpHeaders headers, String revokeTokenURI) {
         try {
-            ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+            ResponseEntity response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
             if(response.getStatusCode() == HttpStatus.OK) {
                 socialTokenRepository.findAndDeleteTokenById(id);
             }
             return response;
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
-            return ResponseEntity.status(e.getRawStatusCode()).body("Error: " + e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getRawStatusCode()).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }
