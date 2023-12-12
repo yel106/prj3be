@@ -28,4 +28,9 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
             "    st.expiresIn = :#{#tokenInfoMap['expiresIn']} " +
             "WHERE st.id = :id ")
     int updateTokenInfo(Long id, Map<String, Object> tokenInfoMap);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM SocialToken st WHERE st.id = :id")
+    int findAndDeleteTokenById(Long id);
 }

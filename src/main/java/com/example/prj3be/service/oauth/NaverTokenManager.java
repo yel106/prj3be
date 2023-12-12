@@ -5,13 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -94,8 +92,18 @@ public class NaverTokenManager implements SocialTokenManager {
                 .queryParams(queryParams)
                 .encode().build().toString();
 
-        ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
-
-        return response;
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                socialTokenRepository.findAndDeleteTokenById(id);
+            }
+            return response;
+        } catch (HttpClientErrorException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(e.getRawStatusCode()).body("Error: " + e.getResponseBodyAsString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+        }
     }
 }
