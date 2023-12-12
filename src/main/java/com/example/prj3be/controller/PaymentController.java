@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,9 @@ public class PaymentController {
         this.paymentConfig = paymentConfig;
     }
     @PostMapping("/toss")
-    public ResponseEntity requestTossPayment(@RequestBody @Valid PaymentDto paymentReqDto) throws CustomLogicException {
-        PaymentResDto paymentResDto = paymentService.requestTossPayment(paymentReqDto.toEntity(), paymentReqDto.getEmail()).toPaymentResDto();
+    public ResponseEntity requestTossPayment(@AuthenticationPrincipal User principal, @RequestBody @Valid PaymentDto paymentReqDto) throws CustomLogicException {
+        PaymentResDto paymentResDto = paymentService.requestTossPayment(paymentReqDto.toEntity(), principal.getUsername()).toPaymentResDto();
+        System.out.println("principal = " + principal.getUsername());
         paymentResDto.setSuccessUrl(paymentReqDto.getSuccessUrl() == null ? paymentConfig.getSuccessUrl() : paymentReqDto.getSuccessUrl());
         paymentResDto.setFailUrl(paymentReqDto.getFailUrl() == null ? paymentConfig.getFailUrl() : paymentReqDto.getFailUrl());
         return ResponseEntity.ok(paymentResDto);
@@ -41,10 +44,12 @@ public class PaymentController {
         Long amount = dto.getAmount();
         return ResponseEntity.ok().body(paymentService.tossPaymentSuccess(paymentKey,orderId,amount));
     }
+    //결제 실패 로직
+
     // 결제 취소 로직
     @PostMapping("/toss/cancel")
-    public ResponseEntity tossPaymentCancel(Member member, @RequestParam String paymentKey, @RequestParam String cancelReason) {
-        return ResponseEntity.ok().body(paymentService.canclePayment(member.getEmail(),paymentKey,cancelReason));
+    public ResponseEntity tossPaymentCancel(@AuthenticationPrincipal User principal, @RequestParam String paymentKey, @RequestParam String cancelReason) {
+        return ResponseEntity.ok().body(paymentService.cancelPayment(principal.getUsername(),paymentKey,cancelReason));
     }
 
 }

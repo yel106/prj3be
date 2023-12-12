@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @RestController
@@ -69,15 +70,6 @@ public class MemberController {
     // 회원 정보
     @GetMapping
     public ResponseEntity<FindMemberDto> method2() {
-//        System.out.println("token1 = " + token);
-//        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
-//             token = token.substring(7);
-//             System.out.println("token2 = " + token);
-//        }
-//        else{
-//            return null;
-//        }
-        // access token Jwt Filter에서 SecurityContextHolder에 넣어줌
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("MemberController.method2");
         System.out.println("authentication = " + authentication);
@@ -91,7 +83,6 @@ public class MemberController {
             dto.setEmail(findMember.getEmail());
             dto.setGender(findMember.getGender());
             dto.setRole(findMember.getRole());
-
             return ResponseEntity.ok(dto);
         }
 
@@ -126,6 +117,10 @@ public class MemberController {
         System.out.println(category);
         Page<Member> memberPage = memberService.findMemberList(pageable,keyword,category);
         return memberPage.map(FindMemberDto::new);
+    }
+    @GetMapping("/{logId}/orders")
+    public List<String> method7(@PathVariable String logId){
+        return memberService.findOrderListByLogId(logId);
     }
 
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,5 +33,6 @@ public class FindMemberDto {
         this.role=member.getRole();
         this.age= member.getAge();
         this.joinDate=member.getRegTime();
+
     }
 }

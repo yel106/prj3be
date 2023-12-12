@@ -1,0 +1,61 @@
+name: Deploy workflow on production environment
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches:
+      - master
+
+env:
+  PROJECT_NAME: prj3-be
+  BUCKET_NAME: study0210
+  CODE_DEPLOY_APP_NAME: codedeploy
+  DEPLOYMENT_GROUP_NAME: production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✅ Checkout branch
+        uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 17
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+      #깃 이그노어 처리되어 깃 레포지토리에 저장되지 않은 properties 파일 깃액션 서버내 생성
+      - name: make custom.properties
+        run:
+          mkdir -p ./src/main/resources |
+          touch ./src/main/resources/custom.properties
+        shell: bash
+      #생성한 properties 파일에 깃 허브 내 secrets 경로에 환경변수로 저장한 properties 값을 저장
+      - name: deliver custom.properties
+        run: echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/custom.properties
+        shell: bash
+      - name: Build and Test
+        run: ./gradlew build
+      - name: Make Zip File
+        run: zip -qq -r ./$GITHUB_SHA.zip .
+        shell: bash
+      - name: 🌎 Access to AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: 🚛 Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+      - name: 🚀 Deploy to EC2 with CodeDeploy
+        run: aws deploy create-deployment
+          --application-name $CODE_DEPLOY_APP_NAME
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name $DEPLOYMENT_GROUP_NAME
+          --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+
+    environment: production
+

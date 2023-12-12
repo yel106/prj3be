@@ -33,8 +33,7 @@ public class TokenProvider implements InitializingBean {
     private final String secret;
     private final long tokenExpiration;
     private Key key;
-    @Autowired
-    private FreshTokenRepository freshTokenRepository;
+    private final FreshTokenRepository freshTokenRepository;
 
     private MemberRepository memberRepository;
     private MemberDetailService memberDetailService;
@@ -42,12 +41,13 @@ public class TokenProvider implements InitializingBean {
 
     //의존성 주입
     public TokenProvider(@Value("${jwt.token.key}")String secret,
-                         @Value("${jwt.token.expiration}")long tokenExpiration, AuthenticationManagerBuilder authenticationManagerBuilder, MemberRepository memberRepository){
+                         @Value("${jwt.token.expiration}")long tokenExpiration, AuthenticationManagerBuilder authenticationManagerBuilder, MemberRepository memberRepository, FreshTokenRepository freshTokenRepository){
         this.secret = secret;
         this.tokenExpiration = tokenExpiration * 1000;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.memberRepository = memberRepository;
         this.memberDetailService = new MemberDetailService(memberRepository);
+        this.freshTokenRepository = freshTokenRepository;
     }
 
     @Override

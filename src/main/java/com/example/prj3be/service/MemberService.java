@@ -4,6 +4,7 @@ import com.example.prj3be.domain.Member;
 import com.example.prj3be.domain.QMember;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.repository.MemberRepository;
+import com.example.prj3be.repository.OrderRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,6 +22,7 @@ import java.util.Optional;
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final OrderRepository orderRepository;
 
     public void signup(Member member) {
         memberRepository.save(member);
@@ -74,5 +78,12 @@ public class MemberService {
         Member member = findMember1.get();
 
         return member;
+    }
+
+    public List<String> findOrderListByLogId(String logId) {
+        Optional<Member> byLogId = memberRepository.findByLogId(logId);
+        Member member = byLogId.orElseThrow();
+        Long id = member.getId();
+        return orderRepository.findOrderNamesByMemberLogId(id);
     }
 }
