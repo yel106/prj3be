@@ -43,76 +43,55 @@ public class BoardService {
     private final S3Client s3;
 
 
-    public Page<Board> boardListAll(Pageable pageable, String category, String[] genre, String keyword) {
-        QBoard board = QBoard.board;
-        BooleanBuilder builder = new BooleanBuilder();
+//    public Page<Board> boardListAll(Pageable pageable, String category, String[] genre, String keyword) {
 
-        if (category != null && keyword != null) {
-            if ("all".equals(category)) {
-                builder.and(board.title.containsIgnoreCase(keyword));
-            } else if ("CD".equals(category)) {
-                builder.and(board.albumFormat.eq(AlbumFormat.CD));
-                builder.and(board.title.containsIgnoreCase(keyword));
-            } else if ("vinyl".equals(category)) {
-                builder.and(board.albumFormat.eq(AlbumFormat.VINYL));
-                builder.and(board.title.containsIgnoreCase(keyword));
-            } else if ("cassettetape".equals(category)) {
-                builder.and(board.albumFormat.eq(AlbumFormat.CASSETTETAPE));
-                builder.and(board.title.containsIgnoreCase(keyword));
-            }
 
-        }
-
-//         any(): List컬렉션 내의 요소들에 대한 조건 설정
-//        if (!genre.) {
-            if ("all".equals(genre)) {
-                builder.and(board.title.containsIgnoreCase(keyword));
-            } else if ("INDIE".equals(genre)) {
-                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
-            } else if ("OST".equals(genre)) {
-                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
-            } else if ("K_POP".equals(genre)) {
-                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
-            } else if ("POP".equals(genre)) {
-                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
-            }
+//        QBoard board = QBoard.board;
+//        BooleanBuilder builder = new BooleanBuilder();
+//
+//        if (category != null && keyword != null) {
+//            if ("all".equals(category)) {
+//                builder.and(board.title.containsIgnoreCase(keyword));
+//            } else if ("CD".equals(category)) {
+//                builder.and(board.albumFormat.eq(AlbumFormat.CD));
+//                builder.and(board.title.containsIgnoreCase(keyword));
+//            } else if ("vinyl".equals(category)) {
+//                builder.and(board.albumFormat.eq(AlbumFormat.VINYL));
+//                builder.and(board.title.containsIgnoreCase(keyword));
+//            } else if ("cassettetape".equals(category)) {
+//                builder.and(board.albumFormat.eq(AlbumFormat.CASSETTETAPE));
+//                builder.and(board.title.containsIgnoreCase(keyword));
+//            }
+//
 //        }
-
-//        if (genre != null) {
+//
+////         any(): List컬렉션 내의 요소들에 대한 조건 설정
+////        if (!genre.) {
 //            if ("all".equals(genre)) {
 //                builder.and(board.title.containsIgnoreCase(keyword));
 //            } else if ("INDIE".equals(genre)) {
-//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.INDIE));
 //            } else if ("OST".equals(genre)) {
-//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.OST));
 //            } else if ("K_POP".equals(genre)) {
-//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.K_POP));
 //            } else if ("POP".equals(genre)) {
-//                builder.and(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
+//                builder.andAnyOf(board.albumGenres.any().albumDetail.eq(AlbumDetail.POP));
 //            }
-//        }
-
-        Predicate predicate = builder.hasValue() ? builder.getValue() : null; //삼항연산자
-
-        if (predicate != null) {
-            return boardRepository.findAll(predicate, pageable);
-        } else {
-            return boardRepository.findAll(pageable);
-        }
-    }
-
-//    private Predicate createPredicate(String category, String keyword, QBoard board) {
-//        BooleanBuilder builder = new BooleanBuilder();
 //
-//        if( keyword != null && !keyword.trim().isEmpty()) {
-//            builder.and(board.title.containsIgnoreCase(keyword));
+//
+//        Predicate predicate = builder.hasValue() ? builder.getValue() : null; //삼항연산자
+//
+//        if (predicate != null) {
+//            return boardRepository.findAll(predicate, pageable);
+//        } else {
+//            return boardRepository.findAll(pageable);
 //        }
+//    }
 
-
-//        if(!"all".equals(category)) {
-//            builder.and(board.title.containsIgnoreCase(keyword));
-//        }
-//        return builder;
+    //새로 만들고 있는 부분
+//    public Page<List<Board>> boardListAll(AlbumFormat albumFormat, String keyword) {
+//        return boardRepository.searchAlbum(AlbumFormat albumFormat, String keyword);
 //    }
 
 

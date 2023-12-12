@@ -23,29 +23,36 @@ public class BoardController {
 
 
 
-    @GetMapping("list")
-    public Page<Board> list(Pageable pageable,
-                            @RequestParam Map<String, Object> params,
-                            @RequestParam(value = "c", defaultValue = "all") String category,
-                            @RequestParam(value="g", defaultValue = "all") String[] genre,
-                            @RequestParam(value = "k", defaultValue = "") String keyword) {
-        System.out.println("pageable = " + pageable);
-        System.out.println("params = " + params);
-
-
-        Page<Board> boardListPage = boardService.boardListAll(pageable, category, genre, keyword);
-        return boardListPage;
-    }
-
-
-//    @PostMapping("add")
-//    //파일 추가할때 @RequestBody X
-//    public void add(@Validated Board saveBoard,
-//                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
-//                    BoardFile boardFile) throws IOException {
+//    @GetMapping("list")
+//    public Page<Board> list(Pageable pageable,
+//                            @RequestParam Map<String, Object> params,
+//                            @RequestParam(value = "c", defaultValue = "all") String category,
+//                            @RequestParam(value="g", defaultValue = "all") String[] genre,
+//                            @RequestParam(value = "k", defaultValue = "") String keyword) {
+//        System.out.println("pageable = " + pageable);
+//        System.out.println("params = " + params);
 //
-//        boardService.save(saveBoard, files, boardFile);
+//
+//        Page<Board> boardListPage = boardService.boardListAll(pageable, category, genre, keyword);
+//        return boardListPage;
 //    }
+
+//    @GetMapping("list")
+//    public Page<List<Board>> list(Pageable pageable,
+//                            @RequestParam Map<String, Object> params,
+//                            @RequestParam(value = "c", defaultValue = "all") String category,
+//                            @RequestParam(value="g", defaultValue = "all") String[] genre,
+//                            @RequestParam(value = "k", defaultValue = "") String keyword) {
+//        System.out.println("pageable = " + pageable);
+//        System.out.println("params = " + params);
+//
+//
+//        Page<Board> boardListPage = boardService.boardListAll(pageable, category, genre, keyword);
+//        return boardListPage;
+//    }
+
+
+
 
 
     @PostMapping("add")
@@ -79,6 +86,7 @@ public class BoardController {
             boardService.update(id, updateBboard, uploadFiles);
         }
     }
+
 
     @DeleteMapping("remove/{id}")
     public void delete(@PathVariable Long id) {
