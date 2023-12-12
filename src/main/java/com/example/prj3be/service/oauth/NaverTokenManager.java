@@ -76,4 +76,26 @@ public class NaverTokenManager implements SocialTokenManager {
     public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
         socialTokenRepository.updateTokenInfo(id, tokenInfoMap);
     };
+
+    @Override
+    public ResponseEntity<String> revokeToken(Long id) {
+        String accessToken = socialTokenRepository.findAccessTokenById(id);
+
+        HttpHeaders headers = new HttpHeaders();
+
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.set("grant_type", "delete");
+        queryParams.set("client_id", NAVER_SNS_CLIENT_ID);
+        queryParams.set("client_secret", NAVER_SNS_CLIENT_SECRET);
+        queryParams.set("access_token", accessToken);
+        queryParams.set("service_provider", "NAVER");
+
+        String revokeTokenURI = UriComponentsBuilder.fromUriString(NAVER_SNS_TOKEN_URI)
+                .queryParams(queryParams)
+                .encode().build().toString();
+
+        ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+
+        return response;
+    }
 }

@@ -13,5 +13,6 @@ public interface SocialTokenManager {
     // 변환 끝난 토큰 정보를 테이블에 업데이트하는 메소드
 
     void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap);
+    ResponseEntity<String> revokeToken(Long id);
 
 }

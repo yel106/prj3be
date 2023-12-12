@@ -24,6 +24,8 @@ public class KakaoTokenManager implements SocialTokenManager {
     private String KAKAO_SNS_CLIENT_ID;
     @Value("${social.kakao.token.uri}")
     private String KAKAO_SNS_TOKEN_URI;
+    @Value("${social.kakao.revoke.uri}")
+    private String KAKAO_SNS_REVOKE_URI;
 
     private final SocialTokenRepository socialTokenRepository;
     private final RestTemplate restTemplate;
@@ -75,5 +77,20 @@ public class KakaoTokenManager implements SocialTokenManager {
     public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
         socialTokenRepository.updateTokenInfo(id, tokenInfoMap);
     };
+
+    @Override
+    public ResponseEntity<String> revokeToken(Long id) {
+        String accessToken = socialTokenRepository.findAccessTokenById(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("Authorization", "Bearer " + accessToken);
+
+        String revokeTokenURI = UriComponentsBuilder.fromUriString(KAKAO_SNS_REVOKE_URI)
+                .encode().build().toString();
+
+        ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+
+        return response;
+    }
 
 }

@@ -77,4 +77,18 @@ public class GoogleTokenManager implements SocialTokenManager {
     public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
         socialTokenRepository.updateTokenInfo(id, tokenInfoMap);
     };
+
+    @Override
+    public ResponseEntity<String> revokeToken(Long id) {
+        String accessToken = socialTokenRepository.findAccessTokenById(id);
+        HttpHeaders headers = new HttpHeaders();
+
+        String revokeTokenURI = UriComponentsBuilder.fromUriString("https://accounts.google.com/o/oauth2/revoke")
+                .queryParam("token", accessToken)
+                .encode().build().toString();
+
+        ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+
+        return response;
+    }
 }
