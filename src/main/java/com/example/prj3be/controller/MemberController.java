@@ -78,6 +78,7 @@ public class MemberController {
             System.out.println("authentication.getName() = " + authentication.getName());
             Member findMember = memberService.findMemberByLogId(authentication.getName());
             FindMemberDto dto = new FindMemberDto();
+            dto.setId(findMember.getId());
             dto.setLogId(findMember.getLogId());
             dto.setName(findMember.getName());
             dto.setAddress(findMember.getAddress());
@@ -93,9 +94,17 @@ public class MemberController {
 
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
-            memberService.update(id,dto);
+        System.out.println("dto = " + dto);
+        memberService.update(id, dto);
     }
-
+    @GetMapping(value = "check",params = "email")
+    public ResponseEntity method4(String email){
+        if (memberService.getEmail(email)==null){
+            return ResponseEntity.notFound().build();
+        }else {
+            return ResponseEntity.ok().build();
+        }
+    }
     @GetMapping(value = "check",params = "logId")
     public ResponseEntity method6(String logId) {
         if (memberService.getLogId(logId)==null){
