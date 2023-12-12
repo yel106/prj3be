@@ -57,14 +57,7 @@ public class MemberController {
         member.setActivated(true);
         memberService.signup(member);
     }
-//    @PostMapping("add/social")
-//    public void socialMethod(@Validated @RequestBody SocialMemberDto dto){
-//        Member member = new Member();
-//        member.setName(dto.getName());
-//        member.setEmail(dto.getEmail());
-//        member.setRole(Role.USER);
-//        memberService.signup(member);
-//    }
+
 
     // 회원 정보
     @GetMapping
@@ -102,14 +95,7 @@ public class MemberController {
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
             memberService.update(id,dto);
     }
-    @GetMapping(value = "check",params = "email")
-    public ResponseEntity method4(String email){
-        if (memberService.getEmail(email)==null){
-            return ResponseEntity.notFound().build();
-        }else {
-            return ResponseEntity.ok().build();
-        }
-    }
+
     @GetMapping(value = "check",params = "logId")
     public ResponseEntity method6(String logId) {
         if (memberService.getLogId(logId)==null){
