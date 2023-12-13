@@ -24,15 +24,11 @@ public class QSocialToken extends EntityPathBase<SocialToken> {
 
     public final StringPath accessToken = createString("accessToken");
 
-    public final DateTimePath<java.time.LocalDateTime> createdTime = createDateTime("createdTime", java.time.LocalDateTime.class);
-
     public final NumberPath<Integer> expiresIn = createNumber("expiresIn", Integer.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final QMember member;
-
-    public final DateTimePath<java.time.LocalDateTime> modifiedTime = createDateTime("modifiedTime", java.time.LocalDateTime.class);
 
     public final StringPath refreshToken = createString("refreshToken");
 
