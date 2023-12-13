@@ -60,7 +60,6 @@ public class LoginController {
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
             refreshToken = refreshToken.substring(7);
         }
-
         Authentication authentication = tokenProvider.updateTokensByRefreshToken(refreshToken);
 
         System.out.println("LoginController.byRefreshToken's authentication = " + authentication);

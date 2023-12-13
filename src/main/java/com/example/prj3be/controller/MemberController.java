@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -92,6 +93,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @PreAuthorize("#dto.logId == authentication.name")
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
         System.out.println("dto = " + dto);
