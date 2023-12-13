@@ -27,6 +27,8 @@ public class GoogleTokenManager implements SocialTokenManager {
     private String GOOGLE_SNS_CLIENT_SECRET;
     @Value("${social.google.token.url}")
     private String GOOGLE_SNS_TOKEN_BASE_URL;
+    @Value("${social.google.revoke.url}")
+    private String GOOGLE_SNS_REVOKE_TOKEN;
 
     private final SocialTokenRepository socialTokenRepository;
     private final RestTemplate restTemplate;
@@ -81,8 +83,15 @@ public class GoogleTokenManager implements SocialTokenManager {
 
     @Override
     public ResponseEntity socialLogout(Long id) {
+        String accessToken = socialTokenRepository.findAccessTokenById(id);
+        HttpHeaders headers = new HttpHeaders();
+
+        String expireTokenURI = UriComponentsBuilder.fromUriString(GOOGLE_SNS_REVOKE_TOKEN)
+                .queryParam("token", accessToken)
+                .encode().build().toString();
+
         //TODO: 여기도 로그아웃인지 아니면 탈퇴인지 확인
-        return null;
+        return tryRevokeToken(id, headers, expireTokenURI);
     }
 
     @Override
