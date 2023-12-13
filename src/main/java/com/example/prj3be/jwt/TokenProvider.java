@@ -134,7 +134,7 @@ public class TokenProvider implements InitializingBean {
         }catch (JwtException e){
             // 리프레시 토큰이 만료되었다면 DB에서 삭제
             System.out.println("업데이트 토큰즈 캐치문");
-            deleteRefreshToken(logId);
+            deleteRefreshTokenBylogId(logId);
         }
         return null;
     }
