@@ -31,15 +31,11 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private AlbumFormat albumFormat;
 
-    private String albumGenre;
     private Double price;
     private String agency;
     private String content;
     private LocalDate releaseDate;
     private Long stockQuantity;
-
-//    private String fileName;
-//    private String category;
 
     @OneToMany(mappedBy = "board")
     @JsonManagedReference
@@ -53,12 +49,11 @@ public class Board {
     private List<BoardFile> boardFiles = new ArrayList<>();
 
 
-    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String albumGenre, Double price, String agency, String content, LocalDate releaseDate, Long stockQuantity, List<Comment> comments, List<AlbumGenre> albumGenres, List<BoardFile> boardFiles) {
+    public Board(Long id, String title, String artist, AlbumFormat albumFormat, Double price, String agency, String content, LocalDate releaseDate, Long stockQuantity, List<Comment> comments, List<AlbumGenre> albumGenres, List<BoardFile> boardFiles) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.albumFormat = albumFormat;
-        this.albumGenre = albumGenre;
         this.price = price;
         this.agency = agency;
         this.content = content;

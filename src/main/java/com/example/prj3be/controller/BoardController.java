@@ -1,9 +1,6 @@
 package com.example.prj3be.controller;
 
-import com.example.prj3be.domain.AlbumDetail;
-import com.example.prj3be.domain.AlbumFormat;
-import com.example.prj3be.domain.Board;
-import com.example.prj3be.domain.BoardFile;
+import com.example.prj3be.domain.*;
 import com.example.prj3be.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -13,18 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
 
 @RestController
 //@RequiredArgsConstructor
 @RequestMapping("/api/board")
 public class BoardController {
     private final BoardService boardService;
-
 
     @GetMapping("list")
     public Page<Board> list(Pageable pageable,
@@ -43,16 +38,15 @@ public class BoardController {
 
     @PostMapping("add")
     public void add(@Validated Board saveBoard,
+                    @RequestParam(required = false) String[] albumDetails,
                     @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
-        System.out.println(saveBoard);
-        boardService.save(saveBoard, files);
-    }
 
-    //희연이 코드
-//    @GetMapping("id/{id}")
-//    public Board get(@PathVariable Long id) {
-//        return boardService.getBoardById(id).orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
-//    }
+        List<AlbumDetail> AlbumDetailList = Arrays.stream(albumDetails)
+                .map(AlbumDetail::valueOf)
+                .collect(Collectors.toList());
+
+        boardService.save(saveBoard, AlbumDetailList , files);
+    }
 
     @GetMapping("id/{id}")
     public Optional<Board> get(@PathVariable Long id) {

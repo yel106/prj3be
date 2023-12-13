@@ -2,12 +2,10 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.domain.*;
 
+import com.example.prj3be.repository.AlbumGenreRepository;
 import com.example.prj3be.repository.BoardFileRepository;
 import com.example.prj3be.repository.BoardRepository;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +19,11 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.example.prj3be.domain.QAlbumGenre.albumGenre;
 import static com.example.prj3be.domain.QBoard.board;
 
 @Service
@@ -33,6 +32,7 @@ import static com.example.prj3be.domain.QBoard.board;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
+    private final AlbumGenreRepository albumGenreRepository;
 
     @Value("${image.file.prefix}")
     private String urlPrefix;
@@ -52,11 +52,11 @@ public class BoardService {
             builder.and(qBoard.title.containsIgnoreCase(title));
         }
         //AlbumFormat 검색조건
-        if ( albumFormat !=null) {
+        if (albumFormat != null) {
             builder.and(qBoard.albumFormat.eq(albumFormat));
         }
         //AlbumDetail 검색조건
-        if (albumDetails !=null && !albumDetails.isEmpty()) {
+        if (albumDetails != null && !albumDetails.isEmpty()) {
             BooleanBuilder genreBuilder = new BooleanBuilder();
             for (AlbumDetail detail :
                     albumDetails) {
@@ -78,29 +78,40 @@ public class BoardService {
     }
 
 
-    public void save(Board board, MultipartFile[] files) throws IOException {
-        board.setId(10L);
-        boardRepository.save(board); //jpa의 save()메소드엔 파일을 넣지 못함
+    public void save(Board board, List<AlbumDetail> albumDetails, MultipartFile[] files) throws IOException {
+        boardRepository.save(board);//jpa의 save()메소드엔 파일을 넣지 못함
 
-        Long id = board.getId();
+        List<AlbumGenre> albumGenreList = new ArrayList<>();
+        for (AlbumDetail detail : albumDetails) {
+            AlbumGenre albumGenre = AlbumGenre.builder()
+                    .board(board)
+                    .albumDetail(detail)
+                    .build();
+            albumGenreList.add(albumGenre);
+        }
+        albumGenreRepository.saveAll(albumGenreList);   // List처럼 n개의 데이터 저장
+
+
         BoardFile boardFile = new BoardFile();
-        Optional<Board> findBoard = boardRepository.findById(id);
+        Optional<Board> findBoard = boardRepository.findById(board.getId()); //board.getId()로 변경
         Board savedBoard = findBoard.get();
 
 
-        for (int i = 0; i < files.length; i++) {
-            String url = urlPrefix + "prj3/"+ id +"/" + files[i].getOriginalFilename();
+        for (int i = 0;
+             i < files.length; i++) {
+            String url = urlPrefix + "prj3/" + board.getId() + "/" + files[i].getOriginalFilename();
             boardFile.setFileName(files[i].getOriginalFilename());
             boardFile.setFileUrl(url);
             boardFile.setBoard(savedBoard);
             boardFileRepository.save(boardFile);    //boardFile 테이블에 files 정보(fileName, fileUrl) 저장
-            upload(files[i], id);
+            upload(files[i], board.getId());
         }
+
     }
 
     //AWS s3에 파일 업로드
-    private void upload(MultipartFile file,Long id) throws IOException {
-        String key = "prj3/" + id + "/" +file.getOriginalFilename();
+    private void upload(MultipartFile file, Long id) throws IOException {
+        String key = "prj3/" + id + "/" + file.getOriginalFilename();
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -158,7 +169,7 @@ public class BoardService {
 //        boardFileRepository.deleteBoardFileByBoardId(id);
 
         BoardFile boardFile = new BoardFile();
-        String url = urlPrefix + "prj3/"+ id +"/" + uploadFiles.getOriginalFilename();
+        String url = urlPrefix + "prj3/" + id + "/" + uploadFiles.getOriginalFilename();
         boardFile.setFileName(uploadFiles.getOriginalFilename());
         boardFile.setFileUrl(url);
         boardFile.setBoard(updatedBoard);
@@ -176,12 +187,13 @@ public class BoardService {
         return boardFileRepository.findFileUrlsByBoardId(id);
     }
 
-
-    public BoardService(BoardRepository boardRepository,BoardFileRepository boardFileRepository, S3Client s3){
+    public BoardService(BoardRepository boardRepository, BoardFileRepository boardFileRepository, AlbumGenreRepository albumGenreRepository, S3Client s3) {
         this.boardRepository = boardRepository;
         this.boardFileRepository = boardFileRepository;
+        this.albumGenreRepository = albumGenreRepository;
         this.s3 = s3;
     }
+
 
 //    public void save(Board saveBoard, String imageURL) {
 //        saveBoard.setImageURL(imageURL);
@@ -191,7 +203,6 @@ public class BoardService {
 //        boardRepository.save(saveBoard);
 //        boardFileRepository.save(boardFile);
 //    }
-
 
 
 //    public void saveWithImageURL(Board saveBoard, String imageURL) {
