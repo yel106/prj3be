@@ -79,7 +79,7 @@ public class BoardService {
 
 
     public void save(Board board, List<AlbumDetail> albumDetails, MultipartFile[] files) throws IOException {
-        boardRepository.save(board);//jpa의 save()메소드엔 파일을 넣지 못함
+        boardRepository.save(board);    //jpa의 save()메소드엔 파일을 넣지 못함
 
         List<AlbumGenre> albumGenreList = new ArrayList<>();
         for (AlbumDetail detail : albumDetails) {

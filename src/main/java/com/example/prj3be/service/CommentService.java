@@ -2,6 +2,7 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
+import com.example.prj3be.repository.BoardRepository;
 import com.example.prj3be.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,15 +18,24 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
+    private final BoardRepository boardRepository;
 
     public Page<Comment> commentListAll(Pageable pageable) {
         Page<Comment> commentALl = commentRepository.findAll(pageable);
         return commentALl;
     }
 
-    public Comment write(Map<String, Object> map) {
-        Comment comment = new Comment(null, map.get("content").toString(), new Board(Long.valueOf(map.get("boardId").toString()), null, null, null, null, null, null, null, null, null));
-        return commentRepository.save(comment);
+    public Comment write(Comment saveComment) {
+        Board board = new Board();
+        Board saveBoard = boardRepository.save(board);
+//        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("앨범이 존재하지 않습니다."));
+
+        Comment comment = Comment.builder()
+                .board(saveBoard)
+                .content(saveComment.getContent())
+                .build();
+        Comment addComment = commentRepository.save(comment);
+        return addComment;
     }
 
     public Comment update(Long id, Comment updateComment) {
