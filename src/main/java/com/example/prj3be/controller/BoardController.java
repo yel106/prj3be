@@ -83,7 +83,6 @@ public class BoardController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
-
     }
 
 

@@ -36,6 +36,7 @@ import java.time.LocalDate;
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
@@ -147,13 +148,24 @@ public class MemberController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteAccount(@PathVariable Long id) {
+    public ResponseEntity deleteAccount(@PathVariable Long id) {
         // TODO 계정 삭제 전 참조 무결성을 위해 점검해야할 것:
         // social 멤버인지, 맞다면 social Token 삭제됐는지
         // (레코드 전체, socialTokenRepository -> findAndDeleteTokenById 사용)
         // fresh_token 삭제 됐는지
+        String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!logId.equals("anonymousUser")) {
+            tokenProvider.deleteRefreshTokenBylogId(logId);
+        }else{
+            //토큰 만료 된 경우 => 일단 그냥 id를 통해서 삭제 하는 걸로
+            tokenProvider.deleteRefreshTokenById(id);
+        }
         // payment에서 해당 멤버 관련 레코드 삭제됐는지
         // 해당 멤버별  like 삭제됐는지
+
+        //회원 삭제
+        memberService.deleteMember(id);
+        return ResponseEntity.ok().build();
     }
 
 }

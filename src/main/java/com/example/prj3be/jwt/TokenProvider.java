@@ -1,6 +1,7 @@
 package com.example.prj3be.jwt;
 
 import com.example.prj3be.domain.FreshToken;
+import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.repository.FreshTokenRepository;
 import com.example.prj3be.repository.MemberRepository;
@@ -8,6 +9,7 @@ import com.example.prj3be.service.MemberDetailService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -146,14 +148,22 @@ public class TokenProvider implements InitializingBean {
         // 소셜 멤버인지 확인
         Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
         System.out.println("isSocialMember = " + isSocialMember);
-        if(isSocialMember) {
+        if(isSocialMember && (isSocialMember != null)) {
             id = memberRepository.findIdByLogId(logId);
             System.out.println("isSocialMember : " + isSocialMember);
         }
         freshTokenRepository.deleteById(logId);
         return id;
     }
-
+    // 회원 탈퇴시 리프레시 토큰 삭제
+    public void deleteRefreshTokenBylogId(String name) {
+        freshTokenRepository.deleteById(name);
+    }
+    public void deleteRefreshTokenById(Long id){
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + id));
+        freshTokenRepository.deleteById(member.getLogId());
+    }
     //엑세스 토큰의 정보를 이용해 Authentication 객체 리턴
     public Authentication getAuthentication(String token){
         // 토큰을 이용해 클레임 생성
@@ -200,6 +210,7 @@ public class TokenProvider implements InitializingBean {
         //유저객체, 토큰, 권한 객체로 Authentication 리턴
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
+
     // 토큰의 유효성 검증을 수행
 
     public boolean validateToken(String token){
