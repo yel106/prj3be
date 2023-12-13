@@ -28,7 +28,6 @@ public class CommentService {
     public Comment write(Comment saveComment) {
         Board board = new Board();
         Board saveBoard = boardRepository.save(board);
-//        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("앨범이 존재하지 않습니다."));
 
         Comment comment = Comment.builder()
                 .board(saveBoard)
