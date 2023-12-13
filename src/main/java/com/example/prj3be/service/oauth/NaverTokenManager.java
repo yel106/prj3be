@@ -76,7 +76,7 @@ public class NaverTokenManager implements SocialTokenManager {
     };
 
     @Override
-    public ResponseEntity<String> revokeToken(Long id) {
+    public ResponseEntity revokeToken(Long id) {
         String accessToken = socialTokenRepository.findAccessTokenById(id);
 
         HttpHeaders headers = new HttpHeaders();
@@ -92,18 +92,35 @@ public class NaverTokenManager implements SocialTokenManager {
                 .queryParams(queryParams)
                 .encode().build().toString();
 
+        return tryRevokeToken(id, headers, revokeTokenURI);
+    }
+
+    @Override
+    public ResponseEntity socialLogout(Long id) {
+        //TODO: 여기도 완전 탈퇴인지 아닌지 확인
+        // 네이버 API는 로그아웃을 지원하지 않음
+        //http://nid.naver.com/nidlogin.logout?returl=http://localhost:8080 로 이동하는 게 최선
+        System.out.println("토큰 데이터베이스에서 삭제");
+        socialTokenRepository.findAndDeleteTokenById(id);
+        System.out.println("네이버 로그아웃 시도를 위해 HttpStatus.Found 리턴합니다. ");
+        return ResponseEntity.status(HttpStatus.FOUND).build();
+    }
+
+    @Override
+    public ResponseEntity tryRevokeToken(Long id, HttpHeaders headers, String revokeTokenURI) {
         try {
-            ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+            ResponseEntity response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 socialTokenRepository.findAndDeleteTokenById(id);
             }
             return response;
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
-            return ResponseEntity.status(e.getRawStatusCode()).body("Error: " + e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getRawStatusCode()).build();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }

@@ -25,6 +25,8 @@ public class KakaoTokenManager implements SocialTokenManager {
     private String KAKAO_SNS_CLIENT_ID;
     @Value("${social.kakao.token.uri}")
     private String KAKAO_SNS_TOKEN_URI;
+    @Value("${social.kakao.logout.uri}")
+    private String KAKAO_SNS_LOGOUT_URI;
     @Value("${social.kakao.revoke.uri}")
     private String KAKAO_SNS_REVOKE_URI;
 
@@ -80,7 +82,20 @@ public class KakaoTokenManager implements SocialTokenManager {
     };
 
     @Override
-    public ResponseEntity<String> revokeToken(Long id) {
+    public ResponseEntity socialLogout(Long id) {
+        String accessToken = socialTokenRepository.findAccessTokenById(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("Authorization", "Bearer " + accessToken);
+
+        String expireTokenURI = UriComponentsBuilder.fromUriString(KAKAO_SNS_LOGOUT_URI)
+                .encode().build().toString();
+
+        return tryRevokeToken(id, headers, expireTokenURI);
+    }
+
+    @Override
+    public ResponseEntity revokeToken(Long id) {
         String accessToken = socialTokenRepository.findAccessTokenById(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -89,17 +104,22 @@ public class KakaoTokenManager implements SocialTokenManager {
         String revokeTokenURI = UriComponentsBuilder.fromUriString(KAKAO_SNS_REVOKE_URI)
                 .encode().build().toString();
 
+        return tryRevokeToken(id, headers, revokeTokenURI);
+    }
+
+    @Override
+    public ResponseEntity tryRevokeToken(Long id, HttpHeaders headers, String revokeTokenURI) {
         try {
-            ResponseEntity<String> response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+            ResponseEntity response = restTemplate.exchange(revokeTokenURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
             if(response.getStatusCode() == HttpStatus.OK) {
                 socialTokenRepository.findAndDeleteTokenById(id);
             }
             return response;
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
-            return ResponseEntity.status(e.getRawStatusCode()).body("Error: " + e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getRawStatusCode()).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

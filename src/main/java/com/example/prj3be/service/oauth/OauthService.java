@@ -2,6 +2,7 @@ package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.constant.Role;
 import com.example.prj3be.constant.SocialLoginType;
+import com.example.prj3be.repository.FreshTokenRepository;
 import com.example.prj3be.repository.SocialTokenRepository;
 import com.example.prj3be.domain.SocialToken;
 import com.example.prj3be.domain.Member;
@@ -12,6 +13,7 @@ import com.example.prj3be.exception.OAuthException;
 import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.repository.MemberRepository;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,11 +28,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class OauthService {
     private final List<SocialOauth> socialOauthList;
+    private final List<SocialTokenManager> socialTokenManagers;
     private final MemberRepository memberRepository;
     private final SocialTokenRepository socialTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -38,7 +42,7 @@ public class OauthService {
     private final TokenProvider tokenProvider;
 
     // 1. redirectURL 만들기
-    public String request(SocialLoginType socialLoginType) {
+    public String loginRequest(SocialLoginType socialLoginType) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
 //        System.out.println("socialOauth = " + socialOauth);
         return socialOauth.getOauthRedirectURL();
@@ -47,6 +51,13 @@ public class OauthService {
     // 1-2. 소셜 타입 찾기
     private SocialOauth findSocialOauthByType(SocialLoginType socialLoginType) {
         return socialOauthList.stream()
+                .filter(x -> x.type() == socialLoginType)
+                .findFirst()
+                .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
+    }
+
+    private SocialTokenManager findSocialTokenManagerByType(SocialLoginType socialLoginType) {
+        return socialTokenManagers.stream()
                 .filter(x -> x.type() == socialLoginType)
                 .findFirst()
                 .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
@@ -82,21 +93,21 @@ public class OauthService {
             member.setIsSocialMember(true);
             memberRepository.save(member);
             System.out.println("New member created : " + member);
-
-            //SocialToken에 소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in 저장
-            tokenInfo = new SocialToken();
-            tokenInfo.setId(member.getId());
-            tokenInfo.setSocialLoginType(socialLoginType);
-            tokenInfo.setAccessToken(oAuthToken.getAccess_token());
-            tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
-            tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
-            tokenInfo.setTokenType(oAuthToken.getToken_type());
-            socialTokenRepository.save(tokenInfo);
-            System.out.println("New token created : " + tokenInfo);
         } else {
             member = existingMember;
             System.out.println("Existing member : " + member);
         }
+
+        //SocialToken에 소셜 타입(로그아웃/토큰 갱신 시 분류 위해), access_token, refresh_token, expires_in 저장
+        tokenInfo = new SocialToken();
+        tokenInfo.setId(member.getId());
+        tokenInfo.setSocialLoginType(socialLoginType);
+        tokenInfo.setAccessToken(oAuthToken.getAccess_token());
+        tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
+        tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
+        tokenInfo.setTokenType(oAuthToken.getToken_type());
+        socialTokenRepository.save(tokenInfo);
+        System.out.println("New token created : " + tokenInfo);
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getLogId(), member.getEmail());
@@ -123,4 +134,20 @@ public class OauthService {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
+
+    public ResponseEntity logoutRequest(Long id) {
+
+        System.out.println("소셜 logoutRequest 연결 성공");
+        SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
+        System.out.println("socialLoginType = " + socialLoginType);
+        SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
+        System.out.println("socialTokenManager = " + socialTokenManager);
+
+        ResponseEntity response = socialTokenManager.socialLogout(id);
+        System.out.println("소셜 logoutRequest 끝 : " + response);
+
+        return response;
+    }
+
+
 }

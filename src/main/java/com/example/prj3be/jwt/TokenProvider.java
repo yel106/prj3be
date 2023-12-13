@@ -137,9 +137,21 @@ public class TokenProvider implements InitializingBean {
         return null;
     }
     //로그아웃 시 refreshToken 삭제
-    public void deleteRefreshToken(String refreshToken) {
+    public Long deleteRefreshToken(String refreshToken) {
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        System.out.println("logId = " + logId);
+        Long id = null;
+        System.out.println("id = " + id);
+
+        // 소셜 멤버인지 확인
+        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
+        System.out.println("isSocialMember = " + isSocialMember);
+        if(isSocialMember) {
+            id = memberRepository.findIdByLogId(logId);
+            System.out.println("isSocialMember : " + isSocialMember);
+        }
         freshTokenRepository.deleteById(logId);
+        return id;
     }
 
     //엑세스 토큰의 정보를 이용해 Authentication 객체 리턴
