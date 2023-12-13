@@ -135,7 +135,7 @@ public class OauthService {
         }
     }
 
-    public ResponseEntity<String> logoutRequest(Long id) {
+    public ResponseEntity logoutRequest(Long id) {
 
         System.out.println("소셜 logoutRequest 연결 성공");
         SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
@@ -143,7 +143,7 @@ public class OauthService {
         SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
         System.out.println("socialTokenManager = " + socialTokenManager);
 
-        ResponseEntity<String> response = socialTokenManager.socialLogout(id);
+        ResponseEntity response = socialTokenManager.socialLogout(id);
         System.out.println("소셜 logoutRequest 끝 : " + response);
 
         return response;
