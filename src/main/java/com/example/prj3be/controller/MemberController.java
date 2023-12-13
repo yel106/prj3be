@@ -74,6 +74,7 @@ public class MemberController {
             dto.setLogId(findMember.getLogId());
             dto.setName(findMember.getName());
             dto.setAddress(findMember.getAddress());
+            dto.setAge(findMember.getAge());
             dto.setEmail(findMember.getEmail());
             dto.setGender(findMember.getGender());
             dto.setRole(findMember.getRole());
