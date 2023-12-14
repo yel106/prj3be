@@ -64,7 +64,5 @@ public class Board {
         this.boardFiles = boardFiles;
     }
 
-    public Board(Long boardId, Object o, Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
-    }
 }
 
