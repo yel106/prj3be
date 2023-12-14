@@ -7,7 +7,7 @@ import lombok.ToString;
 @Entity
 @Table(name="cart")
 @Data
-@ToString
+//@ToString
 public class Cart {
     @Id
     @Column(name= "cart_id")
