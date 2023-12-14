@@ -38,6 +38,9 @@ public class Board {
     private Long stockQuantity;
 
     @OneToMany(mappedBy = "board")
+    private List <Likes> likes_board;
+
+    @OneToMany(mappedBy = "board")
     @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 
@@ -65,4 +68,3 @@ public class Board {
     }
 
 }
-

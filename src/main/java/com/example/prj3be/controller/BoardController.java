@@ -2,7 +2,6 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.*;
 import com.example.prj3be.service.BoardService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +34,9 @@ public class BoardController {
         List<AlbumDetail> albumDetailList = (albumDetails == null) ? null : Arrays.stream(albumDetails).map(AlbumDetail::valueOf).collect(Collectors.toList());
 
         Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice);
+
+
+        // TODO : stackoverflowerror..... why????
         return boardListPage;
     }
 
@@ -84,9 +86,6 @@ public class BoardController {
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
     }
-
-
-
 
     //희연이한테 물어보기
     public BoardController(BoardService boardService) {

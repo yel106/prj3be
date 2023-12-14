@@ -36,6 +36,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final BooleanPath isSocialMember = createBoolean("isSocialMember");
 
+    public final ListPath<Likes, QLikes> likes_member = this.<Likes, QLikes>createList("likes_member", Likes.class, QLikes.class, PathInits.DIRECT2);
+
     public final StringPath logId = createString("logId");
 
     public final StringPath name = createString("name");

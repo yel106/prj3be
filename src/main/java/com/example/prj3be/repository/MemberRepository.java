@@ -31,6 +31,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
     Boolean checkSocialMemberByLogId(String logId);
 
 
+
 //    @Query("SELECT new com.example.prj3be.dto.MemberInfoDto(m.logId, m.name, m.email, m.address, m.gender, m.role) FROM Member m WHERE m.logId = :logId")
 //    MemberInfoDto findMemberInfoByLogId(String logId);
 }
