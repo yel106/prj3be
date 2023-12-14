@@ -28,6 +28,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.util.List;
@@ -154,10 +156,35 @@ public class OauthService {
         return response;
     }
 
-//    @Scheduled(fixedRate=60000) // 59 min * 60 sec * 1000 millisecond = 3540000 59분: 토큰 만료 최소 시간 -1분
-//    public void refreshToken() {
-//        System.out.println(" 소셜 토큰 만료를 확인해봅니다 ");
-//    }
+    public ResponseEntity<Integer> refreshAccessToken(String refreshToken) {
+        //리프래쉬 토큰을 이용해 사용자의 아이디를 가져옴
+        Long id = tokenProvider.getIdRefreshToken(refreshToken);
+        //아이디로 소셜타입을 찾아와 저장
+        SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
+        //소셜 타입에 따른 메소드로 연결
+        SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
 
+        try{
+            //토큰 유효한지 확인하고 요청 보내기
+            ResponseEntity<String> response = socialTokenManager.checkAndRefreshToken(id);
+            //받은 거 프로세스해서
+            Map<String, Object> tokenInfoMap = socialTokenManager.processRefreshResponse(response);
+            //테이블 업데이트하고
+            socialTokenManager.updateTokenInfo(id, tokenInfoMap);
+
+            //expires_in 리턴하기
+            Integer expiresIn = (Integer) tokenInfoMap.get("expiresIn");
+            return ResponseEntity.ok(expiresIn);
+
+        } catch (HttpClientErrorException.Forbidden e) {
+            //소셜 토큰이 유효하지 않으면 Forbidden이 리턴됨
+            //TODO: JWT 토큰 만료시키는 방법 추가
+            System.out.println("e.getMessage() = " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (RestClientException e) {
+            System.out.println("e.getMessage() = " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
 }

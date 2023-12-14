@@ -145,16 +145,27 @@ public class TokenProvider implements InitializingBean {
         Long id = null;
         System.out.println("id = " + id);
 
-        // 소셜 멤버인지 확인
-        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
-        System.out.println("isSocialMember = " + isSocialMember);
-        if(isSocialMember && (isSocialMember != null)) {
+
+        if(isSocialMember(refreshToken)) {
             id = memberRepository.findIdByLogId(logId);
-            System.out.println("isSocialMember : " + isSocialMember);
         }
         freshTokenRepository.deleteById(logId);
         return id;
     }
+
+    // 소셜 멤버인지 아닌지 논리값 리턴
+    public Boolean isSocialMember(String refreshToken) {
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
+
+        return isSocialMember != null ? isSocialMember : false; //NullPointerException 나면 여기임
+    }
+
+    public Long getIdRefreshToken(String refreshToken) {
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        return memberRepository.findIdByLogId(logId);
+    }
+
     // 회원 탈퇴시 리프레시 토큰 삭제
     public void deleteRefreshTokenBylogId(String name) {
         freshTokenRepository.deleteById(name);

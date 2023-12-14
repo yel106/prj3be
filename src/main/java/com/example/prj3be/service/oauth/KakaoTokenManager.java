@@ -13,6 +13,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,18 +36,28 @@ public class KakaoTokenManager implements SocialTokenManager {
 
     @Override
     public boolean isTokenExpired(Long id) {
-        return true;
+        LocalDateTime currentTime = LocalDateTime.now();
+        Map<String, Object> tokenInfo = socialTokenRepository.getUpdateTimeAndExpiresInById(id);
+        LocalDateTime updateTime = (LocalDateTime) tokenInfo.get("updateTime");
+        int expiresIn = (Integer) tokenInfo.get("expiresIn");
+
+        LocalDateTime expirationTime = updateTime.plusSeconds(expiresIn);
+
+        return currentTime.isAfter(expirationTime);
     }; // 토큰 만료 여부 체크하는 논리형 메소드
     @Override
     public ResponseEntity<String> checkAndRefreshToken(Long id) {
-        String accessToken = socialTokenRepository.findAccessTokenById(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE));
-        headers.add("Authorization", "Bearer " + accessToken); //Bearer 뒤 공백 꼭 필요, 절대로 삭제하지 않기
+        if(!isTokenExpired(id)) {
+            String accessToken = socialTokenRepository.findAccessTokenById(id);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE));
+            headers.add("Authorization", "Bearer " + accessToken); //Bearer 뒤 공백 꼭 필요, 절대로 삭제하지 않기
 
-        String refreshURI = getRefreshUri(id);
+            String refreshURI = getRefreshUri(id);
 
-        return restTemplate.exchange(refreshURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+            return restTemplate.exchange(refreshURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }; //토큰 갱신 요청하는 메소드
     @Override
     public String getRefreshUri(Long id) {
@@ -69,8 +80,6 @@ public class KakaoTokenManager implements SocialTokenManager {
         Map<String, Object> tokenInfoMap = new HashMap<>();
 
         tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
-        tokenInfoMap.put("tokenType", jsonObject.get("token_type"));
-        tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
         tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
 
         return tokenInfoMap;

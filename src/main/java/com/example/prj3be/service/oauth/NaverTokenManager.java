@@ -63,8 +63,6 @@ public class NaverTokenManager implements SocialTokenManager {
         Map<String, Object> tokenInfoMap = new HashMap<>();
 
         tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
-        tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
-        tokenInfoMap.put("tokenType", jsonObject.get("token_type"));
         tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
 
         return tokenInfoMap;
@@ -97,9 +95,8 @@ public class NaverTokenManager implements SocialTokenManager {
 
     @Override
     public ResponseEntity socialLogout(Long id) {
-        //TODO: 여기도 완전 탈퇴인지 아닌지 확인
         // 네이버 API는 로그아웃을 지원하지 않음
-        //http://nid.naver.com/nidlogin.logout?returl=http://localhost:8080 로 이동하는 게 최선
+        // http://nid.naver.com/nidlogin.logout 로 이동하는 게 최선
         System.out.println("토큰 데이터베이스에서 삭제");
         socialTokenRepository.findAndDeleteTokenById(id);
         System.out.println("네이버 로그아웃 시도를 위해 HttpStatus.Found 리턴합니다. ");

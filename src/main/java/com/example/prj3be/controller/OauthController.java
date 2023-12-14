@@ -3,11 +3,13 @@ package com.example.prj3be.controller;
 import com.example.prj3be.constant.SocialLoginType;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.exception.OAuthException;
+import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.oauth.OauthService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.query.sqm.sql.ConversionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -37,6 +39,15 @@ public class OauthController {
         return tokenDto;
     }
 
+    @GetMapping("/api/auth/refreshToken")
+    public ResponseEntity<Integer> oAuthRefresh(@RequestHeader("Authorization")String refreshToken) {
+        if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
+            refreshToken = refreshToken.substring(7);
+        }
+
+        ResponseEntity<Integer> expiresIn = oauthService.refreshAccessToken(refreshToken);
+        return expiresIn;
+    }
 
     @ExceptionHandler(OAuthException.class)
     public ResponseEntity<String> oAuthExceptionHandleer(OAuthException e) {
