@@ -1,12 +1,15 @@
 name: Deploy workflow on production environment
 on:
   push:
-    branches: ["master"]
+    branches: [ "master" ]
+  pull_request:
+    branches:
+      - master
 
 env:
   PROJECT_NAME: prj3-be
   BUCKET_NAME: study999888777
-  CODE_DEPLOY_APP_NAME: codedeploy
+  CODE_DEPLOY_APP_NAME: deploy-yelin11
   DEPLOYMENT_GROUP_NAME: production
 
 jobs:
