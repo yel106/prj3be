@@ -19,8 +19,9 @@ public class Order extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="order_id")
     private Long id;
-    private Long price;
-    private String itemName;
+    private Integer price;
+    @JoinColumn(name = "order_name")
+    private String orderName;
 
     private String orderUid; // 주문번호
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,12 +31,13 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "payment_id")
     private Payment payment;
     @Builder
-    public Order(Long price, String itemName, String orderUid, Member member, Payment payment){
+    public Order(Integer price,String orderName, String orderUid, Member member, Payment payment){
         this.price=price;
-        this.itemName=itemName;
+        this.orderName=orderName;
         this.orderUid=orderUid;
         this.member=member;
         this.payment=payment;
+        this.orderName=orderName;
     }
 
 

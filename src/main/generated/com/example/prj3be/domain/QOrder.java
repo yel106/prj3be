@@ -26,15 +26,15 @@ public class QOrder extends EntityPathBase<Order> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath itemName = createString("itemName");
-
     public final QMember member;
+
+    public final StringPath orderName = createString("orderName");
 
     public final StringPath orderUid = createString("orderUid");
 
     public final QPayment payment;
 
-    public final NumberPath<Long> price = createNumber("price", Long.class);
+    public final NumberPath<Integer> price = createNumber("price", Integer.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;

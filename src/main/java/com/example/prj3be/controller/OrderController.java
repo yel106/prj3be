@@ -1,25 +1,44 @@
 package com.example.prj3be.controller;
 
+import com.example.prj3be.domain.Member;
+import com.example.prj3be.domain.Order;
+import com.example.prj3be.domain.Payment;
+import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.dto.OrderFormDto;
+import com.example.prj3be.service.OrderService;
+import com.example.prj3be.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/order")
 public class OrderController {
-    @PostMapping
-    public void order(@Validated @RequestBody OrderFormDto dto){
-        //Order order = new Order();
-
-        System.out.println("dto.getName() = " + dto.getName());
-        System.out.println("dto.getAddr() = " + dto.getAddr());
-        System.out.println("dto.getPhone() = " + dto.getPhone());
-        System.out.println("dto.getTotalPrice() = " + dto.getTotalPrice());
-        System.out.println("dto.getPayment() = " + dto.getPayment());
+    private final OrderService orderService;
+    private final PaymentService paymentService;
+    @GetMapping()
+    public ResponseEntity method1() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!authentication.getName().equals("anonymousUser")) {
+            Member findMember = orderService.findMemberByLogId(authentication.getName());
+            FindMemberDto dto = new FindMemberDto();
+            dto.setLogId(findMember.getLogId());
+            dto.setName(findMember.getName());
+            dto.setAddress(findMember.getAddress());
+            dto.setEmail(findMember.getEmail());
+            dto.setGender(findMember.getGender());
+            dto.setRole(findMember.getRole());
+            System.out.println(dto);
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+
 }
