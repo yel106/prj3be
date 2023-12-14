@@ -2,11 +2,13 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.config.PaymentConfig;
 import com.example.prj3be.domain.Member;
+import com.example.prj3be.domain.Order;
 import com.example.prj3be.domain.Payment;
 import com.example.prj3be.dto.PaymentSuccessDto;
 import com.example.prj3be.exception.CustomLogicException;
 import com.example.prj3be.exception.ExceptionCode;
 import com.example.prj3be.repository.MemberRepository;
+import com.example.prj3be.repository.OrderRepository;
 import com.example.prj3be.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -19,10 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import org.springframework.http.HttpHeaders;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Transactional
 @RequiredArgsConstructor
@@ -31,9 +30,14 @@ public class PaymentService {
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentConfig paymentConfig;
-    public Payment requestTossPayment(Payment payment, String email) throws CustomLogicException {
-        Member member = memberRepository.findByEmail(email);
+    private final OrderRepository orderRepository;
+
+    public Payment requestTossPayment(Payment payment, String logId) throws CustomLogicException {
+        // 처음 결제 요청시 값들에 대한 검증
+        Optional<Member> findMember = memberRepository.findByLogId(logId);
+        Member member = findMember.orElseThrow();
         if (payment.getAmount() < 1000) {
+            //결제 금액이 1000원 미만이면 오류
             throw new CustomLogicException(ExceptionCode.INVALID_PAYMENT_AMOUNT);
         }
         payment.setMember(member);
@@ -43,10 +47,21 @@ public class PaymentService {
     public PaymentSuccessDto tossPaymentSuccess(String paymentKey, String orderId, Long amount) throws JSONException {
         Payment payment = verifyPayment(orderId,amount);
         PaymentSuccessDto result = requestPaymentAccept(paymentKey,orderId,amount);
-        payment.setPaymentKey(paymentKey); //추후 결제 취소 / 결제 조회
+        payment.setPaymentKey(paymentKey); //추후 결제 취소 / 결제 조회!
         payment.setPaySuccessYN(true);
 //        payment.getMember().setPoint(payment.getMember().getPoint() + amount); 나중에 추후 포인트 사용시 이용.
 //        memberService.updateMemberCache(payment.getCustomer());
+        paymentRepository.save(payment);
+        String paymentName = payment.getPaymentName();
+        Member member = payment.getMember();
+        Order order = Order.builder()
+                .price(amount.intValue())
+                .payment(payment)
+                .orderUid(orderId)
+                .member(member)
+                .orderName(paymentName)
+                .build();
+        orderRepository.save(order);
         return result;
     }
     public Payment verifyPayment(String orderId, Long amount) {
@@ -90,8 +105,10 @@ public class PaymentService {
         return headers;
     }
 
-    public Map canclePayment(String memberEmail, String paymentKey, String cancelReason) {
-        Payment payment = paymentRepository.findByPaymentKeyAndMember_Email(paymentKey,memberEmail).orElseThrow(() -> {
+    public Map cancelPayment(String logId, String paymentKey, String cancelReason) {
+        Optional<Member> byLogId = memberRepository.findByLogId(logId);
+        Member member = byLogId.orElseThrow();
+        Payment payment = paymentRepository.findByPaymentKeyAndMember_Email(paymentKey, member.getEmail()).orElseThrow(() -> {
             throw new CustomLogicException(ExceptionCode.PAYMENT_NOT_FOUND);
         });
         return payCancel(paymentKey,cancelReason);
@@ -105,5 +122,10 @@ public class PaymentService {
         return restTemplate.postForObject(PaymentConfig.URL + paymentKey + "/cancel",
                 new HttpEntity<>(params, headers),
                 Map.class);
+    }
+
+    public Payment findPayment(String paymentKey) {
+        Payment payment = paymentRepository.findByPaymentKey(paymentKey).orElseThrow();
+        return payment;
     }
 }

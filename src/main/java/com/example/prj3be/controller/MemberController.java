@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @RestController
@@ -36,6 +37,7 @@ import java.time.LocalDate;
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
@@ -71,15 +73,12 @@ public class MemberController {
             System.out.println("authentication.getName() = " + authentication.getName());
             Member findMember = memberService.findMemberByLogId(authentication.getName());
             FindMemberDto dto = new FindMemberDto();
-            dto.setId(findMember.getId());
             dto.setLogId(findMember.getLogId());
             dto.setName(findMember.getName());
             dto.setAddress(findMember.getAddress());
-            dto.setAge(findMember.getAge());
             dto.setEmail(findMember.getEmail());
             dto.setGender(findMember.getGender());
             dto.setRole(findMember.getRole());
-
             return ResponseEntity.ok(dto);
         }
 
@@ -89,8 +88,7 @@ public class MemberController {
     @PreAuthorize("#dto.logId == authentication.name")
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
-        System.out.println("dto = " + dto);
-        memberService.update(id, dto);
+            memberService.update(id,dto);
     }
     @GetMapping(value = "check",params = "email")
     public ResponseEntity method4(String email){
@@ -116,6 +114,10 @@ public class MemberController {
         System.out.println(category);
         Page<Member> memberPage = memberService.findMemberList(pageable,keyword,category);
         return memberPage.map(FindMemberDto::new);
+    }
+    @GetMapping("/{logId}/orders")
+    public List<String> method7(@PathVariable String logId){
+        return memberService.findOrderListByLogId(logId);
     }
 
 
@@ -147,13 +149,24 @@ public class MemberController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteAccount(@PathVariable Long id) {
+    public ResponseEntity deleteAccount(@PathVariable Long id) {
         // TODO 계정 삭제 전 참조 무결성을 위해 점검해야할 것:
         // social 멤버인지, 맞다면 social Token 삭제됐는지
         // (레코드 전체, socialTokenRepository -> findAndDeleteTokenById 사용)
         // fresh_token 삭제 됐는지
+        String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!logId.equals("anonymousUser")) {
+            tokenProvider.deleteRefreshTokenBylogId(logId);
+        }else{
+            //토큰 만료 된 경우 => 일단 그냥 id를 통해서 삭제 하는 걸로
+            tokenProvider.deleteRefreshTokenById(id);
+        }
         // payment에서 해당 멤버 관련 레코드 삭제됐는지
         // 해당 멤버별  like 삭제됐는지
+
+        //회원 삭제
+        memberService.deleteMember(id);
+        return ResponseEntity.ok().build();
     }
 
 }

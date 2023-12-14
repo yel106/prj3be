@@ -1,34 +1,35 @@
 package com.example.prj3be.domain;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table (schema = "prj3")
+@Table(schema = "prj3")
 @NoArgsConstructor
-@Getter @Setter
-public class BoardFile {
+@Getter
+@Setter
+public class AlbumGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "boardFile_id")
     private Long id;
-    private String fileName;
-    private String fileUrl;
 
+    @Enumerated(EnumType.STRING)
+    private AlbumDetail albumDetail;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
-    @JsonBackReference
-    @JsonIgnore
     private Board board;
 
-    public BoardFile(Long id, String fileName, String fileUrl) {
+    @Builder //빌더 메소드 자동생성
+    public AlbumGenre(Long id, AlbumDetail albumDetail, Board board) {
         this.id = id;
-        this.fileName = fileName;
-        this.fileUrl = fileUrl;
+        this.albumDetail = albumDetail;
+        this.board = board;
     }
+
 }

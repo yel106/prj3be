@@ -14,6 +14,8 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
     Optional<String> findEmailByEmail(String email);
     @Query("SELECT m.logId FROM Member m WHERE m.logId = :logId")
     Optional<String> findLogIdByLogId(String logId);
+    @Query("SELECT m FROM Member m WHERE m.logId = :logId")
+    Optional<Member> findByLogId(String logId);
 
     @Query("SELECT m FROM Member m WHERE m.email=:email AND m.logId = :logId")
     Member findByEmailAndLogId(String email, String logId);
@@ -29,6 +31,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
 
     @Query("SELECT m.isSocialMember FROM Member m WHERE m.logId = :logId")
     Boolean checkSocialMemberByLogId(String logId);
+
 
 
 //    @Query("SELECT new com.example.prj3be.dto.MemberInfoDto(m.logId, m.name, m.email, m.address, m.gender, m.role) FROM Member m WHERE m.logId = :logId")

@@ -1,10 +1,14 @@
 package com.example.prj3be.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
@@ -16,10 +20,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 public class Board {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
     private Long id;
     private String title;
@@ -28,39 +31,40 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private AlbumFormat albumFormat;
 
-    private String price;
+    private Double price;
     private String agency;
     private String content;
     private LocalDate releaseDate;
     private Long stockQuantity;
 
-
-    private String fileName;
-    private String category;
-
-//    @OneToOne
-//    @JoinColumn(name = "item_id") //item_id를 외래키로 사용. item_id가 Board의 pk를 참조
-//    private Item item;
+    @OneToMany(mappedBy = "board")
+    private List <Likes> likes_board;
 
     @OneToMany(mappedBy = "board")
     @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board")
+    private List<AlbumGenre> albumGenres = new ArrayList<>();
+
     @OneToMany(mappedBy = "board")
     @JsonManagedReference
     private List<BoardFile> boardFiles = new ArrayList<>();
 
-    public Board(Long id, String title, String artist, AlbumFormat albumFormat, String price, String agency, LocalDate releaseDate, List<Comment> comments) {
+
+    public Board(Long id, String title, String artist, AlbumFormat albumFormat, Double price, String agency, String content, LocalDate releaseDate, Long stockQuantity, List<Comment> comments, List<AlbumGenre> albumGenres, List<BoardFile> boardFiles) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.albumFormat = albumFormat;
         this.price = price;
         this.agency = agency;
+        this.content = content;
         this.releaseDate = releaseDate;
+        this.stockQuantity = stockQuantity;
         this.comments = comments;
+        this.albumGenres = albumGenres;
+        this.boardFiles = boardFiles;
+    }
 
-    }
-    public String getFileName() {
-        return this.fileName;
-    }
 }

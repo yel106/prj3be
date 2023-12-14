@@ -15,6 +15,7 @@ import java.util.Set;
 @Table(name="member")
 @Getter
 @Setter
+//@ToString // TODO: 지워도됨 테스트하려구 작성함.. 안지워도됨.. 안지워도 별일없음
 public class Member extends BaseTimeEntity{
     @Id
     @Column(name="member_id")
@@ -54,6 +55,10 @@ public class Member extends BaseTimeEntity{
 //    )
 //    private Set<Authority> authorities;
 
+
+
+    @OneToMany(mappedBy = "member")
+    private List<Likes> likes_member;
 
     public Member() {
         this.logId = null;
