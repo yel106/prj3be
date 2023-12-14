@@ -34,6 +34,9 @@ public class BoardController {
         List<AlbumDetail> albumDetailList = (albumDetails == null) ? null : Arrays.stream(albumDetails).map(AlbumDetail::valueOf).collect(Collectors.toList());
 
         Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice);
+
+
+        // TODO : stackoverflowerror..... why????
         return boardListPage;
     }
 
