@@ -26,7 +26,6 @@ public class MemberFormDto {
     @Positive
     private Integer firstDigit; // 주민등록번호 뒤 첫번째 숫자.
 
-    @NotBlank(message = "주소는 필수 입력값입니다.")
     private String address;
 
     private Role role;

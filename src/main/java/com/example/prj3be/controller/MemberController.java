@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +36,7 @@ import java.time.LocalDate;
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
@@ -57,26 +59,11 @@ public class MemberController {
         member.setActivated(true);
         memberService.signup(member);
     }
-//    @PostMapping("add/social")
-//    public void socialMethod(@Validated @RequestBody SocialMemberDto dto){
-//        Member member = new Member();
-//        member.setName(dto.getName());
-//        member.setEmail(dto.getEmail());
-//        member.setRole(Role.USER);
-//        memberService.signup(member);
-//    }
+
 
     // 회원 정보
     @GetMapping
     public ResponseEntity<FindMemberDto> method2() {
-//        System.out.println("token1 = " + token);
-//        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
-//             token = token.substring(7);
-//             System.out.println("token2 = " + token);
-//        }
-//        else{
-//            return null;
-//        }
         // access token Jwt Filter에서 SecurityContextHolder에 넣어줌
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("MemberController.method2");
@@ -85,9 +72,11 @@ public class MemberController {
             System.out.println("authentication.getName() = " + authentication.getName());
             Member findMember = memberService.findMemberByLogId(authentication.getName());
             FindMemberDto dto = new FindMemberDto();
+            dto.setId(findMember.getId());
             dto.setLogId(findMember.getLogId());
             dto.setName(findMember.getName());
             dto.setAddress(findMember.getAddress());
+            dto.setAge(findMember.getAge());
             dto.setEmail(findMember.getEmail());
             dto.setGender(findMember.getGender());
             dto.setRole(findMember.getRole());
@@ -98,9 +87,11 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @PreAuthorize("#dto.logId == authentication.name")
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
-            memberService.update(id,dto);
+        System.out.println("dto = " + dto);
+        memberService.update(id, dto);
     }
     @GetMapping(value = "check",params = "email")
     public ResponseEntity method4(String email){
@@ -156,5 +147,25 @@ public class MemberController {
         return age;
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity deleteAccount(@PathVariable Long id) {
+        // TODO 계정 삭제 전 참조 무결성을 위해 점검해야할 것:
+        // social 멤버인지, 맞다면 social Token 삭제됐는지
+        // (레코드 전체, socialTokenRepository -> findAndDeleteTokenById 사용)
+        // fresh_token 삭제 됐는지
+        String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!logId.equals("anonymousUser")) {
+            tokenProvider.deleteRefreshTokenBylogId(logId);
+        }else{
+            //토큰 만료 된 경우 => 일단 그냥 id를 통해서 삭제 하는 걸로
+            tokenProvider.deleteRefreshTokenById(id);
+        }
+        // payment에서 해당 멤버 관련 레코드 삭제됐는지
+        // 해당 멤버별  like 삭제됐는지
+
+        //회원 삭제
+        memberService.deleteMember(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

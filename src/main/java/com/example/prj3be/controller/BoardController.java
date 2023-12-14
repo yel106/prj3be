@@ -5,6 +5,7 @@ import com.example.prj3be.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 //@RequiredArgsConstructor
@@ -48,12 +51,19 @@ public class BoardController {
         boardService.save(saveBoard, AlbumDetailList , files);
     }
 
+
     @GetMapping("id/{id}")
     public Optional<Board> get(@PathVariable Long id) {
         return boardService.getBoardById(id);
     }
+    @GetMapping("file/id/{id}")
+    public List<String> getURL(@PathVariable Long id) {
+        return boardService.getBoardURL(id);
+    }
+
 
     @PutMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(@PathVariable Long id,
                        Board updateBboard,
                        @RequestParam(value = "uploadFiles", required = false) MultipartFile uploadFiles) throws IOException {
@@ -70,15 +80,13 @@ public class BoardController {
 
 
     @DeleteMapping("remove/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
     }
 
 
-    @GetMapping("file/id/{id}")
-    public List<String> getURL(@PathVariable Long id) {
-        return boardService.getBoardURL(id);
-    }
+
 
     //희연이한테 물어보기
     public BoardController(BoardService boardService) {
