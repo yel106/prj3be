@@ -154,10 +154,10 @@ public class OauthService {
         return response;
     }
 
-    @Scheduled(fixedRate=60000) // 59 min * 60 sec * 1000 millisecond = 3540000 59분: 토큰 만료 최소 시간 -1분
-    public void refreshToken() {
-        System.out.println(" 소셜 토큰 만료를 확인해봅니다 ");
-    }
+//    @Scheduled(fixedRate=60000) // 59 min * 60 sec * 1000 millisecond = 3540000 59분: 토큰 만료 최소 시간 -1분
+//    public void refreshToken() {
+//        System.out.println(" 소셜 토큰 만료를 확인해봅니다 ");
+//    }
 
 
 }
