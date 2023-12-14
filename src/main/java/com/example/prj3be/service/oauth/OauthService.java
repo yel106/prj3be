@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@EnableScheduling
 public class OauthService {
     private final List<SocialOauth> socialOauthList;
     private final List<SocialTokenManager> socialTokenManagers;
@@ -63,6 +67,7 @@ public class OauthService {
                 .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
     }
 
+    @Transactional
     public ResponseEntity<TokenDto> oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
         SocialOauth socialOauth = findSocialOauthByType(socialLoginType);
         ResponseEntity<String> accessTokenResponse = socialOauth.requestAccessToken(code);
@@ -148,6 +153,11 @@ public class OauthService {
 
         return response;
     }
+
+//    @Scheduled(fixedRate=60000) // 59 min * 60 sec * 1000 millisecond = 3540000 59분: 토큰 만료 최소 시간 -1분
+//    public void refreshToken() {
+//        System.out.println(" 소셜 토큰 만료를 확인해봅니다 ");
+//    }
 
 
 }
