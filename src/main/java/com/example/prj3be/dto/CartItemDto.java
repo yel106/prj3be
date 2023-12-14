@@ -3,8 +3,10 @@ package com.example.prj3be.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
 public class CartItemDto {
 
     @NotNull(message = "상품이 입력되지 않았습니다.")

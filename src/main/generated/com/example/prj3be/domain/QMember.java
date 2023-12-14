@@ -34,6 +34,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isSocialMember = createBoolean("isSocialMember");
+
     public final ListPath<Likes, QLikes> likes_member = this.<Likes, QLikes>createList("likes_member", Likes.class, QLikes.class, PathInits.DIRECT2);
 
     public final StringPath logId = createString("logId");
@@ -46,6 +48,8 @@ public class QMember extends EntityPathBase<Member> {
     public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
 
     public final EnumPath<com.example.prj3be.constant.Role> role = createEnum("role", com.example.prj3be.constant.Role.class);
+
+    public final SetPath<SocialToken, QSocialToken> socialTokens = this.<SocialToken, QSocialToken>createSet("socialTokens", SocialToken.class, QSocialToken.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updateTime = _super.updateTime;
