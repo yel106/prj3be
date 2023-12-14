@@ -51,7 +51,7 @@ public class LoginController {
         }
         if(tokenProvider.validateToken(accessToken)){
             String authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList().get(0).toString();
-
+            System.out.println("authority = " + authority);
             return ResponseEntity.ok(authority);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

@@ -64,7 +64,7 @@ public class BoardController {
     }
 
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void update(@PathVariable Long id,
                        Board updateBboard,
