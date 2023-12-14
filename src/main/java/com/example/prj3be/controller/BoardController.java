@@ -1,11 +1,11 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Board;
+import com.example.prj3be.domain.BoardFile;
 import com.example.prj3be.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +41,6 @@ public class BoardController {
 //        boardService.save(saveBoard, files, boardFile);
 //    }
     @PostMapping("add")
-    @PreAuthorize("hasRole('ADMIN')")
     public void add(@Validated Board saveBoard,
                     @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
         System.out.println(saveBoard);
@@ -50,9 +49,10 @@ public class BoardController {
 
 
 
+
     @GetMapping("id/{id}")
-    public Board get(@PathVariable Long id) {
-        return boardService.getBoardById(id).orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+    public Optional<Board> get(@PathVariable Long id) {
+        return boardService.getBoardById(id);
     }
     @GetMapping("file/id/{id}")
     public List<String> getURL(@PathVariable Long id) {
@@ -83,6 +83,19 @@ public class BoardController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
+    }
+
+
+
+
+    @GetMapping("file/id/{id}")
+    public List<String> getURL(@PathVariable Long id) {
+        return boardService.getBoardURL(id);
+    }
+
+    //희연이한테 물어보기
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
     }
 
 
