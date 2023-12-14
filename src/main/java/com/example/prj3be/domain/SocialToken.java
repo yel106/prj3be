@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name="social_token")
 @Getter @Setter
-public class SocialToken {
+public class SocialToken extends BaseTimeEntity {
     @Id
     @Column(name="member_id")
     private Long id;
