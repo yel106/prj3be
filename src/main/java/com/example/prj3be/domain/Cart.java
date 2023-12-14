@@ -2,12 +2,12 @@ package com.example.prj3be.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name="cart")
-@Data
-@ToString
+@Getter @Setter
 public class Cart {
     @Id
     @Column(name= "cart_id")

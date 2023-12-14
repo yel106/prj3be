@@ -12,6 +12,7 @@ public interface FreshTokenRepository extends JpaRepository<FreshToken, String> 
     @Query("SELECT f.logId FROM FreshToken f WHERE f.token = :refreshToken")
     String findLogIdByToken(String refreshToken);
 
+
 //    @Modifying
 //    @Query("DELETE FROM FreshToken f where f.logId = :logId")
 //    void deleteByLogId(String logId);

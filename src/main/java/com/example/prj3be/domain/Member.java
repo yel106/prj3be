@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +20,8 @@ public class Member extends BaseTimeEntity{
     @Column(name="member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="log_id")
     private String logId; //로그인용 아이디
     private String password;
     private String name;
@@ -38,6 +40,12 @@ public class Member extends BaseTimeEntity{
     @Column(name="activated")
     private Boolean activated;
 
+    @Column(name="is_social_member", columnDefinition = "boolean default false", nullable = false)
+    private Boolean isSocialMember;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private Set<SocialToken> socialTokens = new HashSet<>();
+
 //    @ManyToMany
 //    @JoinTable(
 //            name="member_authority",
@@ -45,7 +53,10 @@ public class Member extends BaseTimeEntity{
 //            inverseJoinColumns = {@JoinColumn(name="authority_name", referencedColumnName = "authority_name")}
 //    )
 //    private Set<Authority> authorities;
-    public Member() {
 
+
+    public Member() {
+        this.logId = null;
+        this.isSocialMember = false;
     }
 }
