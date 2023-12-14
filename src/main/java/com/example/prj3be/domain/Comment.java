@@ -3,6 +3,7 @@ package com.example.prj3be.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Table( schema = "prj3")
 @Getter @Setter
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
@@ -28,6 +29,7 @@ public class Comment {
 //    @JoinColumn(name = "member_id")
 //    private Member member;
 
+    @Builder
     public Comment(Long id, String content, Board board) {
         this.id = id;
         this.content = content;

@@ -8,19 +8,19 @@
 //import jakarta.persistence.EntityManager;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 //import org.springframework.boot.test.context.SpringBootTest;
 //
 //import java.util.Optional;
 //
 ////@DataJpaTest
 //@SpringBootTest
-//public class AlbumGereRepositoryTest {
+//public class AlbumGenreRepositoryTest {
 //    @Autowired
 //    private EntityManager em;
 //
 //    @Autowired
 //    private AlbumGenreRepository repository;
+//
 //    @Autowired
 //    private BoardRepository boardRepository;
 //

@@ -1,17 +1,19 @@
 package com.example.prj3be.controller;
 
-import com.example.prj3be.domain.Board;
-import com.example.prj3be.domain.BoardFile;
+import com.example.prj3be.domain.*;
 import com.example.prj3be.service.BoardService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,51 +23,49 @@ import java.util.Optional;
 public class BoardController {
     private final BoardService boardService;
 
-
-
     @GetMapping("list")
     public Page<Board> list(Pageable pageable,
-                            @RequestParam Map<String, Object> params,
-                            @RequestParam(value = "c", defaultValue = "all") String category,
-                            @RequestParam(value="g", defaultValue = "all") String[] genre,
-                            @RequestParam(value = "k", defaultValue = "") String keyword) {
-        System.out.println("pageable = " + pageable);
-        System.out.println("params = " + params);
+                            @RequestParam(required = false) String title,
+                            @RequestParam(required = false) AlbumFormat albumFormat,
+                            @RequestParam(required = false) String[] albumDetails,
+                            @RequestParam(required = false) String minPrice,
+                            @RequestParam(required = false) String maxPrice) {
+
+        List<AlbumDetail> albumDetailList = (albumDetails == null) ? null : Arrays.stream(albumDetails).map(AlbumDetail::valueOf).collect(Collectors.toList());
+
+        Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice);
 
 
-        Page<Board> boardListPage = boardService.boardListAll(pageable, category, genre, keyword);
+        // TODO : stackoverflowerror..... why????
         return boardListPage;
     }
 
 
-//    @PostMapping("add")
-//    //파일 추가할때 @RequestBody X
-//    public void add(@Validated Board saveBoard,
-//                    @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files,
-//                    BoardFile boardFile) throws IOException {
-//
-//        boardService.save(saveBoard, files, boardFile);
-//    }
-
-
     @PostMapping("add")
     public void add(@Validated Board saveBoard,
+                    @RequestParam(required = false) String[] albumDetails,
                     @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files) throws IOException {
-        System.out.println(saveBoard);
-        boardService.save(saveBoard, files);
+
+        List<AlbumDetail> AlbumDetailList = Arrays.stream(albumDetails)
+                .map(AlbumDetail::valueOf)
+                .collect(Collectors.toList());
+
+        boardService.save(saveBoard, AlbumDetailList , files);
     }
 
-    //희연이 코드
-//    @GetMapping("id/{id}")
-//    public Board get(@PathVariable Long id) {
-//        return boardService.getBoardById(id).orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
-//    }
+
     @GetMapping("id/{id}")
     public Optional<Board> get(@PathVariable Long id) {
         return boardService.getBoardById(id);
     }
+    @GetMapping("file/id/{id}")
+    public List<String> getURL(@PathVariable Long id) {
+        return boardService.getBoardURL(id);
+    }
+
 
     @PutMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(@PathVariable Long id,
                        Board updateBboard,
                        @RequestParam(value = "uploadFiles", required = false) MultipartFile uploadFiles) throws IOException {
@@ -80,17 +80,11 @@ public class BoardController {
         }
     }
 
+
     @DeleteMapping("remove/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         boardService.delete(id);
-    }
-
-
-
-
-    @GetMapping("file/id/{id}")
-    public List<String> getURL(@PathVariable Long id) {
-        return boardService.getBoardURL(id);
     }
 
     //희연이한테 물어보기

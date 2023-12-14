@@ -1,4 +1,4 @@
-package com.example.prj3be.controller.oauth;
+package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.dto.SocialUser;
 import com.example.prj3be.dto.SocialOauthToken;

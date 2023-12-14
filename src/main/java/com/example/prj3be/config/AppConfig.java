@@ -1,8 +1,11 @@
 package com.example.prj3be.config;
 
+import io.micrometer.common.lang.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -26,4 +29,15 @@ public class AppConfig {
 
         return s3;
     }
+//    @Bean
+//    public WebMvcConfigurer corsConfigure() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(@Nullable CorsRegistry registry) {
+//                if (registry != null) {
+//                    registry.addMapping("/**").allowedOrigins("*");
+//                }
+//            }
+//        };
+//    }
 }

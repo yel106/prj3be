@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class FindMemberDto {
+    private Long id;
     private String logId;
     private String name;
     private String address;
@@ -25,6 +26,7 @@ public class FindMemberDto {
     }
 
     public FindMemberDto(Member member){
+        this.id = member.getId();
         this.logId = member.getLogId();
         this.name=member.getName();
         this.address=member.getAddress();

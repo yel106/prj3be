@@ -47,7 +47,7 @@ public class PaymentService {
     public PaymentSuccessDto tossPaymentSuccess(String paymentKey, String orderId, Long amount) throws JSONException {
         Payment payment = verifyPayment(orderId,amount);
         PaymentSuccessDto result = requestPaymentAccept(paymentKey,orderId,amount);
-        payment.setPaymentKey(paymentKey); //추후 결제 취소 / 결제 조회
+        payment.setPaymentKey(paymentKey); //추후 결제 취소 / 결제 조회!
         payment.setPaySuccessYN(true);
 //        payment.getMember().setPoint(payment.getMember().getPoint() + amount); 나중에 추후 포인트 사용시 이용.
 //        memberService.updateMemberCache(payment.getCustomer());

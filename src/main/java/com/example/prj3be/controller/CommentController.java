@@ -1,5 +1,6 @@
 package com.example.prj3be.controller;
 
+import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
 import com.example.prj3be.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ public class CommentController {
     }
 
     @PostMapping("add")
-    public Comment save(@RequestBody Map<String, Object> map) { //요청된 본문을 받음
-        Comment CommentWrite = commentService.write(map);
+    public Comment save(@RequestBody Comment saveComment) { //요청된 본문을 받음
+        Comment CommentWrite = commentService.write(saveComment);
         return CommentWrite;
     }
 
