@@ -161,10 +161,12 @@ public class OauthService {
         return response;
     }
 
+    @Transactional
     public ResponseEntity<Integer> refreshAccessToken(String refreshToken) {
         System.out.println("OauthService.refreshAccessToken");
         //리프래쉬 토큰을 이용해 사용자의 아이디를 가져옴
         Long id = tokenProvider.getIdRefreshToken(refreshToken);
+        System.out.println("id = " + id);
         //아이디로 소셜타입을 찾아와 저장
         SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
         //소셜 타입에 따른 메소드로 연결
@@ -182,10 +184,11 @@ public class OauthService {
             updateTokenInfo(id, tokenInfoMap);
             //expires_in 리턴하기
             System.out.println("expires_in 리턴 중");
-            Integer expiresIn = (Integer) tokenInfoMap.get("expiresIn");
-            System.out.println("expiresIn = " + expiresIn);
+            Object expiresInObject = tokenInfoMap.get("expiresIn");
+            System.out.println("expiresInObject = " + expiresInObject);
+            System.out.println("expiresInObject.getClass() = " + expiresInObject.getClass());
+            Integer expiresIn = Integer.parseInt(expiresInObject.toString());
             return ResponseEntity.ok(expiresIn);
-
         } catch (HttpClientErrorException.Forbidden e) {
             System.out.println("소셜 토큰이 유효하지 않음");
             //소셜 토큰이 유효하지 않으면 Forbidden이 리턴됨

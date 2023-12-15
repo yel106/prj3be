@@ -39,13 +39,16 @@ public class OauthController {
         return tokenDto;
     }
 
-    @GetMapping("/api/auth/refreshToken")
+    @GetMapping("/refreshToken")
     public ResponseEntity<Integer> oAuthRefresh(@RequestHeader("Authorization")String refreshToken) {
+        System.out.println("OauthController.oAuthRefresh");
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
             refreshToken = refreshToken.substring(7);
         }
-
+        System.out.println("oAuthRefresh : refreshToken = " + refreshToken);
         ResponseEntity<Integer> expiresIn = oauthService.refreshAccessToken(refreshToken);
+        System.out.println("expiresIn = " + expiresIn);
+
         return expiresIn;
     }
 

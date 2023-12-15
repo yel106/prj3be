@@ -155,7 +155,6 @@ public class TokenProvider implements InitializingBean {
 
     // 소셜 멤버인지 아닌지 논리값 리턴
     public Boolean isSocialMember(String refreshToken) {
-        System.out.println("TokenProvider.isSocialMember");
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
         Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
 
@@ -163,8 +162,11 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Long getIdRefreshToken(String refreshToken) {
+        System.out.println("TokenProvider.getIdRefreshToken");
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
-        return memberRepository.findIdByLogId(logId);
+        Long id = memberRepository.findIdByLogId(logId);
+        System.out.println("id = " + id);
+        return id;
     }
 
     // 회원 탈퇴시 리프레시 토큰 삭제

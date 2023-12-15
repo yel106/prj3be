@@ -106,7 +106,7 @@ public class LoginController {
         return ResponseEntity.ok(socialButtonImagePrefix);
     }
 
-    @GetMapping("/isSocialMember")
+    @GetMapping("/isSocialMember") //TODO: IllegalArgumentException 발생 지점
     public Boolean isSocialMember(@RequestHeader("Authorization")String refreshToken) {
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
             refreshToken = refreshToken.substring(7);
@@ -114,6 +114,7 @@ public class LoginController {
 
         if(refreshToken != null) {
             Boolean isSocial = tokenProvider.isSocialMember(refreshToken);
+            System.out.println("isSocial = " + isSocial);
             return isSocial;
         }
 
