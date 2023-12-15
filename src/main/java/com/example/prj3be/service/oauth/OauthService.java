@@ -218,6 +218,7 @@ public class OauthService {
             updateClause
                     .setNull(socialToken.refreshToken);
         }
+        updateClause.where(socialToken.id.eq(id)).execute();
     };
 
 }
