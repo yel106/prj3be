@@ -2,6 +2,7 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
+import com.example.prj3be.dto.CommentFormDto;
 import com.example.prj3be.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.prj3be.domain.QComment.comment;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comment")
@@ -19,15 +22,16 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("list")
-    public Page<Comment> commentList(Pageable pageable) {
-        Page<Comment> comments = commentService.commentListAll(pageable);
-        return comments;
+    public Page<Comment> commentList(@RequestParam("id") Long boardId, Pageable pageable) {
+        Page<Comment> commentList = commentService.commentListAll(boardId, pageable);
+        return commentList;
     }
 
-    @PostMapping("add")
-    public Comment save(@RequestBody Comment saveComment) { //요청된 본문을 받음
-        Comment CommentWrite = commentService.write(saveComment);
-        return CommentWrite;
+
+    @PostMapping("add/{boardId}")
+    public void save(@PathVariable("boardId") String boardId, @RequestBody CommentFormDto content) {
+        System.out.println("content = " + content);
+        commentService.write(boardId, content);
     }
 
     @PutMapping("update/{id}")
