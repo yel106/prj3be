@@ -1,16 +1,12 @@
 package com.example.prj3be.service.oauth;
 
-import com.example.prj3be.domain.QSocialToken;
 import com.example.prj3be.repository.SocialTokenRepository;
-import com.querydsl.jpa.impl.JPAUpdateClause;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -36,7 +32,6 @@ public class GoogleTokenManager implements SocialTokenManager {
 
     private final SocialTokenRepository socialTokenRepository;
     private final RestTemplate restTemplate;
-    private final EntityManager entityManager;
 
     @Override
     public boolean isTokenExpired(Long id) {
