@@ -89,7 +89,7 @@ public class TokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         long now =(new Date()).getTime();
-        Date validity = new Date(now+300*1000);//일단 만료 시간을 5분으로
+        Date validity = new Date(now+3600*1000);//일단 만료 시간을 5분으로 (기존)
 
         System.out.println("TokenProvider.createAccessToken");
         System.out.println("authorities = " + authorities);
@@ -109,7 +109,7 @@ public class TokenProvider implements InitializingBean {
         // 현재 시간과 토큰 만료 시간 설정, 엑세스 토큰의 24배(24시간)
         long now =(new Date()).getTime();
         System.out.println("now = " + now);
-        Date validity = new Date(now+900*1000);//일단 만료시간을 15분으로
+        Date validity = new Date(now+3660*1000);// 만료시간 : 1시간으로 수정 (기존: 15분)
 
         System.out.println("TokenProvider.createRefreshToken");
 
@@ -155,6 +155,7 @@ public class TokenProvider implements InitializingBean {
 
     // 소셜 멤버인지 아닌지 논리값 리턴
     public Boolean isSocialMember(String refreshToken) {
+        System.out.println("TokenProvider.isSocialMember");
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
         Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
 

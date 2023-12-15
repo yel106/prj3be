@@ -2,7 +2,7 @@ package com.example.prj3be.service.oauth;
 
 import com.example.prj3be.constant.Role;
 import com.example.prj3be.constant.SocialLoginType;
-import com.example.prj3be.repository.FreshTokenRepository;
+import com.example.prj3be.domain.QSocialToken;
 import com.example.prj3be.repository.SocialTokenRepository;
 import com.example.prj3be.domain.SocialToken;
 import com.example.prj3be.domain.Member;
@@ -13,8 +13,11 @@ import com.example.prj3be.exception.OAuthException;
 import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.repository.MemberRepository;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import jakarta.persistence.EntityManager;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +49,8 @@ public class OauthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
+    @Autowired
+    private EntityManager entityManager;
 
     // 1. redirectURL 만들기
     public String loginRequest(SocialLoginType socialLoginType) {
@@ -157,6 +162,7 @@ public class OauthService {
     }
 
     public ResponseEntity<Integer> refreshAccessToken(String refreshToken) {
+        System.out.println("OauthService.refreshAccessToken");
         //리프래쉬 토큰을 이용해 사용자의 아이디를 가져옴
         Long id = tokenProvider.getIdRefreshToken(refreshToken);
         //아이디로 소셜타입을 찾아와 저장
@@ -165,26 +171,53 @@ public class OauthService {
         SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
 
         try{
+            System.out.println("토큰 유효한지 확인하고 요청 보내기");
             //토큰 유효한지 확인하고 요청 보내기
             ResponseEntity<String> response = socialTokenManager.checkAndRefreshToken(id);
+            System.out.println("받은 거 프로세스");
             //받은 거 프로세스해서
             Map<String, Object> tokenInfoMap = socialTokenManager.processRefreshResponse(response);
+            System.out.println("테이블 업데이트");
             //테이블 업데이트하고
-            socialTokenManager.updateTokenInfo(id, tokenInfoMap);
-
+            updateTokenInfo(id, tokenInfoMap);
             //expires_in 리턴하기
+            System.out.println("expires_in 리턴 중");
             Integer expiresIn = (Integer) tokenInfoMap.get("expiresIn");
+            System.out.println("expiresIn = " + expiresIn);
             return ResponseEntity.ok(expiresIn);
 
         } catch (HttpClientErrorException.Forbidden e) {
+            System.out.println("소셜 토큰이 유효하지 않음");
             //소셜 토큰이 유효하지 않으면 Forbidden이 리턴됨
             //TODO: JWT 토큰 만료시키는 방법 추가
             System.out.println("e.getMessage() = " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (RestClientException e) {
+            System.out.println("뭔가 더 큰 에러 남");
             System.out.println("e.getMessage() = " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    @Transactional
+    public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
+        System.out.println("OauthService.updateTokenInfo");
+        //따라서 Querydsl with Spring Data JPA로 있을 때만 업데이트하고 없을 때는 업데이트 하지 않도록 함
+        QSocialToken socialToken = QSocialToken.socialToken;
+
+        JPAUpdateClause updateClause = new JPAUpdateClause(entityManager, socialToken);
+        updateClause
+                .set(socialToken.accessToken, tokenInfoMap.get("accessToken").toString())
+                .set(socialToken.expiresIn, Integer.parseInt(tokenInfoMap.get("expiresIn").toString()));
+
+        if (tokenInfoMap.get("refreshToken") != null) {
+            updateClause
+                    .set(socialToken.refreshToken, tokenInfoMap.get("refreshToken").toString());
+        } else {
+            //refreshToken이 null일 경우 기존 데이터 보존
+            updateClause
+                    .setNull(socialToken.refreshToken);
+        }
+    };
 
 }

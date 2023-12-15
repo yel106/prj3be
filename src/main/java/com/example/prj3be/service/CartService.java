@@ -51,18 +51,18 @@
 //        }
 //    }
 //
-////    @Transactional(readOnly = true)
-////    public List<CartInfoDto> getCartList(String email) {
-////        List<CartInfoDto> cartInfoDtoList = new ArrayList<>();
-////
-////        Member member = memberRepository.findByEmail(email);
-////        Cart cart = cartRepository.findByMemberId(member.getId());
-////        if(cart == null) {
-////            return cartInfoDtoList;
-////        }
-////
-////        cartInfoDtoList = cartItemRepository.findCartDetailDtoList(cart.getId());
-////
-////        return cartInfoDtoList;
-////    }
+//    @Transactional(readOnly = true)
+//    public List<CartInfoDto> getCartList(String email) {
+//        List<CartInfoDto> cartInfoDtoList = new ArrayList<>();
+//
+//        Member member = memberRepository.findByEmail(email);
+//        Cart cart = cartRepository.findByMemberId(member.getId());
+//        if(cart == null) {
+//            return cartInfoDtoList;
+//        }
+//
+//        cartInfoDtoList = cartItemRepository.findCartDetailDtoList(cart.getId());
+//
+//        return cartInfoDtoList;
+//    }
 //}

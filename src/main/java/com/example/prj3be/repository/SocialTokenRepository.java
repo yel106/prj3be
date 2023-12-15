@@ -20,11 +20,16 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
     @Query("SELECT st.accessToken FROM SocialToken st WHERE st.id = :id")
     String findAccessTokenById(Long id);
 
+    // 카카오: refresh Token의 남은 주기가 1개월 이상이면 새로 refresh 토큰 발급 안함
     @Modifying
     @Transactional
     @Query("UPDATE SocialToken st " +
             "SET st.accessToken = :#{#tokenInfoMap['accessToken']}, " +
-            "    st.expiresIn = :#{#tokenInfoMap['expiresIn']} " +
+            "    st.expiresIn = :#{#tokenInfoMap['expiresIn']}" +
+            "    " +
+            "    #if(:#{#tokenInfoMap['refreshToken']} != null)" +
+            "        , st.refreshToken = :#{#tokenInfoMap['refreshToken']}" +
+            "    #end " +
             "WHERE st.id = :id ")
     int updateTokenInfo(Long id, Map<String, Object> tokenInfoMap);
 
