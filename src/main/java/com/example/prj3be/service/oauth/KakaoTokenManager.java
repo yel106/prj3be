@@ -37,20 +37,23 @@ public class KakaoTokenManager implements SocialTokenManager {
     @Override
     public boolean isTokenExpired(Long id) {
         System.out.println("KakaoTokenManager.isTokenExpired");
+        System.out.println("id = " + id);
         LocalDateTime currentTime = LocalDateTime.now();
         System.out.println("currentTime = " + currentTime);
-        Map<String, Object> tokenInfo = socialTokenRepository.getUpdateTimeAndExpiresInById(id);
-        System.out.println("tokenInfo = " + tokenInfo);
-        LocalDateTime updateTime = (LocalDateTime) tokenInfo.get("updateTime");
-        System.out.println("updateTime = " + updateTime);
-        int expiresIn = (Integer) tokenInfo.get("expiresIn");
+
+//        Map<String, Object> tokenInfo = socialTokenRepository.getUpdateTimeAndExpiresInById(id); 안 먹힘 도대체 왜?????
+        Integer expiresIn = socialTokenRepository.getExpireTimeById(id);
         System.out.println("expiresIn = " + expiresIn);
+        LocalDateTime updateTime = socialTokenRepository.getUpdateTimeById(id);
+        System.out.println("updateTimeTest = " + updateTime);
 
         LocalDateTime expirationTime = updateTime.plusSeconds(expiresIn);
         System.out.println("expirationTime = " + expirationTime);
-        System.out.println("토큰 시간 비교 중");
 
-        return currentTime.isAfter(expirationTime);
+        boolean isTokenValid = currentTime.isBefore(expirationTime);
+        System.out.println("토큰이 유효한지: " + isTokenValid);
+
+        return isTokenValid;
     }; // 토큰 만료 여부 체크하는 논리형 메소드
     @Override
     public ResponseEntity<String> checkAndRefreshToken(Long id) {

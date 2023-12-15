@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,4 +31,10 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
 
     @Query("SELECT st.expiresIn, st.updateTime FROM SocialToken st WHERE st.id=:id")
     Map<String, Object> getUpdateTimeAndExpiresInById(Long id);
+
+    @Query("SELECT st.expiresIn FROM SocialToken st WHERE st.id = :id")
+    Integer getExpireTimeById(Long id);
+
+    @Query("SELECT st.updateTime FROM SocialToken st WHERE st.id = :id")
+    LocalDateTime getUpdateTimeById(Long id);
 }

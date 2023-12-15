@@ -176,9 +176,11 @@ public class OauthService {
             System.out.println("토큰 유효한지 확인하고 요청 보내기");
             //토큰 유효한지 확인하고 요청 보내기
             ResponseEntity<String> response = socialTokenManager.checkAndRefreshToken(id);
+            System.out.println("요청 보내고 받은 응답 " + response);
             System.out.println("받은 거 프로세스");
             //받은 거 프로세스해서
             Map<String, Object> tokenInfoMap = socialTokenManager.processRefreshResponse(response);
+            System.out.println("tokenInfoMap = " + tokenInfoMap);
             System.out.println("테이블 업데이트");
             //테이블 업데이트하고
             updateTokenInfo(id, tokenInfoMap);
@@ -188,7 +190,7 @@ public class OauthService {
             System.out.println("expiresInObject = " + expiresInObject);
             System.out.println("expiresInObject.getClass() = " + expiresInObject.getClass());
             Integer expiresIn = Integer.parseInt(expiresInObject.toString());
-            return ResponseEntity.ok(expiresIn);
+            return ResponseEntity.ok().body(expiresIn);
         } catch (HttpClientErrorException.Forbidden e) {
             System.out.println("소셜 토큰이 유효하지 않음");
             //소셜 토큰이 유효하지 않으면 Forbidden이 리턴됨
