@@ -1,19 +1,12 @@
 package com.example.prj3be.controller;
 
-import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
 import com.example.prj3be.dto.CommentFormDto;
 import com.example.prj3be.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-
-import static com.example.prj3be.domain.QComment.comment;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +23,6 @@ public class CommentController {
 
     @PostMapping("add/{boardId}")
     public void save(@PathVariable("boardId") String boardId, @RequestBody CommentFormDto content) {
-        System.out.println("content = " + content);
         commentService.write(boardId, content);
     }
 

@@ -6,7 +6,6 @@ import com.example.prj3be.domain.QComment;
 import com.example.prj3be.dto.CommentFormDto;
 import com.example.prj3be.repository.BoardRepository;
 import com.example.prj3be.repository.CommentRepository;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -31,16 +29,6 @@ public class CommentService {
 
     public Page<Comment> commentListAll(Long boardId, Pageable pageable) {
 
-//        SELECT c.content FROM comment c WHERE c.board_id = board_id;
-//        QComment comment = QComment.comment;
-//        BooleanBuilder builder = new BooleanBuilder();
-//        if( boardId !=null ) {
-//            builder.and(comment.board.id.eq(boardId));
-//        }
-//        Page<Comment> all = commentRepository.findAll(builder, pageable);
-//        Stream<Comment> commentStream = all.get();
-//        commentStream.forEach(System.out::println);
-//        return all;
         List<Comment> content = query.selectFrom(QComment.comment)
                 .where(QComment.comment.board.id.eq(boardId))
                 .offset(pageable.getOffset())

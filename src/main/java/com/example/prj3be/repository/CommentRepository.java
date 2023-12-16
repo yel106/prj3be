@@ -13,8 +13,4 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, QuerydslPredicateExecutor<Comment> {
 
-//     Page<Comment> findCommentsByBoardId(@Param("boardId") Long boardId);
-
-
-//    Comment findCommentsById(Long boardId);
 }
