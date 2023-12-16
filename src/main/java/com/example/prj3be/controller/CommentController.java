@@ -1,11 +1,18 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Comment;
+import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.CommentFormDto;
+import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.service.CommentService;
+import com.example.prj3be.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +30,12 @@ public class CommentController {
 
     @PostMapping("add/{boardId}")
     public void save(@PathVariable("boardId") String boardId, @RequestBody CommentFormDto content) {
-        commentService.write(boardId, content);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Member memberByLogId = commentService.findMemberByLogId(authentication.getName());
+        System.out.println("memberByLogId = " + memberByLogId.getLogId());
+        System.out.println("authentication = " + authentication.getName());
+        commentService.write(boardId, content, memberByLogId);
     }
 
     @PutMapping("update/{id}")

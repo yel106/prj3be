@@ -2,10 +2,12 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.domain.Board;
 import com.example.prj3be.domain.Comment;
+import com.example.prj3be.domain.Member;
 import com.example.prj3be.domain.QComment;
 import com.example.prj3be.dto.CommentFormDto;
 import com.example.prj3be.repository.BoardRepository;
 import com.example.prj3be.repository.CommentRepository;
+import com.example.prj3be.repository.MemberRepository;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
     private final JPAQueryFactory query;
 
 
@@ -42,7 +45,14 @@ public class CommentService {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    public void write(String boardId, CommentFormDto content) {
+    public Member findMemberByLogId(String logId) {
+        Long id = memberRepository.findIdByLogId(logId); //logId로 memberId 찾음
+        Optional<Member> findMember1 = memberRepository.findById(id); //memberId로 member 찾음
+        Member member = findMember1.get();
+        return member;
+    }
+
+    public void write(String boardId, CommentFormDto content, Member dto) {
         System.out.println(content.getContent());
         Optional<Board> byId = boardRepository.findById(Long.valueOf(boardId));
         Board board1 = byId.orElseThrow();
@@ -50,6 +60,7 @@ public class CommentService {
         Comment comment = Comment.builder()
                 .board(board1)
                 .content(content.getContent())
+                .member(dto)
                 .build();
         commentRepository.save(comment);
     }
