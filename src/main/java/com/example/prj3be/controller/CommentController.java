@@ -19,8 +19,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("list")
-    public Page<Comment> commentList(Pageable pageable) {
-        Page<Comment> comments = commentService.commentListAll(pageable);
+    public Page<Comment> commentList(Pageable pageable,@RequestParam("id")Long boardId) {
+        Page<Comment> comments = commentService.commentListAll(pageable,boardId);
         return comments;
     }
 

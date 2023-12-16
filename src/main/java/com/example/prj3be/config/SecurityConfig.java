@@ -54,9 +54,8 @@ public class SecurityConfig{
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
-
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                .requestMatchers("/member/add", "/authenticate","/api/board/add").permitAll()
+                .requestMatchers("/member/add", "/authenticate","/api/board/add","/actuator/**").permitAll()
                                 .requestMatchers("/error").authenticated()
 
                 .anyRequest().permitAll()

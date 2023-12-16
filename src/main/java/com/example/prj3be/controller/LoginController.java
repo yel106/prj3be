@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class LoginController {
 
     @Value("${image.file.prefix}")
     private String socialButtonImagePrefix;
-
+//    @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager")
     @GetMapping("/accessToken")
     public ResponseEntity<String> isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
