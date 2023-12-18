@@ -138,6 +138,7 @@ public class TokenProvider implements InitializingBean {
         }
         return null;
     }
+
     //로그아웃 시 refreshToken 삭제
     public Long deleteRefreshToken(String refreshToken) {
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
@@ -158,7 +159,13 @@ public class TokenProvider implements InitializingBean {
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
         Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
 
-        return isSocialMember != null ? isSocialMember : false; //NullPointerException 나면 여기임
+       return isSocialMember != null ? isSocialMember : false; //NullPointerException 나면 여기임
+    }
+
+    //탈퇴 시에 사용하는 소셜 멤버 여부 리턴
+    public Boolean isSocialMemberByLogId (String logId) {
+        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
+        return isSocialMember != null ? isSocialMember : false;
     }
 
     public Long getIdRefreshToken(String refreshToken) {

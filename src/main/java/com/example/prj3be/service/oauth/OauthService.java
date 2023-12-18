@@ -193,8 +193,7 @@ public class OauthService {
             return ResponseEntity.ok().body(expiresIn);
         } catch (HttpClientErrorException.Forbidden e) {
             System.out.println("소셜 토큰이 유효하지 않음");
-            //소셜 토큰이 유효하지 않으면 Forbidden이 리턴됨
-            //TODO: JWT 토큰 만료시키는 방법 추가
+            //소셜 토큰이 유효하지 않으면 Unauthorized 리턴됨
             System.out.println("e.getMessage() = " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (RestClientException e) {
@@ -225,5 +224,14 @@ public class OauthService {
         }
         updateClause.where(socialToken.id.eq(id)).execute();
     };
+
+    public ResponseEntity deleteSocial(Long id) {
+        // (레코드 전체, socialTokenRepository -> findAndDeleteTokenById 사용)
+        SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
+        SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
+        ResponseEntity response = socialTokenManager.revokeToken(id);
+
+        return response;
+    }
 
 }
