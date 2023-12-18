@@ -9,9 +9,8 @@ import java.util.List;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    //TODO: 고치삼
-    @Query("SELECT ci FROM Cart c JOIN CartItem ci WHERE c.id = :cartId AND ci.id = :itemId")
-    CartItem findByCartIdAndItemId(Long cartId, Long itemId);
+    @Query("SELECT ci FROM CartItem ci WHERE ci.cart.id = :cartId AND ci.id = :boardId")
+    CartItem findByCartIdAndItemId(Long cartId, Long boardId);
 
     @Modifying
     @Query("DELETE FROM CartItem ci WHERE ci.cart.member.id = :memberId")
