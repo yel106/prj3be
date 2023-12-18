@@ -43,7 +43,7 @@ public class BoardService {
     private final S3Client s3;
 
 
-    public Page<Board> boardListAll(Pageable pageable, String title, AlbumFormat albumFormat, List<AlbumDetail> albumDetails, String minPrice, String maxPrice) {
+    public Page<Board> boardListAll(Pageable pageable, String title, AlbumFormat albumFormat, List<AlbumDetail> albumDetails, String minPrice, String maxPrice, Long stockQuantity) {
         QBoard qBoard = board;
         BooleanBuilder builder = new BooleanBuilder();
 
