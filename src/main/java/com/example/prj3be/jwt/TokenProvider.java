@@ -152,7 +152,10 @@ public class TokenProvider implements InitializingBean {
             id = memberRepository.findIdByLogId(logId);
             System.out.println("isSocialMember : " + isSocialMember);
         }
-        freshTokenRepository.deleteById(logId);
+        // logId가 null 인 경우 어차피 DB에 refreshToken이 없음=>근데 대체 왜 없어진거임?ㅜㅋㅋㅋ catch문 발생도 안보이는데
+        if(logId != null) {
+            freshTokenRepository.deleteById(logId);
+        }
         return id;
     }
     // 회원 탈퇴시 리프레시 토큰 삭제

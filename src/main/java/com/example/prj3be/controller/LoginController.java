@@ -1,6 +1,7 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.dto.LoginDto;
+import com.example.prj3be.dto.MemberAuthDto;
 import com.example.prj3be.dto.SocialOauthToken;
 import com.example.prj3be.dto.TokenDto;
 import com.example.prj3be.jwt.JwtAuthenticationEntryPoint;
@@ -45,14 +46,17 @@ public class LoginController {
     private String socialButtonImagePrefix;
 
     @GetMapping("/accessToken")
-    public ResponseEntity<String> isTokenValid(@RequestHeader("Authorization")String accessToken){
+    public ResponseEntity<MemberAuthDto> isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
             accessToken = accessToken.substring(7);
         }
         if(tokenProvider.validateToken(accessToken)){
-            String authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList().get(0).toString();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            return ResponseEntity.ok(authority);
+            MemberAuthDto dto = new MemberAuthDto();
+            dto.setLogId(authentication.getName());
+            dto.setRole(authentication.getAuthorities().stream().toList().get(0).toString());
+            return ResponseEntity.ok(dto);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

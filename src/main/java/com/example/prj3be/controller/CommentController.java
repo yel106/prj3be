@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class CommentController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping("add/{boardId}")
     public void save(@PathVariable("boardId") String boardId, @RequestBody CommentFormDto content) {
 
@@ -38,6 +40,7 @@ public class CommentController {
         commentService.write(boardId, content, memberByLogId);
     }
 
+    @PreAuthorize("#updateComment.member.logId == authentication.name")
     @PutMapping("update/{id}")
     public Comment update(@PathVariable Long id, @RequestBody Comment updateComment) {
         Comment editComment = commentService.update(id, updateComment);
@@ -46,6 +49,7 @@ public class CommentController {
 
     @DeleteMapping("delete/{id}")
     public void delete(@PathVariable Long id) {
-        commentService.delete(id);
+        String logId = commentService.findMemberById(id);
+        commentService.delete(id, logId);
     }
 }
