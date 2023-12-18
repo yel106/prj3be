@@ -7,6 +7,7 @@ import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.jwt.TokenProvider;
 //import com.example.prj3be.dto.SocialMemberDto;
+import com.example.prj3be.service.CartService;
 import com.example.prj3be.service.MemberService;
 import com.example.prj3be.service.oauth.OauthService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,6 +41,7 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final OauthService oauthService;
+    private final CartService cartService;
 
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
@@ -171,6 +173,12 @@ public class MemberController {
         if(isSocial) {
             oauthService.deleteSocial(id);
         }
+
+        //장바구니 아이템 삭제
+        cartService.deleteCartItem(id);
+
+        //장바구니 삭제
+        cartService.deleteCart(id);
 
         //회원 삭제
         memberService.deleteMember(id);

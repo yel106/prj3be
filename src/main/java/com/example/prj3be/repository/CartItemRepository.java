@@ -1,21 +1,20 @@
-//package com.example.prj3be.repository;
-//
-//import com.example.prj3be.domain.CartItem;
-//import com.example.prj3be.dto.CartInfoDto;
-//import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.data.jpa.repository.Query;
-//
-//import java.util.List;
-//
-//public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-//    CartItem findByCartIdAndItemId(Long cart_id, Long itemId);
-//
-////    @Query("SELECT NEW com.example.prj3be.dto.CartInfoDto(ci.id, i.title, i.price, ci.count, i.imgUrl) " +
-////            "FROM CartItem ci " +
-////            "JOIN Item i ON ci.item.id = i.id " +
-////            "WHERE ci.cart.id = :cart_id " +
-////            "ORDER BY ci.regTime DESC")
-////    List<CartInfoDto> findCartDetailDtoList(Long cart_id);
-//
-//
-//}
+package com.example.prj3be.repository;
+
+import com.example.prj3be.domain.CartItem;
+import com.example.prj3be.dto.CartItemDto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import java.util.List;
+
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+
+    @Query("SELECT ci FROM Cart c JOIN CartItem ci WHERE c.id = :cartId AND ci.id = :itemId")
+    CartItem findByCartIdAndItemId(Long cartId, Long itemId);
+
+    @Modifying
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.member.id = :memberId")
+    void deleteByMemberId(Long memberId);
+
+    List<CartItemDto> findCartDetailDtoList(Long id);
+}
