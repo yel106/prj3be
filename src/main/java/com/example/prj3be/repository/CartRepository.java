@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
-    @Query("SELECT c FROM Cart c WHERE c.id = :memberId")
+    @Query("SELECT c FROM Cart c WHERE c.member.id = :memberId")
     Cart findByMemberId(Long memberId);
 
     @Modifying

@@ -23,11 +23,14 @@ public class CartService {
     private final MemberRepository memberRepository;
 
     public Cart createCart(Long memberId) {
+        System.out.println("CartService.createCart");
         Member member = memberRepository.findByMemberId(memberId);
+        System.out.println("member = " + member.getId());
         Cart cart = cartRepository.findByMemberId(memberId);
+        System.out.println("!= 체크하기 전에 cart = " + cart);
 
         // 해당 회원의 카트가 없으면 만듦, 저장
-        if(cart != null) {
+        if(cart == null) {
             cart = Cart.createCart(member);
             cartRepository.save(cart);
         }
@@ -35,19 +38,27 @@ public class CartService {
         return cart;
     }
 
-    public Long addItemsToCart(Cart cart, Long itemId, String title, Double price) {
-        String fileUrl = boardFileRepository.findFileUrlsByBoardId(itemId).get(0);
+    public Long addItemsToCart(Cart cart, Long boardId, String title, Double price) {
+        System.out.println("CartService.addItemsToCart");
+        System.out.println("boardId = " + boardId);
+        String fileUrl = boardFileRepository.findFileUrlsByBoardId(boardId).get(0);
+        System.out.println("fileUrl = " + fileUrl);
         int count = 1;
+        System.out.println("count = " + count);
+        System.out.println("cart.getId() = " + cart.getId());
 
-        CartItem savedCartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), itemId);
+        CartItem savedCartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), boardId);
+        System.out.println("savedCartItem = " + savedCartItem);
 
         //만약 장바구니에 해당 아이템이 이미 존재할 경우 수량 증대
         if(savedCartItem != null) {
             savedCartItem.addCount(count);
+            System.out.println("savedCartItem = " + savedCartItem.getCount());
             return savedCartItem.getId();
         } else {
             //만약 장바구니에 해당 아이템이 존재하지 않을 경우 추가
-            CartItem cartItem = CartItem.createCartItem(cart, itemId, title, price, fileUrl, count);
+            CartItem cartItem = CartItem.createCartItem(cart, boardId, title, price, fileUrl, count);
+            System.out.println("cartItem = " + cartItem);
             cartItemRepository.save(cartItem);
             return cartItem.getId();
         }
