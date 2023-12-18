@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,16 +21,6 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
     @Query("SELECT st.accessToken FROM SocialToken st WHERE st.id = :id")
     String findAccessTokenById(Long id);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE SocialToken st " +
-            "SET st.accessToken = :#{#tokenInfoMap['accessToken']}, " +
-            "    st.tokenType = :#{#tokenInfoMap['tokenType']}, " +
-            "    st.refreshToken = :#{#tokenInfoMap['refreshToken']}, " +
-            "    st.expiresIn = :#{#tokenInfoMap['expiresIn']} " +
-            "WHERE st.id = :id ")
-    int updateTokenInfo(Long id, Map<String, Object> tokenInfoMap);
-
     @Transactional
     @Modifying
     @Query("DELETE FROM SocialToken st WHERE st.id = :id")
@@ -38,4 +29,12 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
     @Query("SELECT st.socialLoginType FROM SocialToken st WHERE st.id=:id")
     SocialLoginType findSocialLoginTypeById(Long id);
 
+    @Query("SELECT st.expiresIn, st.updateTime FROM SocialToken st WHERE st.id=:id")
+    Map<String, Object> getUpdateTimeAndExpiresInById(Long id);
+
+    @Query("SELECT st.expiresIn FROM SocialToken st WHERE st.id = :id")
+    Integer getExpireTimeById(Long id);
+
+    @Query("SELECT st.updateTime FROM SocialToken st WHERE st.id = :id")
+    LocalDateTime getUpdateTimeById(Long id);
 }
