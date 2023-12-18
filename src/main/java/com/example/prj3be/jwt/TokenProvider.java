@@ -148,7 +148,7 @@ public class TokenProvider implements InitializingBean {
         // 소셜 멤버인지 확인
         Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
         System.out.println("isSocialMember = " + isSocialMember);
-        if(isSocialMember && (isSocialMember != null)) {
+        if((isSocialMember != null) && isSocialMember) {
             id = memberRepository.findIdByLogId(logId);
             System.out.println("isSocialMember : " + isSocialMember);
         }
