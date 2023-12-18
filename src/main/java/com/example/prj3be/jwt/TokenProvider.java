@@ -180,6 +180,7 @@ public class TokenProvider implements InitializingBean {
     public void deleteRefreshTokenBylogId(String name) {
         freshTokenRepository.deleteById(name);
     }
+
     public void deleteRefreshTokenById(Long id){
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + id));
