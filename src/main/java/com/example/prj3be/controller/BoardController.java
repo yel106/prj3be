@@ -41,6 +41,7 @@ public class BoardController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("add")
     public void add(@Validated Board saveBoard,
                     @RequestParam(required = false) String[] albumDetails,
