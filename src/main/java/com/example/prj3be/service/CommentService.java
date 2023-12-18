@@ -80,5 +80,5 @@ public class CommentService {
     public void delete(Long id) {
         commentRepository.deleteById(id);
     }
-    
+
 }
