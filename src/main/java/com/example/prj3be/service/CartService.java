@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -79,6 +80,16 @@ public class CartService {
         cartItemList = cartItemRepository.findCartDetailDtoList(cart.getId());
 
         return cartItemList;
+    }
+
+    public void addCountToCartItem(Long cartItemId, int count) {
+        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartItemId);
+        optionalCartItem.ifPresent(cartItem -> cartItem.addCount(count));
+    }
+
+    public void subtractCountFromCartItem(Long cartItemId, int count) {
+        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartItemId);
+        optionalCartItem.ifPresent(cartItem -> cartItem.subtractCount(count));
     }
 
     public void deleteCartItem(Long id) {
