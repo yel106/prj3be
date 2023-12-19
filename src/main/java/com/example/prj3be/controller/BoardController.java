@@ -35,7 +35,7 @@ public class BoardController {
 
         List<AlbumDetail> albumDetailList = (albumDetails == null) ? null : Arrays.stream(albumDetails).map(AlbumDetail::valueOf).collect(Collectors.toList());
 
-        Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice,stockQuantity);
+        Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice, stockQuantity);
 
 
         // TODO : stackoverflowerror..... why?
@@ -74,6 +74,7 @@ public class BoardController {
                        @RequestParam(value = "uploadFiles", required = false) MultipartFile uploadFiles) throws IOException {
         System.out.println("updateBboard = " + updateBboard);
         System.out.println("uploadFiles = " + uploadFiles);
+        System.out.println("updateBboard.getStockQuantity() = " + updateBboard.getStockQuantity());
 
         if (uploadFiles == null) {
             boardService.update(id, updateBboard);

@@ -42,6 +42,7 @@ public class CartController {
         System.out.println("logId = " + logId);
         Long memberId = memberRepository.findIdByLogId(logId);
         System.out.println("memberId = " + memberId);
+        System.out.println("stockQuantity = " + stockQuantity);
 
         try {
             Cart cart = cartService.createCart(memberId);

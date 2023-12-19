@@ -161,6 +161,7 @@ public class BoardService {
             board1.setPrice(updateBoard.getPrice());
             board1.setReleaseDate(updateBoard.getReleaseDate());
             board1.setContent(updateBoard.getContent());
+            board1.setStockQuantity(updateBoard.getStockQuantity());
 
 //            앨범 포멧은 변경할 수 없는 걸로 해서 추가 안했어요.
             return boardRepository.save(board1);

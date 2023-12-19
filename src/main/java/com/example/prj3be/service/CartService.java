@@ -58,7 +58,7 @@ public class CartService {
         //TODO : 중복 아이템 별도로 생성됨 고치셈
         if(savedCartItem != null) {
             System.out.println("장바구니에 해당 아이템이 존재함");
-            savedCartItem.addCount(count);
+//            savedCartItem.addCount(count);
             System.out.println("savedCartItem = " + savedCartItem.getCount());
         } else {
             System.out.println("장바구니에 해당 아이템이 존재하지 않음");
@@ -95,7 +95,9 @@ public class CartService {
         Cart cart = cartRepository.findByMemberId(memberId);
         System.out.println("cart.getId() = " + cart.getId());
         CartItem item = cartItemRepository.findCartItemByCartIdAndCartItemId(cart.getId(), cartItemId);
-        item.addCount(item.getCount());
+        System.out.println("item.getStockQuantity() = " + item.getStockQuantity());
+        System.out.println("item.getCount() = " + item.getCount());
+        item.addCount(item.getCount(), item.getStockQuantity());
         System.out.println("item.getCount() = " + item.getCount());
         cartItemRepository.save(item);
     }
