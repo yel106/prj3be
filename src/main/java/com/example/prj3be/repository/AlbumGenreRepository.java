@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface AlbumGenreRepository extends JpaRepository<AlbumGenre, Long> {
-
+    Long deleteAlbumGenreByBoardId(Long id);
 }

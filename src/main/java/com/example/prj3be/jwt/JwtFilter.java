@@ -44,7 +44,7 @@ public class JwtFilter extends GenericFilterBean {
         }else{
         // 토큰이 정상적인 경우
         if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)){
-            if(!requestURI.equals("/refreshToken") && !requestURI.equals("/api/logout")) {
+            if(!requestURI.equals("/refreshToken") && !requestURI.equals("/api/logout") && !requestURI.equals("/isSocialMember") && !requestURI.equals("/api/auth/refreshToken")) {
                 //토큰에서 authentication 가져와서
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 //security context에 저장

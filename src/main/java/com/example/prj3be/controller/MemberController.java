@@ -55,12 +55,11 @@ public class MemberController {
 
         member.setAge(age);
         member.setAddress(dto.getAddress());
-        Role role = Role.valueOf(String.valueOf(dto.getRole()));
-        member.setRole(role);
+//        Role role = Role.valueOf(String.valueOf(dto.getRole()));
+//        member.setRole(role);
         member.setActivated(true);
         memberService.signup(member);
     }
-
 
     // 회원 정보
     @GetMapping
@@ -78,7 +77,7 @@ public class MemberController {
             dto.setAddress(findMember.getAddress());
             dto.setEmail(findMember.getEmail());
             dto.setGender(findMember.getGender());
-            dto.setRole(findMember.getRole());
+//            dto.setRole(findMember.getRole());
             return ResponseEntity.ok(dto);
         }
 
