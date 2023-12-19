@@ -109,6 +109,8 @@ public class MemberController {
             return ResponseEntity.ok().build();
         }
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("list")
     public Page<FindMemberDto> method5(Pageable pageable,
                                        @RequestParam(value = "k",defaultValue = "")String keyword,

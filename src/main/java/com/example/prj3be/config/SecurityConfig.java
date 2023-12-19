@@ -58,6 +58,7 @@ public class SecurityConfig{
                 .requestMatchers("/member/add", "/authenticate","/api/board/add","/actuator/**").permitAll()
                                 .requestMatchers("/error").authenticated()
 
+
                 .anyRequest().permitAll()
                 )
 
