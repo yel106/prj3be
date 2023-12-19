@@ -7,6 +7,7 @@ import com.example.prj3be.repository.BoardRepository;
 import com.example.prj3be.repository.CartRepository;
 import com.example.prj3be.repository.LikeRepository;
 import com.example.prj3be.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,22 +108,23 @@ public class LikeService {
         return likeRepository.countByBoardId(boardId);
     }
 
-    public Map<String, Object> updateLike(Long id, Member login) {
+    public Map<String, Object> updateLike(Long id, String logId) {
         // TODO : 로그인 안했을 때 멤버정보 얻기위해 작성함 지워야함
-        if (login == null) {
-            login = memberRepository.findById(1L).get();
+        Member member = null;
+        if (logId == null) {
+            member = memberRepository.findByLogId(logId).orElseThrow(()-> new EntityNotFoundException("Member not found with logId: " + logId));
         }
 
-        System.out.println("login = " + login);
+        System.out.println("member = " + member);
 
-        boolean isLiked = likeRepository.existsByBoardIdAndMemberId(id, login.getId());
+        boolean isLiked = likeRepository.existsByBoardIdAndMemberId(id, member.getId());
 
         if (isLiked) {
-            likeRepository.deleteByBoardIdAndMemberId(id, login.getId());
+            likeRepository.deleteByBoardIdAndMemberId(id, member.getId());
         } else {
             Likes like = new Likes();
             like.setBoard(boardRepository.findById(id).get());
-            like.setMember(login);
+            like.setMember(member);
             likeRepository.save(like);
         }
 
