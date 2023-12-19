@@ -81,6 +81,8 @@ public class CommentService {
 
     @PreAuthorize("hasRole('ADMIN') || #logId == authentication.name")
     public void delete(Long id, String logId) {
+        commentRepository.deleteCommentByMemberId(id);
+        commentRepository.deleteCommentByBoardId(id);
         commentRepository.deleteById(id);
     }
 

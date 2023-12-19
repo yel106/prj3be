@@ -8,7 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -36,7 +38,10 @@ public class JwtFilter extends GenericFilterBean {
         System.out.println("jwt = " + jwt);
         String requestURI = httpServletRequest.getRequestURI();
         System.out.println("requestURI = " + requestURI);
-
+        //모니터링 경로는 빼고 검사
+        if (requestURI.contains("/actuator")) {
+            logger.info("'/actuator/prometheus' 경로에 대한 요청은 JWT 인증을 건너뜁니다.");
+        }else{
         // 토큰이 정상적인 경우
         if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)){
             if(!requestURI.equals("/refreshToken") && !requestURI.equals("/api/logout") && !requestURI.equals("/isSocialMember") && !requestURI.equals("/api/auth/refreshToken")) {
@@ -50,7 +55,7 @@ public class JwtFilter extends GenericFilterBean {
             }
         } else{
             logger.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
-        }
+        }}
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
