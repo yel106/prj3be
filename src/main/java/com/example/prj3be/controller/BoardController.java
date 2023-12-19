@@ -38,7 +38,7 @@ public class BoardController {
         Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice, stockQuantity);
 
 
-        // TODO : stackoverflowerror..... why?
+        // stackoverflowerror 발생 가능한 지점
         return boardListPage;
     }
 

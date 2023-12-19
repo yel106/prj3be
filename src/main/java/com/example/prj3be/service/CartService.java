@@ -55,7 +55,6 @@ public class CartService {
         System.out.println("savedCartItem = " + savedCartItem);
 
         //만약 장바구니에 해당 아이템이 이미 존재할 경우 수량 증대
-        //TODO : 중복 아이템 별도로 생성됨 고치셈
         if(savedCartItem != null) {
             System.out.println("장바구니에 해당 아이템이 존재함");
             savedCartItem.addCount(stockQuantity);
