@@ -10,10 +10,12 @@ import com.example.prj3be.repository.CommentRepository;
 import com.example.prj3be.repository.MemberRepository;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,10 +79,17 @@ public class CommentService {
         }
     }
 
-    public void delete(Long id) {
+    @PreAuthorize("hasRole('ADMIN') || #logId == authentication.name")
+    public void delete(Long id, String logId) {
         commentRepository.deleteCommentByMemberId(id);
         commentRepository.deleteCommentByBoardId(id);
         commentRepository.deleteById(id);
     }
 
+    public String findMemberById(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + id));
+
+        return comment.getMember().getLogId();
+    }
 }

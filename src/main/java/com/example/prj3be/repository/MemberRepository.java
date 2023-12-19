@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -31,8 +32,6 @@ public interface MemberRepository extends JpaRepository<Member,Long>,QuerydslPre
 
     @Query("SELECT m.isSocialMember FROM Member m WHERE m.logId = :logId")
     Boolean checkSocialMemberByLogId(String logId);
-
-
 
 //    @Query("SELECT new com.example.prj3be.dto.MemberInfoDto(m.logId, m.name, m.email, m.address, m.gender, m.role) FROM Member m WHERE m.logId = :logId")
 //    MemberInfoDto findMemberInfoByLogId(String logId);
