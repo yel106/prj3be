@@ -39,8 +39,8 @@ public class CartItem {
         return cartItem;
     }
 
-    public void addCount(int count) {
-        if((this.count + 1) > stockQuantity) {
+    public void addCount(int count, Long stockQuantity) {
+        if((this.count + 1) <= stockQuantity) {
             this.count += 1;
         } else {
             throw new OutOfStockException("재고 수량 초과");

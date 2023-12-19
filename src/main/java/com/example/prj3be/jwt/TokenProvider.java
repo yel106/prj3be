@@ -253,9 +253,4 @@ public class TokenProvider implements InitializingBean {
 
         return false;
     }
-
-    public Long getIdRefreshToken(String refreshToken) {
-        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
-        return memberRepository.findIdByLogId(logId);
-    }
 }
