@@ -90,7 +90,7 @@ public class BoardController {
         boardService.delete(id);
     }
 
-    //희연이한테 물어보기
+
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
     }
