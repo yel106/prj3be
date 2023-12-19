@@ -61,7 +61,6 @@ public class MemberController {
         memberService.signup(member);
     }
 
-
     // 회원 정보
     @GetMapping
     public ResponseEntity<FindMemberDto> method2() {
