@@ -54,6 +54,11 @@ dependencies {
 
     //AWS
     implementation 'software.amazon.awssdk:s3:2.21.26'
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('bootBuildImage') {

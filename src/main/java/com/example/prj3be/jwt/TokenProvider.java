@@ -13,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -138,6 +137,7 @@ public class TokenProvider implements InitializingBean {
         }
         return null;
     }
+
     //로그아웃 시 refreshToken 삭제
     public Long deleteRefreshToken(String refreshToken) {
         String logId = freshTokenRepository.findLogIdByToken(refreshToken);
@@ -145,20 +145,44 @@ public class TokenProvider implements InitializingBean {
         Long id = null;
         System.out.println("id = " + id);
 
-        // 소셜 멤버인지 확인
-        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
-        System.out.println("isSocialMember = " + isSocialMember);
-        if(isSocialMember && (isSocialMember != null)) {
+
+        if(isSocialMember(refreshToken)) {
             id = memberRepository.findIdByLogId(logId);
-            System.out.println("isSocialMember : " + isSocialMember);
         }
-        freshTokenRepository.deleteById(logId);
+        // logId가 null 인 경우 어차피 DB에 refreshToken이 없음=>근데 대체 왜 없어진거임?ㅜㅋㅋㅋ catch문 발생도 안보이는데
+        if(logId != null) {
+            freshTokenRepository.deleteById(logId);
+        }
         return id;
     }
+
+    // 소셜 멤버인지 아닌지 논리값 리턴
+    public Boolean isSocialMember(String refreshToken) {
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
+
+       return isSocialMember != null ? isSocialMember : false; //NullPointerException 나면 여기임
+    }
+
+    //탈퇴 시에 사용하는 소셜 멤버 여부 리턴
+    public Boolean isSocialMemberByLogId (String logId) {
+        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
+        return isSocialMember != null ? isSocialMember : false;
+    }
+
+    public Long getIdRefreshToken(String refreshToken) {
+        System.out.println("TokenProvider.getIdRefreshToken");
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        Long id = memberRepository.findIdByLogId(logId);
+        System.out.println("id = " + id);
+        return id;
+    }
+
     // 회원 탈퇴시 리프레시 토큰 삭제
     public void deleteRefreshTokenBylogId(String name) {
         freshTokenRepository.deleteById(name);
     }
+
     public void deleteRefreshTokenById(Long id){
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + id));

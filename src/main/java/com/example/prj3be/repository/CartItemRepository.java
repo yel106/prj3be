@@ -1,21 +1,28 @@
-//package com.example.prj3be.repository;
-//
-//import com.example.prj3be.domain.CartItem;
-//import com.example.prj3be.dto.CartInfoDto;
-//import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.data.jpa.repository.Query;
-//
-//import java.util.List;
-//
-//public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-//    CartItem findByCartIdAndItemId(Long cart_id, Long itemId);
-//
-////    @Query("SELECT NEW com.example.prj3be.dto.CartInfoDto(ci.id, i.title, i.price, ci.count, i.imgUrl) " +
-////            "FROM CartItem ci " +
-////            "JOIN Item i ON ci.item.id = i.id " +
-////            "WHERE ci.cart.id = :cart_id " +
-////            "ORDER BY ci.regTime DESC")
-////    List<CartInfoDto> findCartDetailDtoList(Long cart_id);
-//
-//
-//}
+package com.example.prj3be.repository;
+
+import com.example.prj3be.domain.CartItem;
+import com.example.prj3be.dto.CartItemDto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import java.util.List;
+
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+
+    @Query("SELECT ci FROM CartItem ci WHERE ci.cart.id = :cartId AND ci.id = :boardId")
+    CartItem findByCartIdAndItemId(Long cartId, Long boardId);
+
+    @Query("SELECT new com.example.prj3be.dto.CartItemDto(ci.id, ci.title, ci.price, ci.count, ci.fileUrl) FROM CartItem ci WHERE ci.cart.id = :cartId")
+    List<CartItemDto> findCartDetailDtoList(Long cartId);
+
+    @Query("SELECT ci FROM CartItem ci WHERE ci.cart.id= :cartId AND ci.id = :cartItemId")
+    CartItem findCartItemByCartIdAndCartItemId(Long cartId, Long cartItemId);
+
+    @Modifying
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.id = :cartId AND ci.id = :cartItemId")
+    void deleteCartItemByCartAndCartItemId(Long cartId, Long cartItemId);
+
+    @Modifying
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.id = :cartId")
+    void deleteCartItemsByCartId(Long cartId);
+}

@@ -29,18 +29,21 @@ public class BoardController {
                             @RequestParam(required = false) AlbumFormat albumFormat,
                             @RequestParam(required = false) String[] albumDetails,
                             @RequestParam(required = false) String minPrice,
-                            @RequestParam(required = false) String maxPrice) {
+                            @RequestParam(required = false) String maxPrice,
+                            @RequestParam(required = false) Long stockQuantity
+                        ) {
 
         List<AlbumDetail> albumDetailList = (albumDetails == null) ? null : Arrays.stream(albumDetails).map(AlbumDetail::valueOf).collect(Collectors.toList());
 
-        Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice);
+        Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice, stockQuantity);
 
 
-        // TODO : stackoverflowerror..... why????
+        // TODO : stackoverflowerror..... why?
         return boardListPage;
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("add")
     public void add(@Validated Board saveBoard,
                     @RequestParam(required = false) String[] albumDetails,
@@ -64,13 +67,14 @@ public class BoardController {
     }
 
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void update(@PathVariable Long id,
                        Board updateBboard,
                        @RequestParam(value = "uploadFiles", required = false) MultipartFile uploadFiles) throws IOException {
         System.out.println("updateBboard = " + updateBboard);
         System.out.println("uploadFiles = " + uploadFiles);
+        System.out.println("updateBboard.getStockQuantity() = " + updateBboard.getStockQuantity());
 
         if (uploadFiles == null) {
             boardService.update(id, updateBboard);
@@ -87,7 +91,7 @@ public class BoardController {
         boardService.delete(id);
     }
 
-    //희연이한테 물어보기
+
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
     }

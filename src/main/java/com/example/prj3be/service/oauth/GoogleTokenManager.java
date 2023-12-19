@@ -13,6 +13,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,8 +36,26 @@ public class GoogleTokenManager implements SocialTokenManager {
 
     @Override
     public boolean isTokenExpired(Long id) {
-        return true;
+        System.out.println("GoogleTokenManager.isTokenExpired");
+        System.out.println("id = " + id);
+        LocalDateTime currentTime = LocalDateTime.now();
+        System.out.println("currentTime = " + currentTime);
+
+//        Map<String, Object> tokenInfo = socialTokenRepository.getUpdateTimeAndExpiresInById(id); 안 먹힘 도대체 왜?????
+        Integer expiresIn = socialTokenRepository.getExpireTimeById(id);
+        System.out.println("expiresIn = " + expiresIn);
+        LocalDateTime updateTime = socialTokenRepository.getUpdateTimeById(id);
+        System.out.println("updateTimeTest = " + updateTime);
+
+        LocalDateTime expirationTime = updateTime.plusSeconds(expiresIn);
+        System.out.println("expirationTime = " + expirationTime);
+
+        boolean isTokenValid = currentTime.isBefore(expirationTime);
+        System.out.println("토큰이 유효한지: " + isTokenValid);
+
+        return isTokenValid;
     }; // 토큰 만료 여부 체크하는 논리형 메소드
+
     @Override
     public String getRefreshUri(Long id) {
         String refreshToken = socialTokenRepository.findRefreshTokenById(id);
@@ -70,16 +89,16 @@ public class GoogleTokenManager implements SocialTokenManager {
 
         tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
         tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
-        tokenInfoMap.put("tokenType", jsonObject.get("token_type"));
-        tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
+
+        if (jsonObject.containsKey("refresh_token")) {
+            tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
+        } else {
+            tokenInfoMap.put("refreshToken", null);
+        }
 
         return tokenInfoMap;
     };
 
-    @Override
-    public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
-        socialTokenRepository.updateTokenInfo(id, tokenInfoMap);
-    };
 
     @Override
     public ResponseEntity socialLogout(Long id) {
@@ -89,8 +108,6 @@ public class GoogleTokenManager implements SocialTokenManager {
         String expireTokenURI = UriComponentsBuilder.fromUriString(GOOGLE_SNS_REVOKE_TOKEN)
                 .queryParam("token", accessToken)
                 .encode().build().toString();
-
-        //TODO: 여기도 로그아웃인지 아니면 탈퇴인지 확인
         return tryRevokeToken(id, headers, expireTokenURI);
     }
 

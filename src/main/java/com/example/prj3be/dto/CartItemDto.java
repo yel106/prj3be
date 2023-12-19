@@ -1,17 +1,22 @@
 package com.example.prj3be.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
 public class CartItemDto {
-
-    @NotNull(message = "상품이 입력되지 않았습니다.")
-    private Long itemId;
-
-    @Min(value = 1, message="최소 1개 이상 담아주세요.")
+    private Long cartItemId;
+    private String title;
+    private Double price;
     private int count;
+    private String fileUrl;
+
+    public CartItemDto(Long cartItemId, String title, Double price, int count, String fileUrl) {
+        this.cartItemId = cartItemId;
+        this.title = title;
+        this.price = price;
+        this.count = count;
+        this.fileUrl = fileUrl;
+    }
 }
