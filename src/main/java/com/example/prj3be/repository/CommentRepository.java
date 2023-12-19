@@ -6,4 +6,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, QuerydslPredicateExecutor<Comment> {
     Long deleteCommentByMemberId(Long id);
+
+    Long deleteCommentByBoardId(Long id);
 }
