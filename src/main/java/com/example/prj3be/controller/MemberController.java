@@ -1,13 +1,16 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.constant.Role;
+import com.example.prj3be.domain.Likes;
 import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.FindMemberDto;
 import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.jwt.TokenProvider;
 //import com.example.prj3be.dto.SocialMemberDto;
+import com.example.prj3be.repository.LikeRepository;
 import com.example.prj3be.service.CartService;
+import com.example.prj3be.service.LikeService;
 import com.example.prj3be.service.MemberService;
 import com.example.prj3be.service.oauth.OauthService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -42,6 +45,8 @@ public class MemberController {
     private final TokenProvider tokenProvider;
     private final OauthService oauthService;
     private final CartService cartService;
+    private final LikeRepository likeRepository;
+
 
     @PostMapping("add")
     public void method1(@Validated @RequestBody MemberFormDto dto) {
@@ -181,6 +186,8 @@ public class MemberController {
         cartService.deleteCart(id);
 
         //회원 삭제
+        List<Likes> likes = likeRepository.findByMemberId(id);
+        likeRepository.deleteAll(likes);
         memberService.deleteMember(id);
         return ResponseEntity.ok().build();
     }
