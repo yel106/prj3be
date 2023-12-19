@@ -5,6 +5,7 @@ import com.example.prj3be.domain.*;
 import com.example.prj3be.repository.AlbumGenreRepository;
 import com.example.prj3be.repository.BoardFileRepository;
 import com.example.prj3be.repository.BoardRepository;
+import com.example.prj3be.repository.LikeRepository;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -19,10 +20,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.prj3be.domain.QBoard.board;
 
@@ -31,6 +30,7 @@ import static com.example.prj3be.domain.QBoard.board;
 //@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final LikeRepository likeRepository;
     private final BoardFileRepository boardFileRepository;
     private final AlbumGenreRepository albumGenreRepository;
 
@@ -180,6 +180,9 @@ public class BoardService {
 
     public void delete(Long id) {
         boardFileRepository.deleteBoardFileByBoardId(id);
+        likeRepository.deleteByBoardId(id);
+
+        albumGenreRepository.deleteAlbumGenreByBoardId(id);
         boardRepository.deleteById(id);
     }
 
@@ -187,8 +190,9 @@ public class BoardService {
         return boardFileRepository.findFileUrlsByBoardId(id);
     }
 
-    public BoardService(BoardRepository boardRepository, BoardFileRepository boardFileRepository, AlbumGenreRepository albumGenreRepository, S3Client s3) {
+    public BoardService(BoardRepository boardRepository, LikeRepository likeRepository, BoardFileRepository boardFileRepository, AlbumGenreRepository albumGenreRepository, S3Client s3) {
         this.boardRepository = boardRepository;
+        this.likeRepository = likeRepository;
         this.boardFileRepository = boardFileRepository;
         this.albumGenreRepository = albumGenreRepository;
         this.s3 = s3;

@@ -34,6 +34,7 @@ public class LikeController {
         }
         return ResponseEntity.ok(service.updateLike(like, login));
     }
+
     @GetMapping("board/{boardId}")
     public ResponseEntity<Map<String, Object>>get(
             @PathVariable Long boardId,

@@ -19,6 +19,8 @@ public interface LikeRepository extends JpaRepository<Likes, Long> {
 
     List<Likes> findByBoardId(Long id);
 
+    void deleteByBoardId(Long id);
+
     @Repository
     public interface LikesRepository extends JpaRepository<Likes, Long> {
 
