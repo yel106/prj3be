@@ -62,6 +62,7 @@ public class LoginController {
 
         return ResponseEntity.ok(tokens);
     }
+
     @PostMapping("/login")
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto){
         System.out.println("loginDto.getLogId() = " + loginDto.getLogId());

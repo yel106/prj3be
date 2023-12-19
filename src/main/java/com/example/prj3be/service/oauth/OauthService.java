@@ -167,12 +167,12 @@ public class OauthService {
         //리프래쉬 토큰을 이용해 사용자의 아이디를 가져옴
         Long id = tokenProvider.getIdRefreshToken(refreshToken);
         System.out.println("id = " + id);
-        //아이디로 소셜타입을 찾아와 저장
-        SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
-        //소셜 타입에 따른 메소드로 연결
-        SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
 
         try{
+            //아이디로 소셜타입을 찾아와 저장
+            //소셜 타입에 따른 메소드로 연결
+            SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
+            SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
             System.out.println("토큰 유효한지 확인하고 요청 보내기");
             //토큰 유효한지 확인하고 요청 보내기
             ResponseEntity<String> response = socialTokenManager.checkAndRefreshToken(id);
@@ -191,10 +191,11 @@ public class OauthService {
             System.out.println("expiresInObject.getClass() = " + expiresInObject.getClass());
             Integer expiresIn = Integer.parseInt(expiresInObject.toString());
             return ResponseEntity.ok().body(expiresIn);
+        } catch (OAuthException e) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (HttpClientErrorException.Forbidden e) {
             System.out.println("소셜 토큰이 유효하지 않음");
-            //소셜 토큰이 유효하지 않으면 Forbidden이 리턴됨
-            //TODO: JWT 토큰 만료시키는 방법 추가
+            //소셜 토큰이 유효하지 않으면 Unauthorized 리턴됨
             System.out.println("e.getMessage() = " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (RestClientException e) {
@@ -225,5 +226,14 @@ public class OauthService {
         }
         updateClause.where(socialToken.id.eq(id)).execute();
     };
+
+    public ResponseEntity deleteSocial(Long id) {
+        // (레코드 전체, socialTokenRepository -> findAndDeleteTokenById 사용)
+        SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
+        SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
+        ResponseEntity response = socialTokenManager.revokeToken(id);
+
+        return response;
+    }
 
 }
