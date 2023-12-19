@@ -1,13 +1,10 @@
 package com.example.prj3be.domain;
-//
-//import jakarta.persistence.*;
-//import lombok.Data;
-//import lombok.ToString;
-//
 
+import com.example.prj3be.exception.OutOfStockException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.ResponseEntity;
 
 @Entity
 @Getter @Setter
@@ -28,8 +25,9 @@ public class CartItem {
     private Double price;
 
     private int count;
+    private Long stockQuantity;
 
-    public static CartItem createCartItem(Cart cart, Long id, String title, Double price, String fileUrl, int count) {
+    public static CartItem createCartItem(Cart cart, Long id, String title, Double price, String fileUrl, int count, Long stockQuantity) {
         CartItem cartItem = new CartItem();
         cartItem.setId(id);
         cartItem.setCart(cart);
@@ -37,14 +35,19 @@ public class CartItem {
         cartItem.setPrice(price);
         cartItem.setCount(count);
         cartItem.setFileUrl(fileUrl);
+        cartItem.setStockQuantity(stockQuantity);
         return cartItem;
     }
 
     public void addCount(int count) {
-        this.count += count;
+        if((this.count + 1) > stockQuantity) {
+            this.count += 1;
+        } else {
+            throw new OutOfStockException("재고 수량 초과");
+        }
     }
 
     public void subtractCount(int count) {
-        this.count -= count;
+        this.count -= 1;
     }
 }

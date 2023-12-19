@@ -32,6 +32,8 @@ public class QCartItem extends EntityPathBase<CartItem> {
 
     public final NumberPath<Double> price = createNumber("price", Double.class);
 
+    public final NumberPath<Long> stockQuantity = createNumber("stockQuantity", Long.class);
+
     public final StringPath title = createString("title");
 
     public QCartItem(String variable) {

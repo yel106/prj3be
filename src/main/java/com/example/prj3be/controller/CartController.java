@@ -34,7 +34,7 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity createCartAndAddItem(Long boardId, String title, Double price) {
+    public ResponseEntity createCartAndAddItem(Long boardId, String title, Double price, Long stockQuantity) {
         //id = board.id (상품명)
         System.out.println("boardId = " + boardId);
         System.out.println("CartController.createCartAndAddItem");
@@ -46,21 +46,56 @@ public class CartController {
         try {
             Cart cart = cartService.createCart(memberId);
             System.out.println("CartController에서 cart = " + cart.getId());
-            cartService.addItemsToCart(cart, boardId, title, price);
+            cartService.addItemsToCart(cart, boardId, title, price, stockQuantity);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
-    @DeleteMapping("/cart/delete/{cartItemId}")
+    @DeleteMapping("/delete/{cartItemId}")
     public ResponseEntity<?> deleteCartItem(@PathVariable Long cartItemId) {
+        System.out.println("CartController.deleteCartItem");
+        String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("logId = " + logId);
+        Long memberId = memberRepository.findIdByLogId(logId);
+        System.out.println("memberId = " + memberId);
+
         try {
-            cartService.deleteCartItem(cartItemId);
+            cartService.deleteCartItemByCartAndCartItem(memberId, cartItemId);
             return ResponseEntity.ok(cartItemId + "번 아이템 삭제 완료");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("카트 아이템 삭제 중 오류 발생");
         }
+    }
+
+    @GetMapping("/addCount/{cartItemId}")
+    public void addCount(@PathVariable Long cartItemId) {
+        System.out.println("========================================");
+        System.out.println("CartController.addCount");
+        String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("logId = " + logId);
+        //로그인 아이디로부터 멤버 아이디 추출
+        Long memberId = memberRepository.findIdByLogId(logId);
+        System.out.println("memberId = " + memberId);
+
+        cartService.addCountToCartItem(memberId, cartItemId);
+        System.out.println("========================================");
+    }
+
+    @GetMapping("/subtractCount/{cartItemId}")
+    public void subtractCount(@PathVariable Long cartItemId) {
+        System.out.println("========================================");
+        System.out.println("CartController.subtractCount");
+        String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("logId = " + logId);
+        //로그인 아이디로부터 멤버 아이디 추출
+        Long memberId = memberRepository.findIdByLogId(logId);
+        System.out.println("memberId = " + memberId);
+
+        cartService.subtractCountFromCartItem(memberId, cartItemId);
+        System.out.println("========================================");
     }
 
 
