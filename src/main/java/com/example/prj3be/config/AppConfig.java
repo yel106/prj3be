@@ -1,6 +1,8 @@
 package com.example.prj3be.config;
 
 import io.micrometer.common.lang.Nullable;
+import io.micrometer.core.aop.CountedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,15 +31,8 @@ public class AppConfig {
 
         return s3;
     }
-//    @Bean
-//    public WebMvcConfigurer corsConfigure() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(@Nullable CorsRegistry registry) {
-//                if (registry != null) {
-//                    registry.addMapping("/**").allowedOrigins("*");
-//                }
-//            }
-//        };
-//    }
+    @Bean
+    public CountedAspect countedAspect(MeterRegistry registry) {
+        return new CountedAspect(registry);
+    }
 }

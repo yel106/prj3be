@@ -39,7 +39,7 @@ public class JwtFilter extends GenericFilterBean {
         String requestURI = httpServletRequest.getRequestURI();
         System.out.println("requestURI = " + requestURI);
         //모니터링 경로는 빼고 검사
-        if ("/actuator/prometheus".equals(requestURI)) {
+        if (requestURI.contains("/actuator")) {
             logger.info("'/actuator/prometheus' 경로에 대한 요청은 JWT 인증을 건너뜁니다.");
         }else{
         // 토큰이 정상적인 경우

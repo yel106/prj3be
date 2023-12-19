@@ -1,12 +1,12 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.config.PaymentConfig;
-import com.example.prj3be.domain.Member;
 import com.example.prj3be.dto.PaymentDto;
 import com.example.prj3be.dto.PaymentRequestDto;
 import com.example.prj3be.dto.PaymentResDto;
 import com.example.prj3be.exception.CustomLogicException;
 import com.example.prj3be.service.PaymentService;
+import io.micrometer.core.annotation.Counted;
 import jakarta.validation.Valid;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +29,7 @@ public class PaymentController {
         this.paymentService = paymentService;
         this.paymentConfig = paymentConfig;
     }
+    @Counted("my.order")
     @PostMapping("/toss")
     public ResponseEntity requestTossPayment(@AuthenticationPrincipal User principal, @RequestBody @Valid PaymentDto paymentReqDto) throws CustomLogicException {
         PaymentResDto paymentResDto = paymentService.requestTossPayment(paymentReqDto.toEntity(), principal.getUsername()).toPaymentResDto();
