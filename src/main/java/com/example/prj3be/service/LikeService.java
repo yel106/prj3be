@@ -89,6 +89,7 @@ public class LikeService {
 
         boolean isLiked = likeRepository.existsByBoardIdAndMemberId(id, member.getId());
 
+        // isLiked가 true면(=기존에 like가 있으면) 삭제 ->isLiked는 여전히 true=>리턴 할 때 반전값을 부여)
         if (isLiked) {
             likeRepository.deleteByBoardIdAndMemberId(id, member.getId());
         } else {
@@ -111,36 +112,36 @@ public class LikeService {
             countLike = updatedLikeCount;
         }
 
-        return Map.of("isLiked", isLiked, "countLike", countLike);
+        return Map.of("isLiked", !isLiked, "countLike", countLike);
     }
 
-
-    public Map<String, Object> updateLike(Likes like, Member login) {
-        if (login != null) {
-            like.setMember(login);
-        }
-
-        boolean isLiked = likeRepository.existsByBoardIdAndMemberId(like.getBoard().getId(), like.getMember().getId());
-
-        if (isLiked) {
-            likeRepository.deleteByBoardIdAndMemberId(like.getBoard().getId(), like.getMember().getId());
-        } else {
-            likeRepository.save(like);
-        }
-
-        int countLike = likeRepository.countByBoardId(like.getBoard().getId());
-
-        // Board 엔티티를 가져와서 좋아요 수 업데이트
-        Optional<Board> optionalBoard = boardRepository.findById(like.getBoard().getId());
-        if (optionalBoard.isPresent()) {
-            Board board = optionalBoard.get();
-            List<Likes> likes = likeRepository.findByBoardId(board.getId());
-            board.setLikes_board(likes);
-            int updatedLikeCount = board.getLikes_board().size(); // 좋아요 수 업데이트
-            boardRepository.save(board);
-            countLike = updatedLikeCount;
-        }
-
-        return Map.of("isLiked", isLiked, "countLike", countLike);
-    }
+//
+//    public Map<String, Object> updateLike(Likes like, Member login) {
+//        if (login != null) {
+//            like.setMember(login);
+//        }
+//
+//        boolean isLiked = likeRepository.existsByBoardIdAndMemberId(like.getBoard().getId(), like.getMember().getId());
+//
+//        if (isLiked) {
+//            likeRepository.deleteByBoardIdAndMemberId(like.getBoard().getId(), like.getMember().getId());
+//        } else {
+//            likeRepository.save(like);
+//        }
+//
+//        int countLike = likeRepository.countByBoardId(like.getBoard().getId());
+//
+//        // Board 엔티티를 가져와서 좋아요 수 업데이트
+//        Optional<Board> optionalBoard = boardRepository.findById(like.getBoard().getId());
+//        if (optionalBoard.isPresent()) {
+//            Board board = optionalBoard.get();
+//            List<Likes> likes = likeRepository.findByBoardId(board.getId());
+//            board.setLikes_board(likes);
+//            int updatedLikeCount = board.getLikes_board().size(); // 좋아요 수 업데이트
+//            boardRepository.save(board);
+//            countLike = updatedLikeCount;
+//        }
+//
+//        return Map.of("isLiked", isLiked, "countLike", countLike);
+//    }
 }
