@@ -13,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -35,8 +34,7 @@ public class TokenProvider implements InitializingBean {
     private final String secret;
     private final long tokenExpiration;
     private Key key;
-    @Autowired
-    private FreshTokenRepository freshTokenRepository;
+    private final FreshTokenRepository freshTokenRepository;
 
     private MemberRepository memberRepository;
     private MemberDetailService memberDetailService;
@@ -44,12 +42,13 @@ public class TokenProvider implements InitializingBean {
 
     //의존성 주입
     public TokenProvider(@Value("${jwt.token.key}")String secret,
-                         @Value("${jwt.token.expiration}")long tokenExpiration, AuthenticationManagerBuilder authenticationManagerBuilder, MemberRepository memberRepository){
+                         @Value("${jwt.token.expiration}")long tokenExpiration, AuthenticationManagerBuilder authenticationManagerBuilder, MemberRepository memberRepository, FreshTokenRepository freshTokenRepository){
         this.secret = secret;
         this.tokenExpiration = tokenExpiration * 1000;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.memberRepository = memberRepository;
         this.memberDetailService = new MemberDetailService(memberRepository);
+        this.freshTokenRepository = freshTokenRepository;
     }
 
     @Override
@@ -145,16 +144,33 @@ public class TokenProvider implements InitializingBean {
         Long id = null;
         System.out.println("id = " + id);
 
-        // 소셜 멤버인지 확인
-        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
-        System.out.println("isSocialMember = " + isSocialMember);
-        if((isSocialMember != null) && isSocialMember) {
+
+        if(isSocialMember(refreshToken)) {
             id = memberRepository.findIdByLogId(logId);
-            System.out.println("isSocialMember : " + isSocialMember);
         }
-        freshTokenRepository.deleteById(logId);
+        // logId가 null 인 경우 어차피 DB에 refreshToken이 없음=>근데 대체 왜 없어진거임?ㅜㅋㅋㅋ catch문 발생도 안보이는데
+        if(logId != null) {
+            freshTokenRepository.deleteById(logId);
+        }
         return id;
     }
+
+    // 소셜 멤버인지 아닌지 논리값 리턴
+    public Boolean isSocialMember(String refreshToken) {
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        Boolean isSocialMember = memberRepository.checkSocialMemberByLogId(logId);
+
+        return isSocialMember != null ? isSocialMember : false; //NullPointerException 나면 여기임
+    }
+
+    public Long getIdRefreshToken(String refreshToken) {
+        System.out.println("TokenProvider.getIdRefreshToken");
+        String logId = freshTokenRepository.findLogIdByToken(refreshToken);
+        Long id = memberRepository.findIdByLogId(logId);
+        System.out.println("id = " + id);
+        return id;
+    }
+
     // 회원 탈퇴시 리프레시 토큰 삭제
     public void deleteRefreshTokenBylogId(String name) {
         freshTokenRepository.deleteById(name);

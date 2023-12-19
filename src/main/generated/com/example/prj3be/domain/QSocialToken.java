@@ -22,6 +22,8 @@ public class QSocialToken extends EntityPathBase<SocialToken> {
 
     public static final QSocialToken socialToken = new QSocialToken("socialToken");
 
+    public final QBaseTimeEntity _super = new QBaseTimeEntity(this);
+
     public final StringPath accessToken = createString("accessToken");
 
     public final NumberPath<Integer> expiresIn = createNumber("expiresIn", Integer.class);
@@ -32,11 +34,15 @@ public class QSocialToken extends EntityPathBase<SocialToken> {
 
     public final StringPath refreshToken = createString("refreshToken");
 
-    public final DateTimePath<java.time.LocalDateTime> regTime = createDateTime("regTime", java.time.LocalDateTime.class);
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
 
     public final EnumPath<com.example.prj3be.constant.SocialLoginType> socialLoginType = createEnum("socialLoginType", com.example.prj3be.constant.SocialLoginType.class);
 
     public final StringPath tokenType = createString("tokenType");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updateTime = _super.updateTime;
 
     public QSocialToken(String variable) {
         this(SocialToken.class, forVariable(variable), INITS);

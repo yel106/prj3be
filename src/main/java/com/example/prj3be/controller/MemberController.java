@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @RestController
@@ -60,7 +61,6 @@ public class MemberController {
         memberService.signup(member);
     }
 
-
     // 회원 정보
     @GetMapping
     public ResponseEntity<FindMemberDto> method2() {
@@ -72,15 +72,12 @@ public class MemberController {
             System.out.println("authentication.getName() = " + authentication.getName());
             Member findMember = memberService.findMemberByLogId(authentication.getName());
             FindMemberDto dto = new FindMemberDto();
-            dto.setId(findMember.getId());
             dto.setLogId(findMember.getLogId());
             dto.setName(findMember.getName());
             dto.setAddress(findMember.getAddress());
-            dto.setAge(findMember.getAge());
             dto.setEmail(findMember.getEmail());
             dto.setGender(findMember.getGender());
             dto.setRole(findMember.getRole());
-
             return ResponseEntity.ok(dto);
         }
 
@@ -90,8 +87,7 @@ public class MemberController {
     @PreAuthorize("#dto.logId == authentication.name")
     @PutMapping("/edit/{id}")
     public void method3(@PathVariable Long id,@Validated @RequestBody MemberEditFormDto dto) {
-        System.out.println("dto = " + dto);
-        memberService.update(id, dto);
+            memberService.update(id,dto);
     }
     @GetMapping(value = "check",params = "email")
     public ResponseEntity method4(String email){
@@ -117,6 +113,10 @@ public class MemberController {
         System.out.println(category);
         Page<Member> memberPage = memberService.findMemberList(pageable,keyword,category);
         return memberPage.map(FindMemberDto::new);
+    }
+    @GetMapping("/{logId}/orders")
+    public List<String> method7(@PathVariable String logId){
+        return memberService.findOrderListByLogId(logId);
     }
 
 

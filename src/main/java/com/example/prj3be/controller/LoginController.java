@@ -1,43 +1,28 @@
 package com.example.prj3be.controller;
 
 import com.example.prj3be.dto.LoginDto;
-import com.example.prj3be.dto.SocialOauthToken;
+import com.example.prj3be.dto.MemberAuthDto;
 import com.example.prj3be.dto.TokenDto;
-import com.example.prj3be.jwt.JwtAuthenticationEntryPoint;
-import com.example.prj3be.jwt.JwtFilter;
 import com.example.prj3be.jwt.TokenProvider;
 import com.example.prj3be.service.oauth.OauthService;
-import jakarta.servlet.http.HttpServletRequest;
-import com.example.prj3be.service.LoginService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final LoginService loginService;
     private final OauthService oauthService;
 //    private final LoginProvider loginProvider;
 
@@ -45,14 +30,17 @@ public class LoginController {
     private String socialButtonImagePrefix;
 
     @GetMapping("/accessToken")
-    public ResponseEntity<String> isTokenValid(@RequestHeader("Authorization")String accessToken){
+    public ResponseEntity<MemberAuthDto> isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
             accessToken = accessToken.substring(7);
         }
         if(tokenProvider.validateToken(accessToken)){
-            String authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList().get(0).toString();
-            System.out.println("authority = " + authority);
-            return ResponseEntity.ok(authority);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            MemberAuthDto dto = new MemberAuthDto();
+            dto.setLogId(authentication.getName());
+            dto.setRole(authentication.getAuthorities().stream().toList().get(0).toString());
+            return ResponseEntity.ok(dto);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -120,6 +108,21 @@ public class LoginController {
     @GetMapping("/api/login/image")
     public ResponseEntity<String> socialButtonImage() {
         return ResponseEntity.ok(socialButtonImagePrefix);
+    }
+
+    @GetMapping("/isSocialMember") //TODO: IllegalArgumentException 발생 지점
+    public Boolean isSocialMember(@RequestHeader("Authorization")String refreshToken) {
+        if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
+            refreshToken = refreshToken.substring(7);
+        }
+
+        if(refreshToken != null) {
+            Boolean isSocial = tokenProvider.isSocialMember(refreshToken);
+            System.out.println("isSocial = " + isSocial);
+            return isSocial;
+        }
+
+        return false;
     }
 
 }

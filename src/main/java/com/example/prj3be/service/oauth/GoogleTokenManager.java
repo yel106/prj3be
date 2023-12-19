@@ -70,16 +70,16 @@ public class GoogleTokenManager implements SocialTokenManager {
 
         tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
         tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
-        tokenInfoMap.put("tokenType", jsonObject.get("token_type"));
-        tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
+
+        if (jsonObject.containsKey("refresh_token")) {
+            tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
+        } else {
+            tokenInfoMap.put("refreshToken", null);
+        }
 
         return tokenInfoMap;
     };
 
-    @Override
-    public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
-        socialTokenRepository.updateTokenInfo(id, tokenInfoMap);
-    };
 
     @Override
     public ResponseEntity socialLogout(Long id) {
@@ -89,8 +89,6 @@ public class GoogleTokenManager implements SocialTokenManager {
         String expireTokenURI = UriComponentsBuilder.fromUriString(GOOGLE_SNS_REVOKE_TOKEN)
                 .queryParam("token", accessToken)
                 .encode().build().toString();
-
-        //TODO: 여기도 로그아웃인지 아니면 탈퇴인지 확인
         return tryRevokeToken(id, headers, expireTokenURI);
     }
 

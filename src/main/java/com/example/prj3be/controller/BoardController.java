@@ -38,11 +38,12 @@ public class BoardController {
         Page<Board> boardListPage = boardService.boardListAll(pageable, title, albumFormat, albumDetailList, minPrice, maxPrice,stockQuantity);
 
 
-        // TODO : stackoverflowerror..... why????
+        // TODO : stackoverflowerror..... why?
         return boardListPage;
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("add")
     public void add(@Validated Board saveBoard,
                     @RequestParam(required = false) String[] albumDetails,

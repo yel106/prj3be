@@ -30,7 +30,6 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws ServletException, IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        System.out.println("httpServletRequest = " + httpServletRequest);
         //실제 토큰을 가져옴
         String jwt = resolveToken(httpServletRequest);
         System.out.println("JwtFilter.doFilter");
@@ -40,7 +39,7 @@ public class JwtFilter extends GenericFilterBean {
 
         // 토큰이 정상적인 경우
         if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)){
-            if(!requestURI.equals("/refreshToken") && !requestURI.equals("/api/logout")) {
+            if(!requestURI.equals("/refreshToken") && !requestURI.equals("/api/logout") && !requestURI.equals("/isSocialMember") && !requestURI.equals("/api/auth/refreshToken")) {
                 //토큰에서 authentication 가져와서
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 //security context에 저장
@@ -59,7 +58,6 @@ public class JwtFilter extends GenericFilterBean {
     // 필터링을 하기 위해서 토큰 정보를 꺼내오는 역할(요청 헤더에서 꺼내옴)
     private String resolveToken(HttpServletRequest httpServletRequest) {
         String bearerToken = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
-        System.out.println("bearerToken = " + bearerToken);
 
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
