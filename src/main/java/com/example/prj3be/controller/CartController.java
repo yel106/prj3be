@@ -8,26 +8,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/cart")
 public class CartController {
     private final CartService cartService;
     private final MemberRepository memberRepository;
 
-    @PostMapping("/fetch")
+    @GetMapping("/fetch")
     public List<CartItemDto> fetchCart() {
         System.out.println("CartController.fetchCart");
         //accessToken으로부터 로그인 아이디 추출
         String logId = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("===========================================================");
         System.out.println("logId = " + logId);
         //로그인 아이디로부터 멤버 아이디 추출
         Long memberId = memberRepository.findIdByLogId(logId);

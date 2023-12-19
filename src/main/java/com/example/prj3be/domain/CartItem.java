@@ -29,13 +29,14 @@ public class CartItem {
 
     private int count;
 
-    public static CartItem createCartItem(Cart cart, Long id, String title, Double price, String fileURL, int count) {
+    public static CartItem createCartItem(Cart cart, Long id, String title, Double price, String fileUrl, int count) {
         CartItem cartItem = new CartItem();
         cartItem.setId(id);
         cartItem.setCart(cart);
         cartItem.setTitle(title);
         cartItem.setPrice(price);
         cartItem.setCount(count);
+        cartItem.setFileUrl(fileUrl);
         return cartItem;
     }
 

@@ -70,12 +70,15 @@ public class CartService {
     }
 
     public List<CartItemDto> getCartList(Long id) {
+        System.out.println("CartService.getCartList");
+        
         List<CartItemDto> cartItemList = new ArrayList<>();
-
         Cart cart = cartRepository.findByMemberId(id);
         if(cart == null) {
             return cartItemList;
         }
+
+        System.out.println(cartItemRepository.findCartDetailDtoList(cart.getId()));
 
         cartItemList = cartItemRepository.findCartDetailDtoList(cart.getId());
 
