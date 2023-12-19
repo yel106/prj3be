@@ -180,6 +180,7 @@ public class BoardService {
 
     public void delete(Long id) {
         boardFileRepository.deleteBoardFileByBoardId(id);
+        albumGenreRepository.deleteAlbumGenreByBoardId(id);
         boardRepository.deleteById(id);
     }
 
