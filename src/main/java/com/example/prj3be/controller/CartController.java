@@ -51,8 +51,10 @@ public class CartController {
             cartService.addItemsToCart(cart, boardId, stockQuantity);
             return ResponseEntity.ok().build();
         } catch (OutOfStockException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
