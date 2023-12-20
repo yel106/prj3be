@@ -16,4 +16,4 @@ fi
 echo "> 새 어플리케이션 배포 "
 JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
 rm -rf $REPOSITORY/deploy.log $REPOSITORY/deploy-err.log
-nohup sudo java -jar $JAR_NAME --spring.profiles.active=prod --spring.config.location=$REPOSITORY/application.properties >> $REPOSITORY/deploy.log 2> $REPOSITORY/deploy-err.log &
+nohup sudo java -jar $JAR_NAME --spring.profiles.active=prod --spring.config.location=$REPOSITORY/application.properties,$REPOSITORY/application.yml >> $REPOSITORY/deploy.log 2> $REPOSITORY/deploy-err.log &
