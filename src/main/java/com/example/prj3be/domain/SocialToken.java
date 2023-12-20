@@ -23,6 +23,7 @@ public class SocialToken extends BaseTimeEntity {
     private String accessToken;
     private Integer expiresIn;
     private String refreshToken;
+    private Integer refreshTokenExpiresIn;
     private String tokenType;
 
     @ManyToOne

@@ -88,7 +88,7 @@ public class TokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         long now =(new Date()).getTime();
-        Date validity = new Date(now+300*1000);//일단 만료 시간을 5분으로
+        Date validity = new Date(now+tokenExpiration);
 
         System.out.println("TokenProvider.createAccessToken");
         System.out.println("authorities = " + authorities);
@@ -105,10 +105,9 @@ public class TokenProvider implements InitializingBean {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        // 현재 시간과 토큰 만료 시간 설정, 엑세스 토큰의 24배(24시간)
         long now =(new Date()).getTime();
         System.out.println("now = " + now);
-        Date validity = new Date(now+900*1000);//일단 만료시간을 15분으로
+        Date validity = new Date(now+tokenExpiration*24);
 
         System.out.println("TokenProvider.createRefreshToken");
 

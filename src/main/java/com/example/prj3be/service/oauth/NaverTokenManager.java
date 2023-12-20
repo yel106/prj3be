@@ -32,28 +32,6 @@ public class NaverTokenManager implements SocialTokenManager {
     private final RestTemplate restTemplate;
 
     @Override
-    public boolean isTokenExpired(Long id) {
-        System.out.println("NaverTokenManager.isTokenExpired");
-        System.out.println("id = " + id);
-        LocalDateTime currentTime = LocalDateTime.now();
-        System.out.println("currentTime = " + currentTime);
-
-//        Map<String, Object> tokenInfo = socialTokenRepository.getUpdateTimeAndExpiresInById(id); 안 먹힘 도대체 왜?????
-        Integer expiresIn = socialTokenRepository.getExpireTimeById(id);
-        System.out.println("expiresIn = " + expiresIn);
-        LocalDateTime updateTime = socialTokenRepository.getUpdateTimeById(id);
-        System.out.println("updateTimeTest = " + updateTime);
-
-        LocalDateTime expirationTime = updateTime.plusSeconds(expiresIn);
-        System.out.println("expirationTime = " + expirationTime);
-
-        boolean isTokenValid = currentTime.isBefore(expirationTime);
-        System.out.println("토큰이 유효한지: " + isTokenValid);
-
-        return isTokenValid;
-    }; // 토큰 만료 여부 체크하는 논리형 메소드
-
-    @Override
     public String getRefreshUri(Long id) {
         String refreshToken = socialTokenRepository.findRefreshTokenById(id);
 
@@ -71,30 +49,10 @@ public class NaverTokenManager implements SocialTokenManager {
 
     @Override
     public ResponseEntity<String> checkAndRefreshToken(Long id) {
-        if(isTokenExpired(id)) {
-            String refreshURI = getRefreshUri(id);
-            HttpHeaders headers = new HttpHeaders();
-            return restTemplate.exchange(refreshURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
-        }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        String refreshURI = getRefreshUri(id);
+        HttpHeaders headers = new HttpHeaders();
+        return restTemplate.exchange(refreshURI, HttpMethod.POST, new HttpEntity<>(headers), String.class);
     }; //토큰 갱신 요청하는 메소드
-    @Override
-    public Map<String, Object> processRefreshResponse(ResponseEntity<String> response) {
-        JSONObject jsonObject = (JSONObject) JSONValue.parse(Objects.requireNonNull(response.getBody()));
-        Map<String, Object> tokenInfoMap = new HashMap<>();
-
-        tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
-        tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
-
-        if (jsonObject.containsKey("refresh_token")) {
-            tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
-        } else {
-            tokenInfoMap.put("refreshToken", null);
-        }
-
-        return tokenInfoMap;
-    };
-
 
     @Override
     public ResponseEntity revokeToken(Long id) {
