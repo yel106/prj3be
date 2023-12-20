@@ -55,10 +55,15 @@ public class SecurityConfig{
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                .requestMatchers("/member/add", "/authenticate","/api/board/add","/actuator/**").permitAll()
+                .requestMatchers("/member/add","/api/board/list","api/board/id/**","api/board/file/id/**","api/like/board/**", "/authenticate","/actuator/**", "api/comment/list").permitAll()
+                                .requestMatchers("/login","/refreshToken", "/api/logout","/api/login/image", "/isSocialMember", "/api/auth/**","/cpu","/jvm").permitAll()
+                                .requestMatchers("/accessToken",  "/cart/**","/api/order", "/payment/**").authenticated()
+                                .requestMatchers("/api/board/add","/api/board/edit/**", "api/board/remove/**","member/list").hasRole("ADMIN")
+                                .requestMatchers("api/like/update/**","/api/comment/delete/**", "/api/comment/update/**", "/api/comment/add/**", "/member", "/member/edit/**", "member/delete/**").hasAnyRole("ADMIN","USER")
                                 .requestMatchers("/error").authenticated()
 
-                .anyRequest().permitAll()
+
+                .anyRequest().authenticated()
                 )
 
                 //세션을 사용하지 않으므로 STATELESS로 설정

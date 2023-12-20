@@ -20,7 +20,7 @@ public class LikeController {
     private final LikeService service;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @GetMapping("{boardId}")
+    @GetMapping("update/{boardId}")
     public ResponseEntity<Map<String, Object>> like(@PathVariable Long boardId) {
         String logId = SecurityContextHolder.getContext().getAuthentication().getName();
 

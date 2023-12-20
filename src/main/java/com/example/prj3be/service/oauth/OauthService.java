@@ -209,6 +209,8 @@ public class OauthService {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (HttpClientErrorException.Unauthorized e) {
             System.out.println("소셜 토큰이 유효하지 않음");
+            //TODO: 리프레시 토큰 DB 삭제
+            tokenProvider.deleteRefreshToken(refreshToken);
             //소셜 토큰이 유효하지 않으면 Unauthorized 리턴됨
             System.out.println("e.getMessage() = " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
