@@ -26,11 +26,10 @@ public class LoginController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final OauthService oauthService;
-//    private final LoginProvider loginProvider;
 
     @Value("${image.file.prefix}")
     private String socialButtonImagePrefix;
-//    @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager")
+    @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager")
     @GetMapping("/accessToken")
     public ResponseEntity<MemberAuthDto> isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
