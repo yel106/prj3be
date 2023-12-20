@@ -38,9 +38,9 @@ public class LoginController {
         if(tokenProvider.validateToken(accessToken)){
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            MemberAuthDto dto = new MemberAuthDto();
-            dto.setLogId(authentication.getName());
-            dto.setRole(authentication.getAuthorities().stream().toList().get(0).toString());
+            MemberAuthDto dto = new MemberAuthDto(authentication.getName(),authentication.getAuthorities().stream().toList().get(0).toString());
+//            dto.setLogId(authentication.getName());
+//            dto.setRole(authentication.getAuthorities().stream().toList().get(0).toString());
             return ResponseEntity.ok(dto);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
