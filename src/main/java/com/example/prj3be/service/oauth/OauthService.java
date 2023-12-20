@@ -17,6 +17,8 @@ import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.persistence.EntityManager;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,8 +37,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -52,14 +57,7 @@ public class OauthService {
     @Autowired
     private EntityManager entityManager;
 
-    // 1. redirectURL 만들기
-    public String loginRequest(SocialLoginType socialLoginType) {
-        SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
-//        System.out.println("socialOauth = " + socialOauth);
-        return socialOauth.getOauthRedirectURL();
-    }
-
-    // 1-2. 소셜 타입 찾기
+    // 소셜 타입 찾기 : 로그인용
     private SocialOauth findSocialOauthByType(SocialLoginType socialLoginType) {
         return socialOauthList.stream()
                 .filter(x -> x.type() == socialLoginType)
@@ -67,12 +65,21 @@ public class OauthService {
                 .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
     }
 
+    // 소셜 타입 찾기 : 토큰 관리용
+
     private SocialTokenManager findSocialTokenManagerByType(SocialLoginType socialLoginType) {
         return socialTokenManagers.stream()
                 .filter(x -> x.type() == socialLoginType)
                 .findFirst()
                 .orElseThrow(() -> new OAuthException("알 수 없는 SocialLoginType 입니다."));
     }
+
+    // 로그인
+    public String loginRequest(SocialLoginType socialLoginType) {
+        SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
+        return socialOauth.getOauthRedirectURL();
+    }
+
 
     @Transactional
     public ResponseEntity<TokenDto> oAuthLogin(SocialLoginType socialLoginType, String code) throws IOException {
@@ -115,8 +122,9 @@ public class OauthService {
         tokenInfo.setId(member.getId());
         tokenInfo.setSocialLoginType(socialLoginType);
         tokenInfo.setAccessToken(oAuthToken.getAccess_token());
-        tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
         tokenInfo.setExpiresIn(oAuthToken.getExpires_in());
+        tokenInfo.setRefreshToken(oAuthToken.getRefresh_token());
+        tokenInfo.setRefreshTokenExpiresIn(oAuthToken.getRefresh_token_expires_in());
         tokenInfo.setTokenType(oAuthToken.getToken_type());
         socialTokenRepository.save(tokenInfo);
         System.out.println("New token created : " + tokenInfo);
@@ -148,7 +156,6 @@ public class OauthService {
     }
 
     public ResponseEntity logoutRequest(Long id) {
-
         System.out.println("소셜 logoutRequest 연결 성공");
         SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
         System.out.println("socialLoginType = " + socialLoginType);
@@ -161,6 +168,7 @@ public class OauthService {
         return response;
     }
 
+    // 토큰 갱신
     @Transactional
     public ResponseEntity<Integer> refreshAccessToken(String refreshToken) {
         System.out.println("OauthService.refreshAccessToken");
@@ -174,26 +182,32 @@ public class OauthService {
             SocialLoginType socialLoginType = socialTokenRepository.findSocialLoginTypeById(id);
             SocialTokenManager socialTokenManager = this.findSocialTokenManagerByType(socialLoginType);
             System.out.println("토큰 유효한지 확인하고 요청 보내기");
-            //토큰 유효한지 확인하고 요청 보내기
-            ResponseEntity<String> response = socialTokenManager.checkAndRefreshToken(id);
-            System.out.println("요청 보내고 받은 응답 " + response);
-            System.out.println("받은 거 프로세스");
-            //받은 거 프로세스해서
-            Map<String, Object> tokenInfoMap = socialTokenManager.processRefreshResponse(response);
-            System.out.println("tokenInfoMap = " + tokenInfoMap);
-            System.out.println("테이블 업데이트");
-            //테이블 업데이트하고
-            updateTokenInfo(id, tokenInfoMap);
-            //expires_in 리턴하기
-            System.out.println("expires_in 리턴 중");
-            Object expiresInObject = tokenInfoMap.get("expiresIn");
-            System.out.println("expiresInObject = " + expiresInObject);
-            System.out.println("expiresInObject.getClass() = " + expiresInObject.getClass());
-            Integer expiresIn = Integer.parseInt(expiresInObject.toString());
-            return ResponseEntity.ok().body(expiresIn);
+            //갱신이 필요한지 확인
+            boolean refreshNeeded = isRefreshNeeded(id);
+            if(refreshNeeded) {
+                //요청 보내기
+                ResponseEntity<String> response = socialTokenManager.checkAndRefreshToken(id);
+                System.out.println("요청 보내고 받은 응답 " + response);
+                System.out.println("받은 거 프로세스");
+                Map<String, Object> tokenInfoMap = processRefreshResponse(response);
+                //받은 거 프로세스해서
+                System.out.println("tokenInfoMap = " + tokenInfoMap);
+                System.out.println("테이블 업데이트");
+                //테이블 업데이트하고
+                updateTokenInfo(id, tokenInfoMap);
+                //expires_in 리턴하기
+                System.out.println("expires_in 리턴 중");
+                Object expiresInObject = tokenInfoMap.get("expiresIn");
+                System.out.println("expiresInObject = " + expiresInObject);
+                System.out.println("expiresInObject.getClass() = " + expiresInObject.getClass());
+                Integer expiresIn = Integer.parseInt(expiresInObject.toString());
+                return ResponseEntity.ok().body(expiresIn);
+            } else {
+                return ResponseEntity.ok().body(1800); // 갱신이 불필요하기 때문에 주기 다시 세팅 (3분)
+            }
         } catch (OAuthException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (HttpClientErrorException.Forbidden e) {
+        } catch (HttpClientErrorException.Unauthorized e) {
             System.out.println("소셜 토큰이 유효하지 않음");
             //소셜 토큰이 유효하지 않으면 Unauthorized 리턴됨
             System.out.println("e.getMessage() = " + e.getMessage());
@@ -204,6 +218,74 @@ public class OauthService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    public boolean isRefreshNeeded(Long id) {
+        System.out.println("OauthService.isRefreshNeeded");
+        System.out.println("id = " + id);
+
+        //현재 시간 추출
+        LocalDateTime currentTime = LocalDateTime.now();
+        System.out.println("currentTime = " + currentTime);
+
+        //테이블에서 리프래쉬 토큰의 만료 시간을 가져옴
+        Integer refreshTokenExpiresIn = socialTokenRepository.getRefreshTokenExpireTimeById(id);
+        System.out.println("refreshTokenExpiresIn = " + refreshTokenExpiresIn);
+
+        // 테이블에서 액세스 토큰의 만료 시간을 가져옴
+        Integer expiresIn = socialTokenRepository.getExpireTimeById(id);
+        System.out.println("expiresIn = " + expiresIn);
+
+        // 최근 업데이트 된 시간을 가져옴
+        LocalDateTime updateTime = socialTokenRepository.getUpdateTimeById(id);
+        System.out.println("updateTimeTest = " + updateTime);
+
+        // 리프래쉬 토큰이 만료됐는지 확인
+        // 만료 시간 계산 -> 최근 업데이트 된 시간 + 토큰 만료 시간 (초)
+        // 현재 시간 vs 업데이트 시간 + 토큰 만료 시간
+        LocalDateTime refreshExpireTime = updateTime.plusSeconds(refreshTokenExpiresIn);
+        System.out.println("refreshExpireTime = " + refreshExpireTime);
+        boolean isRefreshTokenExpired = currentTime.isAfter(refreshExpireTime);
+        System.out.println("isRefreshTokenExpired = " + isRefreshTokenExpired);
+
+        // 액세스 토큰이 만료 됐는지 확인
+        LocalDateTime expireTime = updateTime.plusSeconds(expiresIn);
+        System.out.println("expireTime = " + expireTime);
+        boolean isAccessTokenExpired = currentTime.isAfter(expireTime);
+        System.out.println("토큰이 만료됐는지: " + isAccessTokenExpired);
+
+        // 리프래쉬 토큰이 만료됨 -> 재로그인 요청 -> UNAUTHORIZED
+        // 리프래쉬 토큰이 유효하고 액세스 토큰 또한 유효 -> 갱신 불필요
+        // 리프래쉬 토큰이 유효하고 액세스 토큰 만료 -> 갱신 가능
+        if(isRefreshTokenExpired) {
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
+        } else {
+            if(isAccessTokenExpired) {
+                System.out.println("리프래쉬 토큰이 유효하고 액세스 토큰이 만료됨: 갱신 필요");
+                return true;
+            }
+            System.out.println("리프래쉬 토큰이 유효하고 액세스 토큰 또한 유효함");
+            return false;
+        }
+    };
+
+    public Map<String, Object> processRefreshResponse(ResponseEntity<String> response) {
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(Objects.requireNonNull(response.getBody()));
+        Map<String, Object> tokenInfoMap = new HashMap<>();
+
+        tokenInfoMap.put("accessToken", jsonObject.get("access_token"));
+        tokenInfoMap.put("expiresIn", jsonObject.get("expires_in"));
+
+        //토큰 갱신 요청 시 refreshToken이 만료되지 않았을 경우 access_token, expires_in만 돌려줌
+        //따라서 nullPointException 발생 가능, 미리 응답에 있는지 체크하고 있으면 넣고 없으면 null 처리하여 수행
+        if (jsonObject.containsKey("refresh_token")) {
+            tokenInfoMap.put("refreshToken", jsonObject.get("refresh_token"));
+            tokenInfoMap.put("refreshTokenExpiresIn", jsonObject.get("refresh_token_expires_in"));
+        } else {
+            tokenInfoMap.put("refreshToken", null);
+        }
+
+        return tokenInfoMap;
+    };
 
     @Transactional
     public void updateTokenInfo(Long id, Map<String, Object> tokenInfoMap) {
@@ -216,13 +298,15 @@ public class OauthService {
                 .set(socialToken.accessToken, tokenInfoMap.get("accessToken").toString())
                 .set(socialToken.expiresIn, Integer.parseInt(tokenInfoMap.get("expiresIn").toString()));
 
-        if (tokenInfoMap.get("refreshToken") != null) {
+        if (tokenInfoMap.get("refreshToken") != null && tokenInfoMap.get("refreshTokenExpiresIn") != null) {
             updateClause
-                    .set(socialToken.refreshToken, tokenInfoMap.get("refreshToken").toString());
+                    .set(socialToken.refreshToken, tokenInfoMap.get("refreshToken").toString())
+                    .set(socialToken.refreshTokenExpiresIn, Integer.parseInt(tokenInfoMap.get("refreshTokenExpiresIn").toString()));
         } else {
             //refreshToken이 null일 경우 기존 데이터 보존
             updateClause
-                    .setNull(socialToken.refreshToken);
+                    .setNull(socialToken.refreshToken)
+                    .setNull(socialToken.refreshTokenExpiresIn);
         }
         updateClause.where(socialToken.id.eq(id)).execute();
     };

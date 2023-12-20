@@ -37,4 +37,7 @@ public interface SocialTokenRepository extends JpaRepository<SocialToken, String
 
     @Query("SELECT st.updateTime FROM SocialToken st WHERE st.id = :id")
     LocalDateTime getUpdateTimeById(Long id);
+
+    @Query("SELECT st.refreshTokenExpiresIn FROM SocialToken st WHERE st.id = :id")
+    Integer getRefreshTokenExpireTimeById(Long id);
 }

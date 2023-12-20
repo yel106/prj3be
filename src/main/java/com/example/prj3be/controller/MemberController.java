@@ -81,6 +81,7 @@ public class MemberController {
             System.out.println("authentication.getName() = " + authentication.getName());
             Member findMember = memberService.findMemberByLogId(authentication.getName());
             FindMemberDto dto = new FindMemberDto();
+            dto.setId(findMember.getId());
             dto.setLogId(findMember.getLogId());
             dto.setName(findMember.getName());
             dto.setAddress(findMember.getAddress());

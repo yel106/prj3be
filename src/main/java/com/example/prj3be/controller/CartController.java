@@ -2,6 +2,7 @@ package com.example.prj3be.controller;
 
 import com.example.prj3be.domain.Cart;
 import com.example.prj3be.dto.CartItemDto;
+import com.example.prj3be.exception.OutOfStockException;
 import com.example.prj3be.repository.MemberRepository;
 import com.example.prj3be.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity createCartAndAddItem(Long boardId, String title, Double price, Long stockQuantity) {
+    public ResponseEntity createCartAndAddItem(Long boardId, Long stockQuantity) {
         //id = board.id (상품명)
         System.out.println("boardId = " + boardId);
         System.out.println("CartController.createCartAndAddItem");
@@ -47,8 +48,10 @@ public class CartController {
         try {
             Cart cart = cartService.createCart(memberId);
             System.out.println("CartController에서 cart = " + cart.getId());
-            cartService.addItemsToCart(cart, boardId, title, price, stockQuantity);
+            cartService.addItemsToCart(cart, boardId, stockQuantity);
             return ResponseEntity.ok().build();
+        } catch (OutOfStockException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
