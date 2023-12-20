@@ -33,6 +33,7 @@ public class Board {
 
     private Double price;
     private String agency;
+    @Column(name = "content", length = 3000)
     private String content;
     private LocalDate releaseDate;
     private Long stockQuantity;
