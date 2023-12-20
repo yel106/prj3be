@@ -34,6 +34,8 @@ public class QSocialToken extends EntityPathBase<SocialToken> {
 
     public final StringPath refreshToken = createString("refreshToken");
 
+    public final NumberPath<Integer> refreshTokenExpiresIn = createNumber("refreshTokenExpiresIn", Integer.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
 

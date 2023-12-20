@@ -19,27 +19,26 @@ public class CartItem {
     @JoinColumn(name="cart_id") //한 사람당 한 카트
     private Cart cart;
 
-    private String title;
-
-    private String fileUrl;
-    private Double price;
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     private int count;
+    //자주 쓰이는 것들은 따로 저장
+    private String fileUrl;
     private Long stockQuantity;
 
-    public static CartItem createCartItem(Cart cart, Long id, String title, Double price, String fileUrl, int count, Long stockQuantity) {
+    public static CartItem createCartItem(Cart cart, Board board, int count, String fileUrl, Long stockQuantity) {
         CartItem cartItem = new CartItem();
-        cartItem.setId(id);
         cartItem.setCart(cart);
-        cartItem.setTitle(title);
-        cartItem.setPrice(price);
+        cartItem.setBoard(board);
         cartItem.setCount(count);
         cartItem.setFileUrl(fileUrl);
         cartItem.setStockQuantity(stockQuantity);
         return cartItem;
     }
 
-    public void addCount(int count, Long stockQuantity) {
+    public void addCount(Long stockQuantity) {
         if((this.count + 1) <= stockQuantity) {
             this.count += 1;
         } else {

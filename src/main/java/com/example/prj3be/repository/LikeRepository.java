@@ -21,15 +21,17 @@ public interface LikeRepository extends JpaRepository<Likes, Long> {
 
     void deleteByBoardId(Long id);
 
-    @Repository
-    public interface LikesRepository extends JpaRepository<Likes, Long> {
+    List<Likes> findByMemberId(Long id);
 
-        int countByBoardId(Long boardId);
-
-        void deleteByBoardIdAndMemberId(Long boardId, Long memberId);
-
-        Likes findByBoardIdAndMemberId(Long boardId, Long memberId);
-    }
+//    @Repository
+//    public interface LikesRepository extends JpaRepository<Likes, Long> {
+//
+//        int countByBoardId(Long boardId);
+//
+//        void deleteByBoardIdAndMemberId(Long boardId, Long memberId);
+//List<Likes> findByMemberId(Long id);
+//        Likes findByBoardIdAndMemberId(Long boardId, Long memberId);
+//    }
 
 
 }

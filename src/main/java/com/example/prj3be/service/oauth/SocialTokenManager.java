@@ -7,11 +7,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.Map;
 
 public interface SocialTokenManager {
-    boolean isTokenExpired(Long id); // 토큰 만료 여부 체크하는 논리형 메소드
     ResponseEntity<String> checkAndRefreshToken(Long id); //토큰 갱신 요청하는 메소드
     String getRefreshUri(Long id); // 토큰 갱신 URI 생성하는 메소드
-    // 요청해서 받은 토큰 정보를 변환하는 메소드
-    Map<String, Object> processRefreshResponse(ResponseEntity<String> response);
 
     //접근 토큰을 이용한 토큰 만료 요청 - 로그아웃용
     ResponseEntity socialLogout(Long id);

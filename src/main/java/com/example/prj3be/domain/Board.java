@@ -33,8 +33,11 @@ public class Board {
 
     private Double price;
     private String agency;
+    @Column(name = "content", length = 3000)
     private String content;
     private LocalDate releaseDate;
+
+    @Column(name = "stock_quantity", columnDefinition = "BIGINT DEFAULT 100")
     private Long stockQuantity;
 
     @OneToMany(mappedBy = "board")
