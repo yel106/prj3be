@@ -24,7 +24,7 @@ public class Order extends BaseTimeEntity {
     private String orderName;
 
     private String orderUid; // 주문번호
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="member_id")
     private Member member;
     @OneToOne(fetch = FetchType.LAZY)
