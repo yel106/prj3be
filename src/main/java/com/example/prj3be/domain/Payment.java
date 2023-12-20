@@ -26,7 +26,7 @@ public class Payment extends BaseTimeEntity{
     private String paymentUid; // 결제 고유 번호
     private String paymentName; // 결제 제목
     private boolean paySuccessYN; // 성공여부
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
     private String paymentKey;

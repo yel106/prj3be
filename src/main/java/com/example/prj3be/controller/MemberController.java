@@ -181,12 +181,13 @@ public class MemberController {
         if(isSocial) {
             oauthService.deleteSocial(id);
         }
-
+        //이 멤버에 카트가 존재시에
+        if (cartService.findCart(id) != false){
         //장바구니 아이템 삭제
         cartService.deleteCartItem(id);
-
         //장바구니 삭제
         cartService.deleteCart(id);
+        }
 
         //회원 삭제
         List<Likes> likes = likeRepository.findByMemberId(id);

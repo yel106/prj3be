@@ -138,4 +138,12 @@ public class CartService {
         cartRepository.deleteByMemberId(id);
     }
 
+    public boolean findCart(Long id) {
+        Cart byMemberId = cartRepository.findByMemberId(id);
+        if (byMemberId == null){
+            return false;
+        }else {
+            return true;
+        }
+    }
 }
