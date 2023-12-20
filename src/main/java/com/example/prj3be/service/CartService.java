@@ -51,7 +51,8 @@ public class CartService {
         System.out.println("fileUrl = " + fileUrl);
         System.out.println("cart.getId() = " + cart.getId());
 
-        CartItem savedCartItem = cartItemRepository.findByCartIdAndBoardId(cart.getId(), boardId);
+        Optional<CartItem> byCartIdAndBoardId = cartItemRepository.findByCartIdAndBoardId(cart.getId(), boardId);
+        CartItem savedCartItem = byCartIdAndBoardId.orElseThrow();
         System.out.println("savedCartItem = " + savedCartItem);
 
         //만약 장바구니에 해당 아이템이 이미 존재할 경우 수량 증대

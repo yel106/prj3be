@@ -2,11 +2,7 @@ package com.example.prj3be.service;
 
 import com.example.prj3be.domain.*;
 
-import com.example.prj3be.repository.AlbumGenreRepository;
-import com.example.prj3be.repository.BoardFileRepository;
-import com.example.prj3be.repository.BoardRepository;
-import com.example.prj3be.repository.CommentRepository;
-import com.example.prj3be.repository.LikeRepository;
+import com.example.prj3be.repository.*;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -37,6 +33,7 @@ public class BoardService {
     private final LikeRepository likeRepository;
     private final BoardFileRepository boardFileRepository;
     private final AlbumGenreRepository albumGenreRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Value("${image.file.prefix}")
     private String urlPrefix;
@@ -186,9 +183,14 @@ public class BoardService {
     public void delete(Long id) {
         boardFileRepository.deleteBoardFileByBoardId(id);
         likeRepository.deleteByBoardId(id);
-
         albumGenreRepository.deleteAlbumGenreByBoardId(id);
         commentRepository.deleteCommentByBoardId(id);
+        // 카트가 있다면 삭제 없다면 패스
+        Optional<CartItem> cartItemByBoardId = cartItemRepository.findCartItemByBoardId(id);
+        if (cartItemByBoardId != null){
+            cartItemRepository.deleteCartItemByBoardId(id);
+        }
+
         boardRepository.deleteById(id);
     }
 
@@ -196,12 +198,13 @@ public class BoardService {
         return boardFileRepository.findFileUrlsByBoardId(id);
     }
 
-    public BoardService(CommentRepository commentRepository,BoardRepository boardRepository, LikeRepository likeRepository, BoardFileRepository boardFileRepository, AlbumGenreRepository albumGenreRepository, S3Client s3) {
+    public BoardService(CommentRepository commentRepository, BoardRepository boardRepository, LikeRepository likeRepository, BoardFileRepository boardFileRepository, AlbumGenreRepository albumGenreRepository, CartItemRepository cartRepository, S3Client s3) {
         this.commentRepository = commentRepository;
         this.boardRepository = boardRepository;
         this.likeRepository = likeRepository;
         this.boardFileRepository = boardFileRepository;
         this.albumGenreRepository = albumGenreRepository;
+        this.cartItemRepository = cartRepository;
         this.s3 = s3;
     }
 
