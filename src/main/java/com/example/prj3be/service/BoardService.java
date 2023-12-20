@@ -186,10 +186,9 @@ public class BoardService {
         albumGenreRepository.deleteAlbumGenreByBoardId(id);
         commentRepository.deleteCommentByBoardId(id);
         // 카트가 있다면 삭제 없다면 패스
-        Optional<CartItem> cartItemByBoardId = cartItemRepository.findCartItemByBoardId(id);
-        if (cartItemByBoardId != null){
-            cartItemRepository.deleteCartItemByBoardId(id);
-        }
+
+        int i = cartItemRepository.deleteCartItemByBoardId(id);
+        System.out.println("지워진 갯수 = " + i);
 
         boardRepository.deleteById(id);
     }
