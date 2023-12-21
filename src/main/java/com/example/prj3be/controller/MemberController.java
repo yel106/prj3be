@@ -171,8 +171,8 @@ public class MemberController {
         String logId = SecurityContextHolder.getContext().getAuthentication().getName();
         // TODO 계정 삭제 전 참조 무결성을 위해 점검해야할 것:
         // payment에서 해당 멤버 관련 레코드 삭제됐는지
-        paymentRepository.deleteByMemberId(id);
         orderRepository.deleteByMemberId(id);
+        paymentRepository.deleteByMemberId(id);
         // 해당 멤버별  like 삭제됐는지
 
 
