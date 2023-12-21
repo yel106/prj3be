@@ -30,7 +30,7 @@ public class LoginController {
 
     @Value("${image.file.prefix}")
     private String socialButtonImagePrefix;
-//    @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager",key = "#accessToken")
+    @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager",key = "#accessToken")
     @GetMapping("/accessToken")
     public MemberAuthDto isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
@@ -49,7 +49,7 @@ public class LoginController {
         return null;
     }
     @GetMapping("/refreshToken")
-//    @CacheEvict(value = "accesstokenCache", key = "#accessToken")
+    @CacheEvict(value = "accesstokenCache", key = "#accessToken")
     public ResponseEntity<TokenDto> byRefreshToken(@RequestHeader("Authorization")String refreshToken){
         System.out.println("LoginController.byRefreshToken's refreshToken = " + refreshToken);
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
