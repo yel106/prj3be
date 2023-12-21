@@ -2,6 +2,7 @@ package com.example.prj3be.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -20,12 +21,11 @@ public class CorsConfig{
         // 구체적인 출처 지정
         config.addAllowedOrigin("https://muemalaf.click"); // 허용할 출처 지정
         config.addAllowedHeader("*"); // 모든 헤더 허용
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("OPTIONS");
-
+        config.addAllowedMethod(HttpMethod.GET);
+        config.addAllowedMethod(HttpMethod.POST);
+        config.addAllowedMethod(HttpMethod.PUT);
+        config.addAllowedMethod(HttpMethod.DELETE);
+        config.addAllowedMethod(HttpMethod.OPTIONS);
         // 모든 경로에 대해 위에서 정의한 CORS 설정 적용
         source.registerCorsConfiguration("/**", config);
 
