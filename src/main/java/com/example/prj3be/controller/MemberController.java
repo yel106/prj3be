@@ -8,8 +8,10 @@ import com.example.prj3be.dto.MemberEditFormDto;
 import com.example.prj3be.dto.MemberFormDto;
 import com.example.prj3be.jwt.TokenProvider;
 //import com.example.prj3be.dto.SocialMemberDto;
+import com.example.prj3be.repository.CommentRepository;
 import com.example.prj3be.repository.LikeRepository;
 import com.example.prj3be.service.CartService;
+import com.example.prj3be.service.CommentService;
 import com.example.prj3be.service.LikeService;
 import com.example.prj3be.service.MemberService;
 import com.example.prj3be.service.oauth.OauthService;
@@ -46,6 +48,7 @@ public class MemberController {
     private final OauthService oauthService;
     private final CartService cartService;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
 
     @PostMapping("add")
@@ -193,6 +196,8 @@ public class MemberController {
         List<Likes> likes = likeRepository.findByMemberId(id);
         likeRepository.deleteAll(likes);
         memberService.deleteMember(id);
+        commentRepository.deleteCommentByMemberId(id);
+
         return ResponseEntity.ok().build();
     }
 
