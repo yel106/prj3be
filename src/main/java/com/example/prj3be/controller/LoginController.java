@@ -8,6 +8,7 @@ import com.example.prj3be.service.oauth.OauthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,7 @@ public class LoginController {
         return null;
     }
     @GetMapping("/refreshToken")
+    @CacheEvict(value = "accesstokenCache", key = "#accessToken")
     public ResponseEntity<TokenDto> byRefreshToken(@RequestHeader("Authorization")String refreshToken){
         System.out.println("LoginController.byRefreshToken's refreshToken = " + refreshToken);
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
