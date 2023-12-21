@@ -18,7 +18,7 @@ import java.time.Duration;
 @EnableCaching
 @Configuration
 public class RedisCacheConfig {
-    private static final long DELTA_TO_AVOID_CONCURRENCY_TIME = 30 * 60 * 1000L;
+    private static final long DELTA_TO_AVOID_CONCURRENCY_TIME = 1800;
     @Value("${jwt.token.expiration}")
     private long accessTokenValidityInMilliseconds;
 
