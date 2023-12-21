@@ -24,6 +24,7 @@ public class CorsConfig{
         config.addAllowedMethod("POST");
         config.addAllowedMethod("PUT");
         config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("OPTIONS");
 
         // 모든 경로에 대해 위에서 정의한 CORS 설정 적용
         source.registerCorsConfiguration("/**", config);

@@ -163,7 +163,9 @@ public class OauthService {
         System.out.println("socialTokenManager = " + socialTokenManager);
 
         ResponseEntity response = socialTokenManager.socialLogout(id);
-        System.out.println("소셜 logoutRequest 끝 : " + response);
+        System.out.println("소셜 logoutRequest 끝 지우기 전 : " + response);
+        response.getHeaders().remove("Access-Control-Allow-Origin");
+        System.out.println("소셜 logoutRequest 끝 지운 후 : " + response);
 
         return response;
     }
