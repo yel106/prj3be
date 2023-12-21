@@ -31,7 +31,7 @@ public class LoginController {
     private String socialButtonImagePrefix;
     @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager",key = "#accessToken")
     @GetMapping("/accessToken")
-    public ResponseEntity<MemberAuthDto> isTokenValid(@RequestHeader("Authorization")String accessToken){
+    public MemberAuthDto isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
             accessToken = accessToken.substring(7);
         }
@@ -41,9 +41,11 @@ public class LoginController {
             MemberAuthDto dto = new MemberAuthDto(authentication.getName(),authentication.getAuthorities().stream().toList().get(0).toString());
 //            dto.setLogId(authentication.getName());
 //            dto.setRole(authentication.getAuthorities().stream().toList().get(0).toString());
-            return ResponseEntity.ok(dto);
+            return dto;
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        // 유효하지 않은 토큰이거나 다른 이유로 인증에 실패한 경우
+        // 캐시에 저장하지 않도록 null을 반환하거나 다른 방식으로 처리할 수 있습니다.
+        return null;
     }
     @GetMapping("/refreshToken")
     public ResponseEntity<TokenDto> byRefreshToken(@RequestHeader("Authorization")String refreshToken){
