@@ -163,9 +163,9 @@ public class OauthService {
         System.out.println("socialTokenManager = " + socialTokenManager);
 
         ResponseEntity response = socialTokenManager.socialLogout(id);
-        System.out.println("소셜 logoutRequest 끝 : " + response);
+        System.out.println("소셜 logoutRequest 끝 지운: " + response);
 
-        return response;
+        return ResponseEntity.ok(response.getBody());
     }
 
     // 토큰 갱신
