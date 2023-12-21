@@ -53,7 +53,7 @@ public class OauthController {
     }
 
     @ExceptionHandler(OAuthException.class)
-    public ResponseEntity<String> oAuthExceptionHandleer(OAuthException e) {
+    public ResponseEntity<String> oAuthExceptionHandler(OAuthException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
