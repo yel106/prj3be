@@ -10,6 +10,8 @@ import com.example.prj3be.jwt.TokenProvider;
 //import com.example.prj3be.dto.SocialMemberDto;
 import com.example.prj3be.repository.CommentRepository;
 import com.example.prj3be.repository.LikeRepository;
+import com.example.prj3be.repository.OrderRepository;
+import com.example.prj3be.repository.PaymentRepository;
 import com.example.prj3be.service.CartService;
 import com.example.prj3be.service.CommentService;
 import com.example.prj3be.service.LikeService;
@@ -49,6 +51,8 @@ public class MemberController {
     private final CartService cartService;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
 
 
     @PostMapping("add")
@@ -167,6 +171,8 @@ public class MemberController {
         String logId = SecurityContextHolder.getContext().getAuthentication().getName();
         // TODO 계정 삭제 전 참조 무결성을 위해 점검해야할 것:
         // payment에서 해당 멤버 관련 레코드 삭제됐는지
+        paymentRepository.deleteByMemberId(id);
+        orderRepository.deleteByMemberId(id);
         // 해당 멤버별  like 삭제됐는지
 
 
