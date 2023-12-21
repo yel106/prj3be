@@ -195,8 +195,10 @@ public class MemberController {
         //회원 삭제
         List<Likes> likes = likeRepository.findByMemberId(id);
         likeRepository.deleteAll(likes);
-        memberService.deleteMember(id);
+
         commentRepository.deleteCommentByMemberId(id);
+
+        memberService.deleteMember(id);
 
         return ResponseEntity.ok().build();
     }
