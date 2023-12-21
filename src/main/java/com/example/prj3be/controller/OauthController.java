@@ -58,7 +58,7 @@ public class OauthController {
     }
 
     @ExceptionHandler(ConversionException.class)
-    public ResponseEntity<String> conversionExceptionHandler() {
+    public ResponseEntity<String> conversionExceptionHandler(ConversionException e) {
         return new ResponseEntity<>("지원되지 않는 SocialLoginType입니다.", HttpStatus.NOT_FOUND);
     }
 }
