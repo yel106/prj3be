@@ -18,7 +18,7 @@ import java.time.Duration;
 @EnableCaching
 @Configuration
 public class RedisCacheConfig {
-    private static final long DELTA_TO_AVOID_CONCURRENCY_TIME = 1800;
+    private static final long DELTA_TO_AVOID_CONCURRENCY_TIME = 1800*1000;
     @Value("${jwt.token.expiration}")
     private long accessTokenValidityInMilliseconds;
 
@@ -56,7 +56,7 @@ public class RedisCacheConfig {
          * 만료 직전 캐시 조회하여 로그인 안되는 동시성 이슈 방지를 위해 accessToken ttl 보다 30분 일찍 만료
          */
         RedisCacheConfiguration redisCacheConfiguration = generateCacheConfiguration()
-                .entryTtl(Duration.ofMillis(accessTokenValidityInMilliseconds - DELTA_TO_AVOID_CONCURRENCY_TIME));
+                .entryTtl(Duration.ofMillis(accessTokenValidityInMilliseconds*1000 - DELTA_TO_AVOID_CONCURRENCY_TIME));
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory)
