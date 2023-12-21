@@ -9,7 +9,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 public interface CommentRepository extends JpaRepository<Comment, Long>, QuerydslPredicateExecutor<Comment> {
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.member.id = :memberId")
-    Long deleteCommentByMemberId(Long memberId);
+    int deleteCommentByMemberId(Long memberId);
 
     Long deleteCommentByBoardId(Long id);
 }
