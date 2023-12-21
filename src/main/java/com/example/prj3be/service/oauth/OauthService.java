@@ -203,7 +203,7 @@ public class OauthService {
                 Integer expiresIn = Integer.parseInt(expiresInObject.toString());
                 return ResponseEntity.ok().body(expiresIn);
             } else {
-                return ResponseEntity.ok().body(1800); // 갱신이 불필요하기 때문에 주기 다시 세팅 (3분)
+                return ResponseEntity.ok().body(3600); // 갱신이 불필요하기 때문에 주기 다시 세팅 (3분)
             }
         } catch (OAuthException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
