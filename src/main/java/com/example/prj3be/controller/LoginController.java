@@ -30,7 +30,7 @@ public class LoginController {
 
     @Value("${image.file.prefix}")
     private String socialButtonImagePrefix;
-    @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager",key = "#accessToken")
+//    @Cacheable(value = "accesstokenCache",cacheManager = "accessTokenCacheManager",key = "#accessToken")
     @GetMapping("/accessToken")
     public MemberAuthDto isTokenValid(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){

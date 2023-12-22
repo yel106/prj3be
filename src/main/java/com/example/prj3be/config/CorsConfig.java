@@ -19,7 +19,7 @@ public class CorsConfig{
 
         config.setAllowCredentials(true); // 쿠키 및 인증 정보 허용
         // 구체적인 출처 지정
-        config.addAllowedOrigin("https://muemalaf.click"); // 허용할 출처 지정
+        config.addAllowedOrigin("*"); // 허용할 출처 지정
         config.addAllowedHeader("*"); // 모든 헤더 허용
         config.addAllowedMethod(HttpMethod.GET);
         config.addAllowedMethod(HttpMethod.POST);

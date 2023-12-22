@@ -10,25 +10,25 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-@Configuration
-public class RedisConfiguration {
-    @Value("${spring.data.redis.host}")
-    private String redisHost;
-    @Value("${spring.data.redis.port}")
-    private int redisPort;
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(new RedisStandaloneConfiguration(redisHost, redisPort));
-    }
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-
-        /* Java 기본 직렬화가 아닌 JSON 직렬화 설정 */
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-
-        return redisTemplate;
-    }
-}
+//@Configuration
+//public class RedisConfiguration {
+//    @Value("${spring.data.redis.host}")
+//    private String redisHost;
+//    @Value("${spring.data.redis.port}")
+//    private int redisPort;
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory() {
+//        return new LettuceConnectionFactory(new RedisStandaloneConfiguration(redisHost, redisPort));
+//    }
+//    @Bean
+//    public RedisTemplate<String, Object> redisTemplate() {
+//        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+//        redisTemplate.setConnectionFactory(redisConnectionFactory());
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//
+//        /* Java 기본 직렬화가 아닌 JSON 직렬화 설정 */
+//        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+//
+//        return redisTemplate;
+//    }
+//}
