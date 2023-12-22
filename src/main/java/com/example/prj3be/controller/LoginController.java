@@ -49,7 +49,7 @@ public class LoginController {
         return null;
     }
     @GetMapping("/refreshToken")
-    @CacheEvict(value = "accesstokenCache", key = "#accessToken")
+//    @CacheEvict(value = "accesstokenCache", key = "#accessToken")
     public ResponseEntity<TokenDto> byRefreshToken(@RequestHeader("Authorization")String refreshToken){
         System.out.println("LoginController.byRefreshToken's refreshToken = " + refreshToken);
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
