@@ -27,7 +27,7 @@ public class CartService {
     // 카트 생성
     public Cart createCart(Long memberId) {
         System.out.println("CartService.createCart");
-        Member member = memberRepository.findByMemberId(memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow(null);
         System.out.println("member = " + member.getId());
         Cart cart = cartRepository.findByMemberId(memberId);
         System.out.println("!= 체크하기 전에 cart = " + cart);
